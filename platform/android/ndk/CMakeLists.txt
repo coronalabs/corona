@@ -1,10 +1,9 @@
-cmake_minimum_required(VERSION 3.4.1)
+cmake_minimum_required(VERSION 3.13)
 
 set(COMMON_COMPILER_FLAGS "-Wno-deprecated -O3 -fstrict-aliasing -fvisibility=hidden -ffunction-sections -fdata-sections")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_COMPILER_FLAGS} -std=c++14")
 set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   ${COMMON_COMPILER_FLAGS}")
-set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,max-page-size=16384")
 
 add_definitions(
 	-DALMIXER_COMPILE_WITHOUT_SDL
@@ -732,4 +731,10 @@ add_library( corona SHARED
 		${CORONA_ROOT}/external/smoothpolygon/SmoothPolygon.cpp
 )
 
+if(ANDROID AND (ANDROID_ABI STREQUAL "arm64-v8a" OR ANDROID_ABI STREQUAL "x86_64"))
+	# NDK version < 28
+	target_link_options(corona PRIVATE "-Wl,-z,max-page-size=16384")
+	# NDK version <= 22
+	target_link_options(corona PRIVATE "-Wl,-z,common-page-size=16384")
+endif()
 target_link_libraries ( corona lua jnlua5.1 mpg123 OpenAL almixer cpufeatures GLESv2 EGL jnigraphics dl log z OpenSLES )

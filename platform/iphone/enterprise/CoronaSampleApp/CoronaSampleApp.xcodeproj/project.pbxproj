@@ -13,7 +13,7 @@
 		A484112615114F700074BD57 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A484112515114F700074BD57 /* OpenGLES.framework */; };
 		A484112C15114F700074BD57 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A484112A15114F700074BD57 /* InfoPlist.strings */; };
 		A484112E15114F700074BD57 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = A484112D15114F700074BD57 /* main.mm */; };
-		A48411551511613D0074BD57 /* libplayer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A48411541511613D0074BD57 /* libplayer.a */; };
+		A48411551511613D0074BD57 /* libplayer.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A48411541511613D0074BD57 /* libplayer.xcframework */; };
 		A4841159151161C00074BD57 /* MainWindow-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = A4841157151161C00074BD57 /* MainWindow-iPad.xib */; };
 		A484115A151161C00074BD57 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = A4841158151161C00074BD57 /* MainWindow.xib */; };
 		A484115F151162820074BD57 /* FBDialog.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A484115E151162820074BD57 /* FBDialog.bundle */; };
@@ -56,7 +56,7 @@
 		A484112B15114F700074BD57 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		A484112D15114F700074BD57 /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = SOURCE_ROOT; };
 		A484112F15114F700074BD57 /* Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = SOURCE_ROOT; };
-		A48411541511613D0074BD57 /* libplayer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libplayer.a; path = Libraries/Corona/libplayer.a; sourceTree = SOURCE_ROOT; };
+		A48411541511613D0074BD57 /* libplayer.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = libplayer.xcframework; path = Libraries/Corona/libplayer.xcframework; sourceTree = SOURCE_ROOT; };
 		A4841157151161C00074BD57 /* MainWindow-iPad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = "MainWindow-iPad.xib"; path = "Libraries/Corona/MainWindow-iPad.xib"; sourceTree = SOURCE_ROOT; };
 		A4841158151161C00074BD57 /* MainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MainWindow.xib; path = Libraries/Corona/MainWindow.xib; sourceTree = SOURCE_ROOT; };
 		A484115E151162820074BD57 /* FBDialog.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = FBDialog.bundle; path = Libraries/Facebook/FBDialog.bundle; sourceTree = SOURCE_ROOT; };
@@ -126,7 +126,7 @@
 				A484118915128D5D0074BD57 /* StoreKit.framework in Frameworks */,
 				A484118A15128D5D0074BD57 /* SystemConfiguration.framework in Frameworks */,
 				A484111E15114F700074BD57 /* UIKit.framework in Frameworks */,
-				A48411551511613D0074BD57 /* libplayer.a in Frameworks */,
+				A48411551511613D0074BD57 /* libplayer.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -219,7 +219,7 @@
 				A49BEF0615193CAB004F2BBE /* lauxlib.h */,
 				A49BEF0715193CAB004F2BBE /* lua.h */,
 				A49BEF0815193CAB004F2BBE /* lualib.h */,
-				A48411541511613D0074BD57 /* libplayer.a */,
+				A48411541511613D0074BD57 /* libplayer.xcframework */,
 				A4841160151267970074BD57 /* Corona3rdPartyLicenses.txt */,
 				A4841157151161C00074BD57 /* MainWindow-iPad.xib */,
 				A4841158151161C00074BD57 /* MainWindow.xib */,

@@ -44,6 +44,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Insets;
 import android.graphics.Paint;
 import android.media.MediaScannerConnection;
 import android.media.AudioManager;
@@ -55,8 +56,9 @@ import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
 import android.view.DisplayCutout;
-
-import dalvik.system.DexClassLoader;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowInsets;
 
 import com.ansca.corona.AudioRecorder.AudioByteBufferHolder;
 import com.ansca.corona.listeners.CoronaSplashScreenApiListener;
@@ -143,8 +145,6 @@ public class NativeToJavaBridge {
 
 		return result;
 	}
-
-	private static DexClassLoader sClassLoader = null;
 
 	protected static int callLoadClass(
 		CoronaRuntime runtime, long luaStateMemoryAddress, String libName, String className )
@@ -3291,7 +3291,33 @@ public class NativeToJavaBridge {
 	}
 	protected static void callSetNavigationBarColor(CoronaRuntime runtime, double red, double green, double blue) {
 		if (runtime != null) {
-			CoronaEnvironment.getCoronaActivity().setNavigationBarColor(red, green, blue);
+			Activity activity = CoronaEnvironment.getCoronaActivity();
+			if (activity == null) return;
+			int color = Color.rgb(
+					(int)(255 * red),
+					(int)(255 * green),
+					(int)(255 * blue)
+			);
+
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) { // Android 15+
+				Window window = activity.getWindow();
+				View decorView = window.getDecorView();
+				// Add bottom insert
+				decorView.setOnApplyWindowInsetsListener((view, insets) -> {
+					Insets navBarInsets = insets.getInsets(WindowInsets.Type.navigationBars());
+					view.setBackgroundColor(color);
+					view.setPadding(0, 0, 0, navBarInsets.bottom);
+					return insets;
+				});
+
+				window.setNavigationBarColor(color);
+				// Update Insert
+				decorView.post(() -> {
+					decorView.requestApplyInsets();
+				});
+			} else {
+				CoronaEnvironment.getCoronaActivity().setNavigationBarColor(red, green, blue);
+			}
 		}
 	}
 

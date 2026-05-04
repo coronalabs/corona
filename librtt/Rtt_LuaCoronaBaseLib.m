@@ -14,6 +14,10 @@
 #include "lua.h"
 #include "lauxlib.h"
 
+#if Rtt_IPHONE_ENV || defined( Rtt_TVOS_ENV )
+#import <os/log.h>
+#endif
+
 /* This is an override of Lua's stock "print" function to use NSLog
  * because Apple is starting to redirect stdout/stderr to /dev/null.
  * Can't be static because the .c file needs to see this function.
@@ -51,7 +55,8 @@ int Rtt_LuaCoronaBaseLib_print(lua_State *L)
 		// Lua print separates characters with tabs, so do the same.
 		NSString* outputstring = [stringarray componentsJoinedByString: @"\t"];
 #if Rtt_IPHONE_ENV || defined( Rtt_TVOS_ENV )
-		NSLog(@"%@", outputstring); // NSLog automatically includes a newline
+        os_log_with_type(OS_LOG_DEFAULT, OS_LOG_TYPE_DEFAULT, "%{public}s", [outputstring UTF8String]);
+		//NSLog(@"%@", outputstring); // NSLog automatically includes a newline
 #else
 		Rtt_LogException("%s", [outputstring UTF8String]);
 #endif

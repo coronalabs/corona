@@ -48,7 +48,7 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 	/**
 	 * Stores a collection of reserved unique notification IDs.
 	 * <p>
-	 * This collection is used to determine what unique integer IDs are reservered for Android
+	 * This collection is used to determine what unique integer IDs are reserved for Android
 	 * status bar notifications and alarm manager scheduled notifications. This collection must
 	 * contain the same notification IDs used in member variable "sNotificationCollection", but
 	 * it can also contain additional IDs to be posted later.
@@ -505,7 +505,7 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 	 * Removes a scheduled notification or status bar notification that was once posted by this class
 	 * by its unique integer ID.
 	 * <p>
-	 * Note that removing a notification will unreserve its associated ID and make it available
+	 * Note that removing a notification will unreserved its associated ID and make it available
 	 * again by the reserveId() methods.
 	 * @param id The unique integer ID of the notification to be removed.
 	 * @return Returns true if the notification was successfully removed.

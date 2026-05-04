@@ -77,7 +77,6 @@
 		A43B959615C7807C003E6F9F /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
 		A43B959E15C78721003E6F9F /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A43B959C15C78721003E6F9F /* InfoPlist.strings */; };
 		A43E5D41185EE7C90055BC21 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A43E5D40185EE7C90055BC21 /* Images.xcassets */; };
-		A445AA5F16B204FF00A9A764 /* libgameNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A445AA5D16B2049900A9A764 /* libgameNetwork.a */; };
 		A44D43FF164B201300CFE7B3 /* libalmixer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D435D164B1D5200CFE7B3 /* libalmixer.a */; };
 		A44D4400164B201300CFE7B3 /* libbox2d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D435B164B1D5200CFE7B3 /* libbox2d.a */; };
 		A44D4401164B201300CFE7B3 /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D4355164B1D5200CFE7B3 /* liblua.a */; };
@@ -235,7 +234,6 @@
 		A4EF77271A352B44002D3BEF /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A4EF77261A352B44002D3BEF /* Images.xcassets */; };
 		A4EF772A1A352B44002D3BEF /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A4EF77281A352B44002D3BEF /* LaunchScreen.xib */; };
 		A4EF77461A352B70002D3BEF /* libCoronaCards.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A482FAA0183D74950005831B /* libCoronaCards.a */; };
-		A4F12C2716D437A6002BCCFB /* liblicensing.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4F12C2616D4379F002BCCFB /* liblicensing.a */; };
 		A4F2ADCB16E0AF2E00814C7B /* LibPlayerPrefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = A484115115115CE20074BD57 /* LibPlayerPrefix.pch */; };
 		A4F2ADCC16E0AF2E00814C7B /* CoronaApplicationMain.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7C151AA23A00486F8A /* CoronaApplicationMain.h */; };
 		A4F2ADCD16E0AF2E00814C7B /* CoronaDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7E151AA23A00486F8A /* CoronaDelegate.h */; };
@@ -449,8 +447,6 @@
 		F5C36C4124FAB49F00775C6E /* libluasocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D4359164B1D5200CFE7B3 /* libluasocket.a */; };
 		F5C36C4224FAB49F00775C6E /* librtt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A44D4353164B1D5200CFE7B3 /* librtt.a */; };
 		F5C36C4324FAB49F00775C6E /* libplugins.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A49186A91642195200A39286 /* libplugins.a */; };
-		F5C36C4424FAB49F00775C6E /* libgameNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A445AA5D16B2049900A9A764 /* libgameNetwork.a */; };
-		F5C36C4524FAB49F00775C6E /* liblicensing.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4F12C2616D4379F002BCCFB /* liblicensing.a */; };
 		F5C36C4824FAB49F00775C6E /* LibPlayerPrefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = A484115115115CE20074BD57 /* LibPlayerPrefix.pch */; };
 		F5C36C4924FAB49F00775C6E /* CoronaApplicationMain.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7C151AA23A00486F8A /* CoronaApplicationMain.h */; };
 		F5C36C4A24FAB49F00775C6E /* CoronaDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A4543E7E151AA23A00486F8A /* CoronaDelegate.h */; };
@@ -1779,8 +1775,6 @@
 				C2F911791CDC15F4004A5564 /* libluasocket.a in Frameworks */,
 				A44D4404164B201300CFE7B3 /* librtt.a in Frameworks */,
 				A49186D416421AEC00A39286 /* libplugins.a in Frameworks */,
-				A445AA5F16B204FF00A9A764 /* libgameNetwork.a in Frameworks */,
-				A4F12C2716D437A6002BCCFB /* liblicensing.a in Frameworks */,
 				F5E8ABD928134BF0004295B4 /* libNetworkPlugin.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1864,8 +1858,6 @@
 				F5C36C4124FAB49F00775C6E /* libluasocket.a in Frameworks */,
 				F5C36C4224FAB49F00775C6E /* librtt.a in Frameworks */,
 				F5C36C4324FAB49F00775C6E /* libplugins.a in Frameworks */,
-				F5C36C4424FAB49F00775C6E /* libgameNetwork.a in Frameworks */,
-				F5C36C4524FAB49F00775C6E /* liblicensing.a in Frameworks */,
 				F5E8ABDA28134BF9004295B4 /* libNetworkPlugin.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3925,7 +3917,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "DST_DIR=/Users/Shared/CoronaLabs/ios\nmkdir -p $DST_DIR\n\nditto -V \"$TARGET_BUILD_DIR\"/\"$TARGETNAME\" \"$DST_DIR\"/\"$TARGETNAME\"\n";
+			shellScript = "DST_DIR=/Users/Shared/CoronaLabs/ios\nmkdir -p $DST_DIR\n\n# Copy the standard framework for backward compatibility\nditto -V \"$TARGET_BUILD_DIR\"/\"$TARGETNAME\" \"$DST_DIR\"/\"$TARGETNAME\"\n\n# Also copy the XCFramework for M1 simulator support\nXCFRAMEWORK_NAME=\"${TARGETNAME%.framework}.xcframework\"\nif [ -d \"$TARGET_BUILD_DIR\"/$XCFRAMEWORK_NAME ]; then\n    ditto -V \"$TARGET_BUILD_DIR\"/$XCFRAMEWORK_NAME \"$DST_DIR\"/$XCFRAMEWORK_NAME\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		A46935BD169D62DA00723568 /* Script: CopyResources and resource.corona-archive */ = {
@@ -4125,7 +4117,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "DST_DIR=/Users/Shared/CoronaLabs/ios\nmkdir -p $DST_DIR\n\nditto -V \"$TARGET_BUILD_DIR\"/\"$TARGETNAME\" \"$DST_DIR\"/\"$TARGETNAME\"\n";
+			shellScript = "DST_DIR=/Users/Shared/CoronaLabs/ios\nmkdir -p $DST_DIR\n\n# Copy the standard framework for backward compatibility\nditto -V \"$TARGET_BUILD_DIR\"/\"$TARGETNAME\" \"$DST_DIR\"/\"$TARGETNAME\"\n\n# Also copy the XCFramework for M1 simulator support\nXCFRAMEWORK_NAME=\"${TARGETNAME%.framework}.xcframework\"\nif [ -d \"$TARGET_BUILD_DIR\"/$XCFRAMEWORK_NAME ]; then\n    ditto -V \"$TARGET_BUILD_DIR\"/$XCFRAMEWORK_NAME \"$DST_DIR\"/$XCFRAMEWORK_NAME\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -5601,8 +5593,7 @@
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+								GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_ENABLE_PASCAL_STRINGS = NO;
@@ -5669,8 +5660,7 @@
 				DEPLOYMENT_POSTPROCESSING = YES;
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+								GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_ENABLE_PASCAL_STRINGS = NO;

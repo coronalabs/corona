@@ -161,12 +161,12 @@ function M:updateFlags( minVersion )
 	self.options.flags = {
 		'-ObjC',
 		'-all_load',
-		'-ld_classic',
 		'-fobjc-link-runtime',
 		'-miphoneos-version-min=' .. minVersion,
 		'-std=c++11',
 		'-stdlib=libc++',
 		'-Xlinker -rpath -Xlinker /usr/lib/swift -Xlinker -rpath -Xlinker @executable_path/Frameworks',
+		'-Xlinker -undefined -Xlinker dynamic_lookup',
 	}
 end
 

@@ -28,7 +28,6 @@
         <activity
             android:name="com.ansca.corona.CameraActivity"
             android:configChanges="keyboardHidden|orientation"
-            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
         <activity
             android:name="com.ansca.corona.VideoActivity"

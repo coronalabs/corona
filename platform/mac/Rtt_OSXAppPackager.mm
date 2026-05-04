@@ -296,14 +296,15 @@ OSXAppPackager::PrepackagePlugins(OSXAppPackagerParams *params, String& pluginsD
 {
 	int result = PlatformAppPackager::kNoError;
 
-#if !defined( Rtt_NO_GUI )
-	// We don't currently support plugins for CoronaBuilder macOS desktop builds
+	// In GUI (Simulator) builds we use the running Runtime to unzip pre-downloaded plugins.
+	// In headless (CoronaBuilder) builds we use DownloadPluginsHeadless() which drives
+	// BuilderPluginDownloader.lua + CoronaBuilderPluginCollector — the same infrastructure iOS uses.
 
+#if !defined( Rtt_NO_GUI )
 	Runtime *runtime = params->GetRuntime();
 
 	Rtt_TRACE(("OSXAppPackager::PrepackagePlugins: pluginsDir %s", pluginsDir.GetString()));
 
-	// Extract the project's plugins to the "bin" directory.
 	if (runtime != NULL && runtime->RequiresDownloadablePlugins())
 	{
 		// Unzip the project's plugins to an intermediate directory.
@@ -320,7 +321,7 @@ OSXAppPackager::PrepackagePlugins(OSXAppPackagerParams *params, String& pluginsD
 		OSXAppPackagerParams pluginParamsSettings(params->GetAppName(), "", pluginsDir.GetString(), outputDir.GetString());
 
 		bool wasCompiled = CompileScripts(&pluginParamsSettings, outputDir.GetString());
-		
+
 		if (!wasCompiled)
 		{
 			if (Rtt_StringIsEmpty(pluginParamsSettings.GetBuildMessage()))
@@ -331,11 +332,45 @@ OSXAppPackager::PrepackagePlugins(OSXAppPackagerParams *params, String& pluginsD
 			{
 				params->SetBuildMessage(pluginParamsSettings.GetBuildMessage());
 			}
-			
+
 			return PlatformAppPackager::kBuildError;
 		}
 	}
-#endif
+
+#else // Rtt_NO_GUI — headless CoronaBuilder path
+
+	Rtt_TRACE(("OSXAppPackager::PrepackagePlugins (headless): pluginsDir %s", pluginsDir.GetString()));
+
+	// Download and extract plugins into pluginsDir using BuilderPluginDownloader.lua.
+	// All plugin archives are extracted flat into pluginsDir (lua_51/ is merged to root).
+	// Use "macos" — TagForPlatform(kOSXPlatform) — to match CoronaBuilderPluginCollector's
+	// platform fallback chain ("macos" → "mac-sim" → "lua").
+	bool wasDownloaded = DownloadPluginsHeadless(params, "macos", pluginsDir.GetString());
+	if (!wasDownloaded)
+	{
+		return PlatformAppPackager::kLocalPackagingError;
+	}
+
+	// Compile any Lua plugin scripts found in pluginsDir.
+	// OSXPostPackage picks up the compiled .lu files alongside the native dylibs.
+	OSXAppPackagerParams pluginParamsSettings(params->GetAppName(), "", pluginsDir.GetString(), outputDir.GetString());
+
+	bool wasCompiled = CompileScripts(&pluginParamsSettings, outputDir.GetString());
+	if (!wasCompiled)
+	{
+		if (Rtt_StringIsEmpty(pluginParamsSettings.GetBuildMessage()))
+		{
+			params->SetBuildMessage("Failed to compile plugin Lua scripts.");
+		}
+		else
+		{
+			params->SetBuildMessage(pluginParamsSettings.GetBuildMessage());
+		}
+
+		return PlatformAppPackager::kBuildError;
+	}
+
+#endif // Rtt_NO_GUI
 
 	return result;
 }

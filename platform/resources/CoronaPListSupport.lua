@@ -126,35 +126,46 @@ local function addLiveBuildsPlist(buildSettingsPlist, options)
 end
 
 function CoronaPListSupport.modifyPlist( options )
-	local delegates
+    local delegates
+    -- The local iOS builds don't have options.tmpDir specified, iOS builds through the simulator do
+    if options.tmpDir then
+        delegates = getDelegates(options.tmpDir)
+    end
+    if debugBuildProcess and debugBuildProcess ~= 0 then
+        print("CoronaPListSupport.modifyPlist: options: "..json.prettify(options))
+    end
+    local infoPlistFile
+    local tmpJSONFile = os.tmpname()
+    local infoPlist = nil
+    local basePath
 
-	-- The local iOS builds don't have options.tmpDir specified, iOS builds through the simulator do
-	if options.tmpDir then
-		delegates = getDelegates(options.tmpDir)
-	end
+    if options.targetPlatform == "OSX" then
+        basePath = options.appBundleFile .. "/Contents/"
+    elseif options.targetPlatform == "iOS" or options.targetPlatform == "tvOS" then
+        basePath = options.appBundleFile .. "/"
+    else
+        print("modifyPlist: unknown platform '"..tostring(options.targetPlatform).."', defaulting to 'iOS'")
+        basePath = options.appBundleFile .. "/"
+        options.targetPlatform = "iOS"
+    end
 
-	if debugBuildProcess and debugBuildProcess ~= 0 then
-		print("CoronaPListSupport.modifyPlist: options: "..json.prettify(options))
-	end
-
-	local infoPlistFile
-	local tmpJSONFile = os.tmpname()
-	local infoPlist = nil
-
-	if options.targetPlatform == "OSX" then
-		infoPlistFile = options.appBundleFile .. "/Contents/Info.plist"
-	elseif options.targetPlatform == "iOS" or options.targetPlatform == "tvOS" then
-		infoPlistFile = options.appBundleFile .. "/Info.plist"
-	else
-		print("modifyPlist: unknown platform '"..tostring(options.targetPlatform).."', defaulting to 'iOS'")
-		infoPlistFile = options.appBundleFile .. "/Info.plist"
-		options.targetPlatform = "iOS"
-	end
+    -- Check if Info.plist exists, if so use App-Info.plist instead
+    local defaultPlist = basePath .. "Info.plist"
+    local altPlist = basePath .. "App-Info.plist"
+    
+    local f = io.open(defaultPlist, "r")
+    if f then
+        f:close()
+        infoPlistFile = altPlist
+        print("Info.plist exists, using App-Info.plist instead")
+    else
+        infoPlistFile = defaultPlist
+    end
 
     print("Creating Info.plist...")
-	print(options.appBundleFile)
-	-- Convert the Info.plist to JSON and read it in
-	os.execute( "plutil -convert json -o '"..tmpJSONFile.."' "..infoPlistFile)
+    print(options.appBundleFile)
+    -- Convert the Info.plist to JSON and read it in
+    os.execute( "plutil -convert json -o '"..tmpJSONFile.."' "..infoPlistFile)
 
 	local jsonFP, errorMsg = io.open(tmpJSONFile, "r")
 	if jsonFP ~= nil then

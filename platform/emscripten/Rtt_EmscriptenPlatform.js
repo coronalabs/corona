@@ -628,7 +628,7 @@ var platformLibrary =
 	jsContextUnlockAudio: function () {
 		// create empty buffer and play it
 		if (audioCtx.state != 'running') {
-			var buffer = audioCtx.createBuffer(1, 1, 22050);
+			var buffer = audioCtx.createBuffer(1, 1, 44100);
 			var source = audioCtx.createBufferSource();
 			source.buffer = buffer;
 			source.connect(audioCtx.destination);
@@ -637,6 +637,11 @@ var platformLibrary =
 	},
 
 	jsContextSyncFS: function() {
+		if (Module.idbfsSynced == 0)
+		{
+			return;
+		}
+		
 		Module.idbfsSynced = 0;
 		try {
 			FS.syncfs(function (err) {
@@ -807,16 +812,13 @@ var platformLibrary =
 
 		var fontName = UTF8ToString(_fontName);
 		var a = fontName.split('/');
-		var fontName = a[a.length - 1];		// filename
+		fontName = a[a.length - 1]; // filename
 
-		var a = fontName.split('.');
+		a = fontName.split('.');
 		fontName = a[0];
 		var ext = a[1];
 
 		var canva = document.createElement('canvas');
-		canva.width = canvas.width;
-		canva.height = canvas.height;
-		canva.style.position = "absolute";
 		var ctx = canva.getContext("2d");
 
 		if (Module.isSafari) {
@@ -824,131 +826,197 @@ var platformLibrary =
 		}
 
 		// check if font exists
-		// the text whose final pixel size I want to measure
 		var testtext = "ABCM|abcdefghijklmnopqrstuvwxyz0123456789";
 
-		// specifying the baseline font
 		ctx.font = "72px monospace";
-
-		// checking the size of the baseline text
 		var baselineSize = ctx.measureText(testtext).width;
 
-		// specifying the font whose existence we want to check
 		ctx.font = "72px '" + fontName + "', monospace";
-
-		// checking the size of the font we want to check
 		var newSize = ctx.measureText(testtext).width;
 
-		// If the size of the two text instances is the same, the font does not exist because it is being rendered
-		fontExist = newSize != baselineSize;
+		var fontExist = newSize != baselineSize;
 
 		if (fontName === '' || fontExist == false) {
-		//	console.log(fontName + ' not found, using sans-serif');
-			fontName = 'sans-serif';		// Default value
+			// console.log(fontName + ' not found, using sans-serif');
+			fontName = 'sans-serif';
 		}
+
+		// ensure font is loaded (prevents Firefox fallback metrics)
+		if (document.fonts && document.fonts.load) {
+			try {
+				document.fonts.load(fontSize + 'px "' + fontName + '"');
+			} catch (e) {
+				// ignore
+			}
+		}
+
 		ctx.font = String(fontSize) + 'px ' + fontName;
-
-		ctx.textBaseline = 'top';
 		ctx.textAlign = alignment;
+		ctx.textBaseline = 'alphabetic'; // safer baseline across browsers
 
-		var a = measureText(testtext, false, fontName, fontSize);
-		var lineHeight = a[1];
+		// measure proper font metrics for vertical alignment
+		var testMetrics = ctx.measureText("Mg'");
+		var ascent = testMetrics.actualBoundingBoxAscent || fontSize * 0.75;
+		var descent = testMetrics.actualBoundingBoxDescent || fontSize * 0.25;
+		var lineHeight = ascent + descent;
+		
+		// Extra space for punctuation that extends above normal ascent
+		var topExtraPadding = fontSize * 0.2;
 
+		// Anti-aliasing padding
+		var horizontalPadding = Math.ceil(fontSize * 0.15);
+
+		// calculate actual content dimensions first
+		var maxWidth = w;
+		var useFixedWidth = (w > 0);
+		
 		if (w == 0) {
-			// calc width
+			// calc width dynamically
+			maxWidth = 0;
 			var line = '';
 			for (var i = 0; i < text.length; i++) {
 				if (text.charAt(i) == '\n') {
 					line = '';
-				}
-				else {
+				} else {
 					line += text.charAt(i);
 					var metrics = ctx.measureText(line);
-					if (metrics.width > w) {
-						w = metrics.width;
+					if (metrics.width > maxWidth) {
+						maxWidth = metrics.width;
 					}
 				}
 			}
-			// last line
 			var metrics = ctx.measureText(line);
-			w = Math.max(w, metrics.width);
+			maxWidth = Math.max(maxWidth, metrics.width);
 		}
 
-		var x = 0;
-		var y = 0;
-		if (alignment === 'right') {
-			x = w;
-		}
-		else
-			if (alignment === 'center') {
-				x = w / 2;
+		// count lines to calculate height
+		var lineCount = 1;
+		var line = '';
+		var effectiveMaxWidth = useFixedWidth ? (w - (horizontalPadding * 2)) : maxWidth;
+		
+		for (var i = 0; i < text.length; i++) {
+			if (text.charAt(i) == '\n') {
+				lineCount++;
+				line = '';
+			} else {
+				var testLine = line + text.charAt(i);
+				var metrics = ctx.measureText(testLine);
+				if (metrics.width > effectiveMaxWidth) {
+					lineCount++;
+					if (text.charAt(i) === ' ') {
+						line = '';
+					} else {
+						var a = line.split(' ');
+						if (a.length > 1) {
+							line = a[a.length - 1] + text.charAt(i);
+						} else {
+							line = text.charAt(i);
+						}
+					}
+				} else {
+					line = testLine;
+				}
 			}
+		}
 
-		// wrap text
+		// calculate required dimensions with proper padding
+		var topPadding = topExtraPadding; // padding to prevent clipping
+		var calculatedHeight = (lineCount * lineHeight) + topPadding;
+		var calculatedWidth = maxWidth + (horizontalPadding * 2);
 
-		var ww = 0;
-		var hh = 0;
+		// set canvas to exact required size
+		canva.width = useFixedWidth ? w : Math.ceil(calculatedWidth);
+		canva.height = h > 0 ? h : Math.ceil(calculatedHeight);
+		canva.style.position = "absolute";
+
+		// re-apply font and styles after canvas resize (canvas resets context)
+		ctx.font = String(fontSize) + 'px ' + fontName;
+		ctx.textAlign = alignment;
+		ctx.textBaseline = 'alphabetic';
+		
+		if (Module.isSafari) {
+			ctx.fillStyle = 'red';
+		}
+
+		var y = ascent + topPadding;
+		var x = 0;
+
+		if (alignment === 'left') {
+			x = horizontalPadding;
+		} else if (alignment === 'right') {
+			x = canva.width - horizontalPadding;
+		} else if (alignment === 'center') {
+			x = canva.width / 2;
+		}
+
+		// render text
 		var line = '';
 		for (var i = 0; i < text.length; i++) {
 			if (text.charAt(i) == '\n') {
 				ctx.fillText(line, x, y);
 				line = '';
 				y += lineHeight;
-			}
-			else {
+			} else {
 				var testLine = line + text.charAt(i);
 				var metrics = ctx.measureText(testLine);
-				if (metrics.width > w) {
+				if (metrics.width > effectiveMaxWidth) {
 					if (text.charAt(i) === ' ') {
 						// ignore last space
 						ctx.fillText(line, x, y);
 						line = '';
-					}
-					else {
+					} else {
 						// delete last uncomplete word if space exists
 						var a = line.split(' ');
-						if (a.length > 1)	{
-							var line = a[a.length - 1] + text.charAt(i);	// the beginning of next line
-							a.pop();		// remove last
+						if (a.length > 1) {
+							line = a[a.length - 1] + text.charAt(i); // beginning of next line
+							a.pop();
 							var s = a.join(' ');
 							ctx.fillText(s, x, y);
-						}
-						else{
-							// no words, draw line as is 
+						} else {
+							// no words, draw line as is
 							ctx.fillText(line, x, y);
-							line = text.charAt(i);	// the beginning of next line
+							line = text.charAt(i);
 						}
 					}
 					y += lineHeight;
-				}
-				else {
+				} else {
 					line = testLine;
 				}
 			}
 		}
 
 		// last line
-		ctx.fillText(line, x, y);
+		ctx.fillText(line, Math.round(x), Math.round(y));
 
-		hh = h > 0 ? h : y + lineHeight;
-		ww = w > 0 ? w : 1;
+		var ww = canva.width;
+		var hh = canva.height;
 
-		// it's needs for corona ?
+		// make width 4-byte aligned
 		if ((ww & 0x3) != 0) {
 			ww = (ww + 3) & -4;
 		}
 
-		//console.log('render: ', metrics, text, w, h, ww, hh, alignment, fontName, fontSize);
+		// console.log('render: ', text, w, h, ww, hh, alignment, fontName, fontSize);
 
-		var myImageData = ctx.getImageData(0, 0, ww, hh);
+		var myImageData = ctx.getImageData(0, 0, canva.width, canva.height);
 		var img = Module.jarray2carray(myImageData.data);
-		_jsEmscriptenBitmapSaveImage(thiz, myImageData.data.length, img, myImageData.width, myImageData.height, Module.isSafari);
+		_jsEmscriptenBitmapSaveImage(
+			thiz,
+			myImageData.data.length,
+			img,
+			myImageData.width,
+			myImageData.height,
+			Module.isSafari
+		);
 		_free(img);
 
-		//var body = document.getElementsByTagName("body")[0];
-		//body.appendChild(canva);
-		//canva.remove();
+		// optional debug
+		// var body = document.getElementsByTagName("body")[0];
+		// body.appendChild(canva);
+		// canva.remove();
 	},
+
+
 
 	jsContextSetClearColor: function(r, g, b, a)
 	{

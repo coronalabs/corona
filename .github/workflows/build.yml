@@ -17,14 +17,14 @@ on:
 
 env:
   WORKSPACE: ${{ github.workspace }}
-  DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
+  DEVELOPER_DIR: /Applications/Xcode_26.4.app/Contents/Developer
   BUILD_NUMBER: ${{ github.event.inputs.buildNumber }}
   YEAR: ${{ github.event.inputs.buildYear }}
 
 jobs:
   source-code:
     name: Check out and process source code
-    runs-on: macos-13
+    runs-on: macos-26
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - uses: actions/checkout@v4
@@ -41,7 +41,7 @@ jobs:
 
   native:
     needs: source-code
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -62,6 +62,49 @@ jobs:
           name: Native
           path: ./output
 
+  Xcode-template-matrix-26:
+    strategy:
+      matrix:
+        runner:
+          - macos-26
+        xcode:
+          - Xcode_26.4
+        target:
+          - template
+          - template-angle
+        platform:
+          - iphone
+          - tvos
+    needs: source-code
+    runs-on: ${{ matrix.runner }}
+    env:
+      DEVELOPER_DIR: /Applications/${{ matrix.xcode }}.app/Contents/Developer
+      TEMPLATE_TARGET: ${{ matrix.target }}
+      TEMPLATE_PLATFORM: ${{ matrix.platform }}
+    steps:
+      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
+      - name: Get processed code
+        uses: actions/download-artifact@v4
+        with:
+          name: SourceCode
+          path: SourceCode
+      - name: Unpack source code
+        run: tar -xzf SourceCode/corona.tgz
+      - run: ./tools/GHAction/daily_env.sh
+      - name: Build templates
+        working-directory: ./platform/${{ matrix.platform }}
+        run: ./gh_build_templates.sh
+        env:
+          CERT_PASSWORD: ${{ secrets.CertPassword }}
+      - name: Build templates JSON spec
+        run: ./tools/GHAction/generate_xcode_jsons.py
+      - name: Upload templates
+        uses: actions/upload-artifact@v4
+        with:
+          name: Templates-${{ matrix.platform }}-${{ matrix.xcode }}-${{ matrix.target }}
+          path: ./output
+          
+          
   Xcode-template-matrix-15:
     strategy:
       matrix:
@@ -69,9 +112,6 @@ jobs:
           - macos-15
         xcode:
           - Xcode_16.4
-          - Xcode_16.3
-          - Xcode_16.2
-          - Xcode_16
         target:
           - template
           - template-angle
@@ -110,6 +150,7 @@ jobs:
 
   collect-ios-templates:
     needs:
+      - Xcode-template-matrix-26
       - Xcode-template-matrix-15
     runs-on: ubuntu-latest
     if: (! failure() && ! cancelled())
@@ -130,42 +171,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Collected-ios-templates
-          path: ./output
-
-  webtemplate:
-    needs:
-      - source-code
-    runs-on: macos-15
-    env:
-      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
-    steps:
-      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
-      - name: Set up emsdk
-        run: |
-          wget -q --header='Accept:application/octet-stream' https://github.com/coronalabs/emsdk/releases/download/e2.0.34/emsdk.tar.xz -O emsdk.tar.xz
-          tar -xjf emsdk.tar.xz -C ~/
-          xattr -r -d com.apple.quarantine ~/emsdk || true
-      - name: Get processed code
-        uses: actions/download-artifact@v4
-        with:
-          name: SourceCode
-          path: SourceCode
-      - name: Unpack source code
-        run: tar -xzf SourceCode/corona.tgz
-      - run: ./tools/GHAction/daily_env.sh
-      - name: Build webtemplate
-        working-directory: ./platform/emscripten/gmake
-        run: |
-          source ~/emsdk/emsdk_env.sh
-          ./build_template.sh
-      - name: Copy result to output
-        run: |
-          mkdir -p output
-          cp -v platform/emscripten/webtemplate.zip output
-      - name: Upload webtemplate artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Webtemplate
           path: ./output
 
   linux:
@@ -284,7 +289,7 @@ jobs:
 
   CoronaCards-iOS:
     needs: source-code
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -310,7 +315,7 @@ jobs:
 
   CoronaCards-iOS-angle:
     needs: source-code
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -345,7 +350,7 @@ jobs:
       - webtemplate
       # - linux
     if: (! failure() && ! cancelled())
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
       - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
       - name: Get processed code
@@ -442,7 +447,7 @@ jobs:
           exit 1
 
   check-notarization:
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
       - name: Check notarization credentials
         run: |
@@ -463,13 +468,50 @@ jobs:
           APPLE_KEY_ID: ${{ secrets.AppleKeyId }}
           APPLE_ISSUER: ${{ secrets.AppleIssuer }}
 
+  webtemplate:
+    needs:
+      - source-code
+    runs-on: macos-26
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.4.app/Contents/Developer
+    steps:
+      - run: CDR="$(basename "$(pwd)")" ; cd .. ; rm -rf "$CDR" ; mkdir -p "$CDR" ; cd "$CDR"
+      - name: Set up emsdk
+        run: |
+          wget -q --header='Accept:application/octet-stream' https://github.com/coronalabs/emsdk/releases/download/e2.0.34/emsdk.tar.xz -O emsdk.tar.xz
+          tar -xjf emsdk.tar.xz -C ~/
+          xattr -r -d com.apple.quarantine ~/emsdk || true
+      - name: Get processed code
+        uses: actions/download-artifact@v4
+        with:
+          name: SourceCode
+          path: SourceCode
+      - name: Unpack source code
+        run: tar -xzf SourceCode/corona.tgz
+      - run: ./tools/GHAction/daily_env.sh
+      - name: Build webtemplate
+        working-directory: ./platform/emscripten/gmake
+        run: |
+          source ~/emsdk/emsdk_env.sh
+          ./build_template.sh
+      - name: Copy result to output
+        run: |
+          mkdir -p output
+          cp -v platform/emscripten/webtemplate.zip output
+      - name: Upload webtemplate artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Webtemplate
+          path: ./output
+
+
   Windows-Simulator:
     needs:
       - source-code
       - native
       - webtemplate
       # - linux
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
       - name: Get processed code
         uses: actions/download-artifact@v4
@@ -477,9 +519,11 @@ jobs:
           name: SourceCode
           path: SourceCode
       - name: Unpack source code
+        shell: cmd
         run: |
-          7z x SourceCode/corona.tgz
-          7z x corona.tar
+          7z x -snld SourceCode/corona.tgz
+          7z x -snld corona.tar
+          ver > nul     
       - run: ./tools/GHAction/daily_env.sh
         shell: bash
       - run: mkdir -f docs
@@ -550,13 +594,32 @@ jobs:
           choco install dotnet-8.0-runtime --no-progress
           nuget install Microsoft.Windows.SDK.BuildTools -Version 10.0.22621.3233 -x
           nuget install Microsoft.Trusted.Signing.Client -Version 1.0.53 -x
+      - name: Missing VC Components
+        shell: powershell
+        run: |
+          Set-Location "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
+          $InstallPath = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
+          $componentsToAdd = @(
+            "Microsoft.VisualStudio.Component.VC.14.29.16.11.MFC"
+          )
+          [string]$workloadArgs = $componentsToAdd | ForEach-Object {" --add " +  $_}
+          $Arguments = ('/c', "vs_installer.exe", 'modify', '--installPath', "`"$InstallPath`"",$workloadArgs, '--quiet', '--norestart')
+          $process = Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait -PassThru -WindowStyle Hidden
+          if ($process.ExitCode -eq 0)
+          {
+              Write-Host "components have been successfully added"
+          }
+          else
+          {
+              Write-Host "components were not installed"
+              exit 1
+          }
       - name: Build Corona Simulator
         shell: cmd
         run: |
           cd platform\windows
           call UpdateFileVersions.bat %BUILD_NUMBER%
           call Build.Tools\VSVars.bat
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
           devenv "Corona.SDK.sln" /rebuild "Release|x86"
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}

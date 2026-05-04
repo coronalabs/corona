@@ -66,6 +66,7 @@
 #	include <Guiddef.h>
 #endif
 #include <mfapi.h>
+#include <mfidl.h>
 #include <Mfreadwrite.h>
 #include <Propvarutil.h>
 

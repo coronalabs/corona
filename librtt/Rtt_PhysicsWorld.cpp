@@ -187,10 +187,13 @@ PhysicsWorld::StopWorld()
 		// iterate over bodies and detach from display object
 		const void *groundBodyUserdata = LuaLibPhysics::GetGroundBodyUserdata();
 
-		for ( b2Body *body = fWorld->GetBodyList();
+		for ( b2Body *body = fWorld->GetBodyList(), *nextBody = NULL;
 			  NULL != body;
-			  body = body->GetNext() )
+			  body = nextBody )
 		{
+			// Prefetch next body before we delete body
+			nextBody = body->GetNext();
+
 			if ( body->GetUserData() )
 			{
 				if ( body->GetUserData() != groundBodyUserdata )
@@ -199,6 +202,8 @@ PhysicsWorld::StopWorld()
 					o->RemoveExtensions();
 				}
 			}
+
+			fWorld->DestroyBody( body );
 		}
 
 		Rtt_DELETE( fWorld );

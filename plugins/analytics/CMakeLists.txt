@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.4.1)
+cmake_minimum_required(VERSION 3.13)
 project( analytics )
-set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,max-page-size=16384")
+
 include_directories( 
 	${LuaIncludePath}
 	${CORONA_ROOT}/librtt/Corona
@@ -14,4 +14,10 @@ add_library( analytics SHARED
 				${Lua2CppOutputDir}/analytics.c
 				${Lua2CppOutputDir}/CoronaProvider.analytics.c )
 
+if(ANDROID AND (ANDROID_ABI STREQUAL "arm64-v8a" OR ANDROID_ABI STREQUAL "x86_64"))
+	# NDK version < 28
+	target_link_options(analytics PRIVATE "-Wl,-z,max-page-size=16384")
+	# NDK version <= 22
+	target_link_options(analytics PRIVATE "-Wl,-z,common-page-size=16384")
+endif()
 target_link_libraries ( analytics lua corona )

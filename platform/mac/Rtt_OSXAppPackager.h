@@ -53,10 +53,11 @@ class OSXAppPackagerParams : public AppPackagerParams
 							targetPlatform, (char*)"apple", targetVersion, targetDevice, customBuildId, productId,
 							appPackage, isDistributionBuild ),
 		fAppSigningIdentity(appSigningIdentity),
-		fInstallerSigningIdentity(installerSigningIdentity)
+		fInstallerSigningIdentity(installerSigningIdentity),
+		fDistributionMethod(NULL)
 		{
 		}
-		
+
 		// Create a minimal OS X packager params for internal use
 		OSXAppPackagerParams(
 							 const char* appName,
@@ -67,7 +68,10 @@ class OSXAppPackagerParams : public AppPackagerParams
 		: AppPackagerParams(
 							appName, version, "", "", srcDir, dstDir, "",
 							TargetDevice::kOSXPlatform, (char*)"apple", -1, -1, "", "",
-							"", false )
+							"", false ),
+		fAppSigningIdentity(NULL),
+		fInstallerSigningIdentity(NULL),
+		fDistributionMethod(NULL)
 		{
 		}
 		
@@ -83,22 +87,26 @@ class OSXAppPackagerParams : public AppPackagerParams
 		///  <para>Returns null if not assigned yet.</para>
 		/// </returns>
 		Runtime* GetRuntime() const { return fRuntime; }
-		const char* GetAppSigningIdentity( ) { return fAppSigningIdentity; }
-		const char* GetInstallerSigningIdentity( ) { return fInstallerSigningIdentity; }
+		const char* GetAppSigningIdentity() const { return fAppSigningIdentity; }
+		const char* GetInstallerSigningIdentity() const { return fInstallerSigningIdentity; }
 
-		/// <summary>
-		///  <para>Sets a pointer to the Corona runtime associated with the project that is being built.</para>
-		///  <para>The runtime is needed to acquire and unzip its plugins for local builds.</para>
-		/// </summary>
-		/// <param name="value">Pointer to the Corona runtime. Can be null.</param>
+		// distributionMethod controls which build pipeline CoronaBuilder uses:
+		//   "developer"        — standard .app build, unsigned or developer-signed (default)
+		//   "app-store"        — Mac App Store .pkg (upload manually via Transporter)
+		//   "developer-id"     — Developer ID signed .pkg for direct distribution
+		//   "developer-id-dmg" — Developer ID signed .dmg for direct distribution
+		const char* GetDistributionMethod() const { return fDistributionMethod ? fDistributionMethod : "developer"; }
+
 		void SetRuntime(Runtime* value) { fRuntime = value; }
-		void SetAppSigningIdentity(const char * appSigningIdentity ) { fAppSigningIdentity = appSigningIdentity; }
-		void SetInstallerSigningIdentity(const char * installerSigningIdentity ) { fInstallerSigningIdentity = installerSigningIdentity; }
+		void SetAppSigningIdentity(const char* v) { fAppSigningIdentity = v; }
+		void SetInstallerSigningIdentity(const char* v) { fInstallerSigningIdentity = v; }
+		void SetDistributionMethod(const char* v) { fDistributionMethod = v; }
 
 	public:
 		Rtt::Runtime* fRuntime;
 		const char* fAppSigningIdentity;
 		const char* fInstallerSigningIdentity;
+		const char* fDistributionMethod;
 };
 
 class OSXAppPackager : public PlatformAppPackager

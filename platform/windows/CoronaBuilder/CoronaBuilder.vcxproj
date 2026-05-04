@@ -14,20 +14,20 @@
     <ProjectGuid>{EAFC16C3-22B1-4C46-BEDE-8828226D926B}</ProjectGuid>
     <RootNamespace>CoronaBuilder</RootNamespace>
     <Keyword>MFCProj</Keyword>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <UseOfMfc>Dynamic</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <UseOfMfc>Dynamic</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
@@ -48,7 +48,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\..\..\tools\CoronaBuilder;..\..\..\tools\car;..\Corona.Native.Library.Win32\Rtt;..\Corona.Native.Library.Win32;..\Corona.Simulator;..\Corona.Simulator\Rtt;..\..\..\librtt\Core;..\..\..\librtt\Corona;..\..\..\librtt;..\..\..\external\hmac;..\..\..\external\lua-5.1.3\src;$(VC_IncludePath);$(WindowsSdk_71A_IncludePath);..\..\..\external\luafilesystem\src</IncludePath>
+    <IncludePath>..\..\..\tools\CoronaBuilder;..\..\..\tools\car;..\Corona.Native.Library.Win32\Rtt;..\Corona.Native.Library.Win32;..\Corona.Simulator;..\Corona.Simulator\Rtt;..\..\..\librtt\Core;..\..\..\librtt\Corona;..\..\..\librtt;..\..\..\external\hmac;..\..\..\external\lua-5.1.3\src;$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\..\external\luafilesystem\src</IncludePath>
     <PreLinkEventUseInBuild>false</PreLinkEventUseInBuild>
     <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
   </PropertyGroup>
@@ -56,7 +56,7 @@
     <LinkIncremental>false</LinkIncremental>
     <PreLinkEventUseInBuild>false</PreLinkEventUseInBuild>
     <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
-    <IncludePath>..\..\..\tools\CoronaBuilder;..\..\..\tools\car;..\Corona.Native.Library.Win32\Rtt;..\Corona.Native.Library.Win32;..\Corona.Simulator;..\Corona.Simulator\Rtt;..\..\..\librtt\Core;..\..\..\librtt\Corona;..\..\..\librtt;..\..\..\external\hmac;..\..\..\external\lua-5.1.3\src;$(VC_IncludePath);$(WindowsSdk_71A_IncludePath);..\..\..\external\luafilesystem\src</IncludePath>
+    <IncludePath>..\..\..\tools\CoronaBuilder;..\..\..\tools\car;..\Corona.Native.Library.Win32\Rtt;..\Corona.Native.Library.Win32;..\Corona.Simulator;..\Corona.Simulator\Rtt;..\..\..\librtt\Core;..\..\..\librtt\Corona;..\..\..\librtt;..\..\..\external\hmac;..\..\..\external\lua-5.1.3\src;$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\..\external\luafilesystem\src</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
