@@ -13,7 +13,7 @@
 #include "AsyncPipeReader.h"
 #include "IODataEventArgs.h"
 #include "Process.h"
-#include "WinString.h"
+#include "RttString.h"
 #include <Shlwapi.h>
 
 
@@ -78,7 +78,7 @@ void CommandLineRunner::SetIsShellCommand(bool value)
 
 CommandLineRunResult CommandLineRunner::RunUntilExit(const char* commandLine)
 {
-	WinString stringTranscoder(commandLine);
+	RttString stringTranscoder(commandLine);
 	return RunUntilExit(stringTranscoder.GetUTF16());
 }
 

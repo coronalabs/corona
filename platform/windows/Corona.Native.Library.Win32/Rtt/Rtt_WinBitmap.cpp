@@ -16,7 +16,7 @@
 #include "Interop\RuntimeEnvironment.h"
 #include "Rtt_GPUStream.h"
 #include "Rtt_WinFont.h"
-#include "WinString.h"
+#include "RttString.h"
 #include <windows.h>
 #include <algorithm>
 using std::min;
@@ -306,7 +306,7 @@ static Gdiplus::Bitmap* LoadBitmap( Rtt_Allocator& context, IStream* pStream, U3
 static HANDLE
 FileFromPath( const char *inPath )
 {
-	WinString wPath( inPath );
+	RttString wPath( inPath );
 
 	return CreateFile( wPath.GetTCHAR(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL );
 }
@@ -704,7 +704,7 @@ WinTextBitmap::WinTextBitmap(
 	}
 	
 	// Convert the given UTF-8 text to UTF-16.
-	WinString stringConverter;
+	RttString stringConverter;
 	stringConverter.SetUTF8(str);
 
 	// Set up the text format and alignment.
@@ -901,7 +901,7 @@ WinTextBitmap::WinTextBitmap(
 	, fHeight(0)
 {
 	// Convert the given UTF-8 text to UTF-16.
-	WinString stringConverter;
+	RttString stringConverter;
 	stringConverter.SetUTF8(str);
 
 	auto fontAscender = .0f;

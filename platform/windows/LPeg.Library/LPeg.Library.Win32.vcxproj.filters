@@ -6,4 +6,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\external\lpeg\lpeg.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
 </Project>

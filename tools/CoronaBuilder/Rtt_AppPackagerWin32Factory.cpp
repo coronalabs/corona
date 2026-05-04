@@ -14,7 +14,7 @@
 #include "Rtt_Win32AppPackager.h"
 #include "Rtt_Win32AppPackagerParams.h"
 
-#include "WinString.h"
+#include "RttString.h"
 
 #include <string.h>
 #include <ctype.h>
@@ -131,13 +131,13 @@ AppPackagerFactory::CreatePackagerParamsWin32(
 
 			// Configure the Win32 app packager's parameters.
 			Rtt::Win32AppPackagerParams::CoreSettings paramsSettings{};
-			WinString appNameTranscoder(appName);
+			RttString appNameTranscoder(appName);
 			paramsSettings.AppName = appNameTranscoder.GetUTF8();
 
-			WinString versionStringTranscoder(versionString);
+			RttString versionStringTranscoder(versionString);
 			paramsSettings.VersionString = versionStringTranscoder.GetUTF8();
 
-			WinString destinationDirectoryPathTranscoder(dstPath);
+			RttString destinationDirectoryPathTranscoder(dstPath);
 			String destinationDirectoryPathStr;
 			destinationDirectoryPathStr.Set(destinationDirectoryPathTranscoder.GetUTF8());
 			String lastPathComponent = destinationDirectoryPathStr.GetLastPathComponent();
@@ -149,10 +149,10 @@ AppPackagerFactory::CreatePackagerParamsWin32(
 			}
 			paramsSettings.DestinationDirectoryPath = destinationDirectoryPathStr;
 
-			WinString sourceDirectoryPathTranscoder(projectPath);
+			RttString sourceDirectoryPathTranscoder(projectPath);
 			paramsSettings.SourceDirectoryPath = sourceDirectoryPathTranscoder.GetUTF8();
 
-			WinString stringTranscoder;
+			RttString stringTranscoder;
 			Rtt::Win32AppPackagerParams *params = new Win32AppPackagerParams(paramsSettings);
 
 			stringTranscoder.SetUTF8(exeFileName);
@@ -172,7 +172,7 @@ AppPackagerFactory::CreatePackagerParamsWin32(
 
 			params->SetRuntime(NULL); // NEEDSWORK:  runtimeEnvironmentPointer->GetRuntime());
 
-			WinString projectDirectoryPath = projectPath;
+			RttString projectDirectoryPath = projectPath;
 			String utf8BuildSettingsPath;
 
 			utf8BuildSettingsPath.Set(projectDirectoryPath.GetUTF8());

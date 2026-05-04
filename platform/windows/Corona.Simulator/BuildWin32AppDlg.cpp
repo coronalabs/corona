@@ -27,7 +27,7 @@
 #include "SimulatorDoc.h"
 #include "SimulatorView.h"
 #include "WinGlobalProperties.h"
-#include "WinString.h"
+#include "RttString.h"
 
 
 IMPLEMENT_DYNAMIC(CBuildWin32AppDlg, CDialog)
@@ -198,7 +198,7 @@ void CBuildWin32AppDlg::OnSysCommand(UINT nID, LPARAM lParam)
 
 void CBuildWin32AppDlg::OnOK()
 {
-	WinString stringTranscoder;
+	RttString stringTranscoder;
 	CString appName;
 	CString exeFileName;
 	CString versionString;
@@ -342,7 +342,7 @@ void CBuildWin32AppDlg::OnOK()
 	// Set up a subdirectory path to copy the built Win32 app's files to.
 	// This will be a subfolder under the root destination directory as follows.
 	// Ex:    <DestinationDirectory>\<AppName>.Win32
-	WinString win32DestinationDirectoryPath(rootDestinationDirectoryPath);
+	RttString win32DestinationDirectoryPath(rootDestinationDirectoryPath);
 	win32DestinationDirectoryPath.Append(L"\\");
 	{
 		stringTranscoder.SetTCHAR(appName);
@@ -388,7 +388,7 @@ void CBuildWin32AppDlg::OnOK()
 	Rtt::Win32AppPackager packager(*platformServicesPointer);
 
 	// Read and validate the project's "build.settings" file.
-	WinString projectDirectoryPath;
+	RttString projectDirectoryPath;
 	projectDirectoryPath.SetTCHAR(fProjectPointer->GetDir());
 	bool wasBuildSettingsFileRead = packager.ReadBuildSettings(projectDirectoryPath.GetUTF8());
 	if (!wasBuildSettingsFileRead)
@@ -413,11 +413,11 @@ void CBuildWin32AppDlg::OnOK()
 
 	// Configure the Win32 app packager's parameters.
 	Rtt::Win32AppPackagerParams::CoreSettings paramsSettings{};
-	WinString appNameTranscoder(appName);
+	RttString appNameTranscoder(appName);
 	paramsSettings.AppName = appNameTranscoder.GetUTF8();
-	WinString versionStringTranscoder(versionString);
+	RttString versionStringTranscoder(versionString);
 	paramsSettings.VersionString = versionStringTranscoder.GetUTF8();
-	WinString destinationDirectoryPathTranscoder(win32DestinationDirectoryPath.GetUTF8());
+	RttString destinationDirectoryPathTranscoder(win32DestinationDirectoryPath.GetUTF8());
 	paramsSettings.DestinationDirectoryPath = destinationDirectoryPathTranscoder.GetUTF8();
 	paramsSettings.SourceDirectoryPath = projectDirectoryPath.GetUTF8();
 	Rtt::Win32AppPackagerParams params(paramsSettings);
@@ -449,7 +449,7 @@ void CBuildWin32AppDlg::OnOK()
 	// Choose a good hidden temp directory path to be used by the build system.
 	// Will be used as an intermediate directory for compiled Lua files, app template extraction, and other purposes.
 	// The build system will automatically delete this directory once the build ends.
-	WinString tempDirectoryPath;
+	RttString tempDirectoryPath;
 	{
 		const size_t kBufferSize = 1024;
 		wchar_t utf16TempDirectoryPath[kBufferSize];
@@ -478,7 +478,7 @@ void CBuildWin32AppDlg::OnOK()
 		// Display the error message reported by the build system.
 		CStringW title;
 		title.LoadStringW(IDS_WARNING);
-		WinString errorMessage;
+		RttString errorMessage;
 		errorMessage.SetUTF8(params.GetBuildMessage());
 		MessageBoxW(errorMessage.GetUTF16(), title, MB_OK | MB_ICONEXCLAMATION);
 
@@ -517,9 +517,9 @@ void CBuildWin32AppDlg::OnOK()
 			case 0:
 			{
 				// Run the built app via the Corona Console.
-				WinString outputViewerFilePath(((CSimulatorApp*)::AfxGetApp())->GetApplicationDir());
+				RttString outputViewerFilePath(((CSimulatorApp*)::AfxGetApp())->GetApplicationDir());
 				outputViewerFilePath.Append(L"\\Corona.Console.exe");
-				WinString commandLineArguments;
+				RttString commandLineArguments;
 				commandLineArguments.Append(L"/command:run \"");
 				commandLineArguments.Append(win32DestinationDirectoryPath.GetUTF16());
 				commandLineArguments.Append(L'\\');
