@@ -170,9 +170,11 @@ GLFrameBufferObject::GetTextureName()
 	return param;
 }
 
-#if defined( Rtt_OPENGLES ) && !defined( Rtt_NXS_ENV )
+#if defined( Rtt_NXS_ENV )
+	#define GL_GET_PROC(name, suffix) gl ## name ## suffix
+#elif defined( Rtt_OPENGLES )
 	#define GL_GET_PROC(name, cap, suffix) (PFNGL ## cap ## suffix ## PROC) eglGetProcAddress( "gl" #name #suffix )
-#elif !defined( Rtt_OPENGLES )
+#else
 	#define GL_GET_PROC(name, suffix) gl ## name ## suffix
 #endif
 
