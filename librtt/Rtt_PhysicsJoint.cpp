@@ -1428,8 +1428,15 @@ PhysicsJoint::Finalizer( lua_State *L )
 		b2Joint *joint = (b2Joint*)wrapper->Dereference();
 		if ( joint )
 		{
-			// Make sure joint no longer points to this wrapper that we're about to destroy
-			joint->SetUserData( NULL );
+			// Only clear userdata if the joint still points back to this wrapper.
+			// If it doesn't, the joint may have already been destroyed by
+			// DestroyBody/DestroyJoint (SayGoodbye already invalidated the wrapper),
+			// and the pointer could be dangling or reused memory.
+			void *userData = joint->GetUserData();
+			if ( userData == wrapper )
+			{
+				joint->SetUserData( NULL );
+			}
 		}
 
 		Rtt_DELETE( wrapper );
