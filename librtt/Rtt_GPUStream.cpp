@@ -21,7 +21,7 @@
 #include "Display/Rtt_VertexCache.h"
 #include "Renderer/Rtt_RenderTypes.h"
 
-#if defined( Rtt_WIN_DESKTOP_ENV ) && !defined( Rtt_POWERVR_ENV )
+#if defined( OLD_GRAPHICS ) && defined( Rtt_WIN_DESKTOP_ENV ) && !defined( Rtt_POWERVR_ENV )
 	#if defined(Rtt_EMSCRIPTEN_ENV)
 		#include <GL/glew.h>
 	#elif defined(Rtt_LINUX_ENV)
@@ -208,7 +208,7 @@ GPUStream::GPUStream( Rtt_Allocator* pAllocator )
 {
 	memset( & fColor, 0xFF, sizeof( fColor ) );
 
-#if defined( Rtt_WIN_DESKTOP_ENV ) && !defined( Rtt_POWERVR_ENV )
+#if defined( OLD_GRAPHICS ) && defined( Rtt_WIN_DESKTOP_ENV ) && !defined( Rtt_POWERVR_ENV )
 	if  ( glActiveTexture == NULL ) {
 		glActiveTexture = (PFNGLACTIVETEXTUREPROC) wglGetProcAddress("glActiveTexture");
 		glClientActiveTexture = (PFNGLCLIENTACTIVETEXTUREPROC) wglGetProcAddress("glClientActiveTexture");
