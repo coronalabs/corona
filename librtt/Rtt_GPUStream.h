@@ -15,7 +15,7 @@
 #include "Rtt_RenderingStream.h"
 
 #include "Display/Rtt_Paint.h"
-#include "Rtt_GPU.h"
+/* #include "Rtt_GPU.h" */ // TODO: created annoying dependencies, and seemed to be mostly dead code (probably safe to remove)
 
 #if defined( Rtt_AUTHORING_SIMULATOR ) || defined( Rtt_ANDROID_ENV )
 #define RTT_SURFACE_ROTATION
@@ -48,11 +48,15 @@ class GPUStream : public RenderingStream
 			kMaxTextureStackDepth = 32
 		};
 
+#ifdef OLD_GRAPHICS
+
 	public:
 		static int GetMaxTextureUnits();
 
 	public:
 		static GLenum GetDataType();
+
+#endif
 
 	public:
 		GPUStream( Rtt_Allocator* );
@@ -176,8 +180,16 @@ class GPUStream : public RenderingStream
 		TextureStackFrame fTextureStack[kMaxTextureStackDepth];
 
 	private:
-		GLint fWindowWidth;
-		GLint fWindowHeight;
+	#ifdef OLD_GRAPHICS /* window dimensions and clear components; the old versions drag in GL dependencies */
+		typedef GLint wdInt;
+		typedef GLclampf ccFloat;
+	#else
+		typedef int wdInt;
+		typedef float ccFloat;
+	#endif
+	
+		wdInt fWindowWidth;
+		wdInt fWindowHeight;
 		S32 fRenderedContentWidth; // width of rect in which content is rendered (not necessarily same as content width)
 		S32 fRenderedContentHeight; // height of rect in which content is rendered (not necessarily same as content height)
 
@@ -196,10 +208,10 @@ class GPUStream : public RenderingStream
 		TextureFunction fTextureFunction;
 
 		// Clear color
-		GLclampf fClearR;
-		GLclampf fClearG;
-		GLclampf fClearB;
-		GLclampf fClearA;
+		ccFloat fClearR;
+		ccFloat fClearG;
+		ccFloat fClearB;
+		ccFloat fClearA;
 		
 	protected:
 		Rtt_Allocator* fAllocator;
