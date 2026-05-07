@@ -376,6 +376,11 @@ ProgramHeader::CopyHeaderSource( Program::Language language, char *dst, int dstS
 			Rtt_ASSERT( Program::kOpenGL_ES_2 == language );
 
 			int dstLen = snprintf( dst, dstSize,
+				// Explicitly declare GLSL ES 1.00. Without this, iOS 26's OpenGL ES 3
+				// context (which Apple provides even when ES2 is requested) rejects
+				// the shaders because its stricter GLSL compiler doesn't default to ES 1.00.
+				// All ES3 implementations are required to support GLSL ES 1.00 shaders.
+				"#version 100\n"
 				"\n"
 				"#define P_DEFAULT	%s\n"
 				"#define P_RANDOM	%s\n"

@@ -8,6 +8,10 @@ shell.name = "default"
 
 shell.vertex =
 [[
+#ifdef Rtt_GLES3_COMPAT
+// GLSL ES 3.00: 'varying' outputs from vertex shaders are declared with 'out'
+#define varying out
+#endif
 attribute vec2 a_Position;
 attribute vec3 a_TexCoord;
 attribute vec4 a_ColorScale;
@@ -103,6 +107,13 @@ void main()
 
 shell.fragment =
 [[
+#ifdef Rtt_GLES3_COMPAT
+// GLSL ES 3.00: 'varying' inputs to fragment shaders are declared with 'in'.
+// gl_FragColor is removed in ES3 — declare a named output and alias it.
+#define varying in
+out lowp vec4 corona_FragColor;
+#define gl_FragColor corona_FragColor
+#endif
 uniform sampler2D u_FillSampler0;
 uniform sampler2D u_FillSampler1;
 uniform P_DEFAULT float u_TotalTime;

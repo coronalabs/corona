@@ -57,7 +57,7 @@ class IPhoneScreenSurface : public PlatformSurface
 
 	private:
 		Rtt_GLKView *fView;
-		float fScale;
+		mutable float fScale;  // mutable: updated lazily in const Width() when contentScaleFactor changes
 };
 
 // ----------------------------------------------------------------------------

@@ -59,13 +59,19 @@ namespace /*anonymous*/
             GLchar* infoLog = new GLchar[length];
             glGetShaderInfoLog( name, length, NULL, infoLog );
 
+            // Always log shader compile errors (isVerbose controls extra context lines
+            // but the raw error is always useful; shader failures silently produce a
+            // black screen which is very hard to diagnose otherwise).
+            if ( label )
+            {
+                Rtt_LogException( "SHADER COMPILE ERROR (%s kernel): %s\n", label, infoLog );
+            }
+            else
+            {
+                Rtt_LogException( "SHADER COMPILE ERROR: %s\n", infoLog );
+            }
             if ( isVerbose )
             {
-                if ( label )
-                {
-                    Rtt_LogException( "ERROR: An error occurred in the %s kernel.\n", label );
-                }
-                Rtt_LogException( "%s", infoLog );
                 Rtt_LogException( "\tNOTE: Kernel starts at line number (%d), so subtract that from the line numbers above.\n", startLine );
             }
             delete[] infoLog;
@@ -85,20 +91,28 @@ namespace /*anonymous*/
             GLchar* infoLog = new GLchar[length];
             glGetProgramInfoLog( name, length, NULL, infoLog );
 
-			if ( isVerbose )
-			{
-				Rtt_LogException( "%s", infoLog );
-			}
-			else
-			{
-				Rtt_LogException(
-					"ERROR: A shader failed to compile. To see errors, add the following to the top of your main.lua:\n"
-					"\tdisplay.setDefault( 'isShaderCompilerVerbose', true )\n" );
-			}
+			// Always log the actual link error — bypass isVerbose gate
+			Rtt_LogException( "SHADER LINK ERROR: %s\n", infoLog );
 			delete[] infoLog;
 		}
 	}
 	
+    // Dump the full assembled GLSL source of a shader to the log.
+    // Retrieves whatever glShaderSource() stored — the actual text the driver compiles.
+    static void DumpShaderSource( GLuint shader, const char * label )
+    {
+        GLint length = 0;
+        glGetShaderiv( shader, GL_SHADER_SOURCE_LENGTH, &length );
+        if ( length > 0 )
+        {
+            GLchar * src = new GLchar[length];
+            glGetShaderSource( shader, length, NULL, src );
+            Rtt_LogException( "=== GLSL %s SOURCE (%d chars) ===\n%s\n=== END %s SOURCE ===\n",
+                              label, length, src, label );
+            delete[] src;
+        }
+    }
+
 	const char* kWireframeSource =
 		"void main()" \
 		"{" \
@@ -583,6 +597,8 @@ GLProgram::Update( Program::Version version, VersionData& data )
     bool isVerbose = program->IsCompilerVerbose();
     int kernelStartLine = 0;
 
+    // Dump assembled GLSL so we can see exactly what the driver is compiling.
+    DumpShaderSource( data.fVertexShader, "VERTEX" );
     glCompileShader( data.fVertexShader );
     if ( isVerbose )
     {
@@ -591,6 +607,7 @@ GLProgram::Update( Program::Version version, VersionData& data )
     CheckShaderCompilationStatus( data.fVertexShader, isVerbose, "vertex", kernelStartLine );
     GL_CHECK_ERROR();
 
+    DumpShaderSource( data.fFragmentShader, "FRAGMENT" );
     glCompileShader( data.fFragmentShader );
     if ( isVerbose )
     {

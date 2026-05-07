@@ -23,6 +23,8 @@
 
 #include "Renderer/Rtt_FormatExtensionList.h"
 #include "Renderer/Rtt_Program.h"
+#include "Renderer/Rtt_GL.h"
+#include <cstring>  // strstr
 #if defined( Rtt_USE_PRECOMPILED_SHADERS )
     #include "Renderer/Rtt_ShaderBinary.h"
     #include "Renderer/Rtt_ShaderBinaryVersions.h"
@@ -327,7 +329,39 @@ ShaderFactory::NewProgram(
 		}
 		
 		std::string header = Program::HeaderForLanguage( language, * fProgramHeader );
-		
+
+#if defined( Rtt_OPENGLES )
+		// iOS 26 gives an OpenGL ES 3 context even when ES2 is requested via the
+		// *native* Apple GLES driver.  GLSL ES 1.00 (#version 100) is rejected there.
+		// We detect at runtime whether the current context is genuinely ES3: if so,
+		// rewrite the header to GLSL ES 3.00 and inject backward-compat macros.
+		//
+		// MetalANGLE always creates a true ES 2.0 EGL context (GL_VERSION = "OpenGL
+		// ES 2.0 ...") and its own GLSL compiler correctly accepts #version 100.
+		// Passing #version 300 es to an ES2 context causes ANGLE to reject every
+		// shader, producing a black screen — so we must NOT upgrade there.
+		if ( language == Program::kOpenGL_ES_2 )
+		{
+			const char* glVersion = (const char*)glGetString( GL_VERSION );
+			if ( glVersion && strstr( glVersion, "OpenGL ES 3" ) )
+			{
+				const std::string kVersion100 = "#version 100\n";
+				std::string::size_type pos = header.find( kVersion100 );
+				if ( pos != std::string::npos )
+				{
+					header.replace( pos, kVersion100.length(), "#version 300 es\n" );
+				}
+				else
+				{
+					header = "#version 300 es\n" + header;
+				}
+				header += "#define Rtt_GLES3_COMPAT 1\n"
+				          "#define attribute in\n"
+				          "#define texture2D texture\n";
+			}
+		}
+#endif
+
 		if (ShaderResource::k25D == mod)
 		{
 			header = header + std::string("#define TEX_COORD_Z 1\n");
