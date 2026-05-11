@@ -26,7 +26,7 @@ namespace Rtt
 class PlatformBitmap
 {
 	public:
-		typedef enum Format
+		typedef enum FormatValue
 		{
 			kUndefined = 0,
 			kMask,
@@ -38,7 +38,22 @@ class PlatformBitmap
 			kLUMINANCE_ALPHA,
 			kNumFormats
 		}
-		Format;
+		FormatValue;
+
+		class Format {
+		public:
+			Format( FormatValue value = kUndefined );
+
+			FormatValue GetValue() const;
+			U32 GetBackingValue() const { return fValue; }
+			void SetBackingValue( U32 value ) { fValue = value; }
+
+		public:
+			bool IsNonCore() const;
+
+		 private:
+			U32 fValue;
+		};
 
 	public:
 		typedef enum _Orientation
@@ -162,7 +177,7 @@ class PlatformBitmap
 		bool IsLandscape() const;
 
 		// TODO: Remove as this is subsumed by GetFormat();
-		Rtt_INLINE bool IsMask() const { return GetFormat() == kMask; }
+		Rtt_INLINE bool IsMask() const { return GetFormat().GetValue() == kMask; }
 
 	public:
 		RenderTypes::TextureFilter GetMagFilter() const { return (RenderTypes::TextureFilter)fMagFilter; }

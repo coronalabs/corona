@@ -46,6 +46,7 @@ TextureResourceBitmap::Create(
 
 	if( save_to_file )
 	{
+		// TODO? check if this can occur with non-built-in-formats (BufferBitmap currently just uses a U8)
 		bitmap = Rtt_NEW( allocator,
 							BufferBitmap( display.GetAllocator(),
 											w,

@@ -18,6 +18,25 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
+ PlatformBitmap::Format::Format( FormatValue value )
+:	fValue( value )
+{
+}
+
+PlatformBitmap::FormatValue
+PlatformBitmap::Format::GetValue() const
+{
+	return (FormatValue)GetStockFormatAndFlag( fValue );
+}
+
+bool
+PlatformBitmap::Format::IsNonCore() const
+{
+	return HasFormatFlag( fValue );
+}
+
+// ----------------------------------------------------------------------------
+
 PlatformBitmap::PlatformBitmap()
 :	fMagFilter( RenderTypes::kLinearTextureFilter ),
 	fMinFilter( RenderTypes::kLinearTextureFilter ),
@@ -50,7 +69,7 @@ PlatformBitmap::HitTest( Rtt_Allocator *context, int i, int j, U8 threshold ) co
 
 			int index = (int) bytesPerPixel * ( i + j*Width() );
 
-			switch ( format )
+			switch ( format.GetValue() )
 			{
 				case kMask:
 					{
@@ -134,7 +153,7 @@ PlatformBitmap::HasAlphaChannel() const
 
 	Format format = GetFormat();
 
-	switch ( format )
+	switch ( format.GetValue() )
 	{
 		case kRGBA:
 		case kBGRA:
@@ -143,6 +162,12 @@ PlatformBitmap::HasAlphaChannel() const
 			result = true;
 			break;
 		default:
+			if ( format.IsNonCore() )
+			{
+				FormatDetails details = FormatDetails::UnpackFromValue( format.GetBackingValue() );
+				
+				result = -1 != details.fAlphaIndex;
+			}
 			break;
 	}
 
@@ -189,7 +214,7 @@ PlatformBitmap::IsLandscape() const
 size_t
 PlatformBitmap::BytesPerPixel( Format format )
 {
-	switch( format )
+	switch( format.GetValue() )
 	{
 		case kMask:
 			return 1;
@@ -203,6 +228,12 @@ PlatformBitmap::BytesPerPixel( Format format )
 		case kABGR:
 			return 4;
 		default:
+			if ( format.IsNonCore() )
+			{
+				FormatDetails details = FormatDetails::UnpackFromValue( format.GetBackingValue() );
+				
+				return details.fBytesPerComponent * details.fNumComponents;
+			}
 			break;
 	}
 
@@ -259,7 +290,7 @@ PlatformBitmap::GetColorByteIndexesFor(
 	int blueIndexOut = -1;
 
 	// Fetch the color byte index by format and endianness.
-	switch (format)
+	switch ( format.GetValue() )
 	{
 		case PlatformBitmap::kRGB:
 			#ifdef Rtt_LITTLE_ENDIAN
@@ -325,8 +356,20 @@ PlatformBitmap::GetColorByteIndexesFor(
 			#endif
 			break;
 		default:
-			// New formats need to have a case above
-			Rtt_ASSERT_NOT_IMPLEMENTED();
+			if ( format.IsNonCore() )
+			{
+				FormatDetails details = FormatDetails::UnpackFromValue( format.GetBackingValue() );
+				
+				redIndexOut = details.fRedIndex;
+				greenIndexOut = details.fGreenIndex;
+				blueIndexOut = details.fBlueIndex;
+				alphaIndexOut = details.fAlphaIndex;
+			}
+			else
+			{
+				// New formats need to have a case above
+				Rtt_ASSERT_NOT_IMPLEMENTED();
+			}
 			break;
 	}
 
@@ -371,7 +414,7 @@ PlatformBitmap::Unlock()
 void 
 PlatformBitmap::SwapRGB()
 {
-	if ( GetFormat() != kRGBA )
+	if ( GetFormat().GetValue() != kRGBA )
 		return;
 
 	char * pixels = const_cast<char *>( (const char *) GetBits( NULL ) );
@@ -399,6 +442,26 @@ PlatformBitmap::SwapBitmapRGB( char * pixels, int w, int h )
 	}
 }
 #endif
+
+// ----------------------------------------------------------------------------
+
+using FV1 = Texture::FormatValue;
+using FV2 = PlatformBitmap::FormatValue;
+
+// Assume these as frozen.
+Rtt_STATIC_ASSERT( (U32)FV1::kAlpha == (U32)FV2::kUndefined );
+Rtt_STATIC_ASSERT( (U32)FV1::kLuminance == (U32)FV2::kMask );
+Rtt_STATIC_ASSERT( (U32)FV1::kRGB == (U32)FV2::kRGB );
+Rtt_STATIC_ASSERT( (U32)FV1::kRGBA == (U32)FV2::kRGBA );
+Rtt_STATIC_ASSERT( (U32)FV1::kBGRA == (U32)FV2::kBGRA );
+Rtt_STATIC_ASSERT( (U32)FV1::kABGR == (U32)FV2::kABGR );
+Rtt_STATIC_ASSERT( (U32)FV1::kARGB == (U32)FV2::kARGB );
+Rtt_STATIC_ASSERT( (U32)FV1::kLuminanceAlpha == (U32)FV2::kLUMINANCE_ALPHA );
+Rtt_STATIC_ASSERT( (U32)FV1::kNumFormats == (U32)FV2::kNumFormats );
+
+// #formats happens to be a power-of-2; while not strictly important, use it
+// as the guideline since we are already freezing the other values.
+Rtt_STATIC_ASSERT( (U32)( 1U << kStockFormatBits ) == (U32)FV1::kNumFormats );
 
 // ----------------------------------------------------------------------------
 

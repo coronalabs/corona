@@ -295,7 +295,7 @@ GPU_GetPixelFormat( PlatformBitmap::Format format )
 
 #	else // Not Rtt_OPENGLES.
 
-		switch ( format )
+		switch ( format.GetValue() )
 		{
 			case PlatformBitmap::kBGRA:
 			case PlatformBitmap::kARGB:
@@ -333,7 +333,7 @@ GPU_GetPixelType( PlatformBitmap::Format format )
 
 #	else // Not Rtt_OPENGLES.
 
-		switch( format )
+		switch( format.GetValue() )
 		{
 			case PlatformBitmap::kBGRA:
 				#ifdef Rtt_BIG_ENDIAN

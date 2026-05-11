@@ -27,7 +27,7 @@ class Texture : public CPUResource
 		typedef CPUResource Super;
 		typedef Texture Self;
 
-		typedef enum _Format
+		typedef enum _FormatValue
 		{
 			kAlpha,
 			kLuminance,
@@ -39,7 +39,26 @@ class Texture : public CPUResource
 			kLuminanceAlpha,
 			kNumFormats
 		}
-		Format;
+		FormatValue;
+
+		class Format {
+		public:
+			Format( FormatValue value = kRGBA );
+
+			FormatValue GetValue() const;
+			U32 GetBackingValue() const { return fValue; }
+			void SetBackingValue( U32 value ) { fValue = value; }
+
+		public:
+			bool IsNonCore() const;
+			
+			static int BlockDimsID( U8 width, U8 height );
+			static void GetBlockDims( int blockDimsID, U8& width, U8& height );
+			static int GetCompressedSize( U16 w, U16 h, U8 blockWidth, U8 blockHeight, U8 blockSize );
+
+		private:
+			U32 fValue;
+		};
 
 		typedef enum _Filter
 		{
@@ -70,6 +89,39 @@ class Texture : public CPUResource
 		}
 		Unit;
 
+		typedef enum _Target
+		{
+			k2D, // default
+			k1D,
+			k3D,
+			kCube,
+			kBuffer,
+			kRectangle,
+			kMultisample,
+			kNumTargets
+		}
+		Target;
+
+		typedef enum _TargetSubtype
+		{
+			kNormal, // default
+			kArray,
+			kImage,
+			kImageArray,
+			kNumTargetSubtypes
+		}
+		TargetSubtype;
+
+		typedef enum _Family
+		{
+			kFloatingPoint, // default
+			kSignedInteger,
+			kUnsignedInteger,
+			kOtherFamily, // shadow formats, atomic_uint
+			kNumFamilies
+		}
+		Family;
+
 	public:
 
 		Texture( Rtt_Allocator* allocator );
@@ -97,7 +149,7 @@ class Texture : public CPUResource
 	
 	public:
 		void SetRetina( bool newValue ){ fIsRetina = newValue; }
-		bool IsRetina(){ return fIsRetina; }
+		bool IsRetina() const { return fIsRetina; }
 		void SetTarget( bool newValue ){ fIsTarget = newValue; }
 		bool IsTarget() const { return fIsTarget; }
 
