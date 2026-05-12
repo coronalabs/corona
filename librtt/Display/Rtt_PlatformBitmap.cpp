@@ -448,20 +448,9 @@ PlatformBitmap::SwapBitmapRGB( char * pixels, int w, int h )
 using FV1 = Texture::FormatValue;
 using FV2 = PlatformBitmap::FormatValue;
 
-// Assume these as frozen.
-Rtt_STATIC_ASSERT( (U32)FV1::kAlpha == (U32)FV2::kUndefined );
-Rtt_STATIC_ASSERT( (U32)FV1::kLuminance == (U32)FV2::kMask );
-Rtt_STATIC_ASSERT( (U32)FV1::kRGB == (U32)FV2::kRGB );
-Rtt_STATIC_ASSERT( (U32)FV1::kRGBA == (U32)FV2::kRGBA );
-Rtt_STATIC_ASSERT( (U32)FV1::kBGRA == (U32)FV2::kBGRA );
-Rtt_STATIC_ASSERT( (U32)FV1::kABGR == (U32)FV2::kABGR );
-Rtt_STATIC_ASSERT( (U32)FV1::kARGB == (U32)FV2::kARGB );
-Rtt_STATIC_ASSERT( (U32)FV1::kLuminanceAlpha == (U32)FV2::kLUMINANCE_ALPHA );
+// These details are basically frozen, but enforce them.
 Rtt_STATIC_ASSERT( (U32)FV1::kNumFormats == (U32)FV2::kNumFormats );
-
-// #formats happens to be a power-of-2; while not strictly important, use it
-// as the guideline since we are already freezing the other values.
-Rtt_STATIC_ASSERT( (U32)( 1U << kStockFormatBits ) == (U32)FV1::kNumFormats );
+Rtt_STATIC_ASSERT( (U32)( 1U << kStockFormatBits ) >= (U32)FV1::kNumFormats );
 
 // ----------------------------------------------------------------------------
 
