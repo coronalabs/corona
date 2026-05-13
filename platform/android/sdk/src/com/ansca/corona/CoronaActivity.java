@@ -78,6 +78,9 @@ public class CoronaActivity extends Activity {
 	/** Sends CoronaRuntimeTask objects to the Corona runtime's EventManager in a thread safe manner. */
 	private CoronaRuntimeTaskDispatcher myRuntimeTaskDispatcher = null;
 
+	/** Tracks whether a back event came from OnBackInvokedCallback (API 33+) and is awaiting Lua resolution. */
+	private boolean mBackInvokedPending = false;
+
 	/** The "screen orientation" constant in class ActivityInfo defined in AndroidManifest.xml. */
 	private int myInitialOrientationSetting = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
 
@@ -361,6 +364,11 @@ public class CoronaActivity extends Activity {
 		// another permission in that group after access to the group has been granted.
 		if (android.os.Build.VERSION.SDK_INT >= 23) {
 			syncPermissionStateForAllPermissions();
+		}
+
+		// Register back key handler for Android 13+ predictive back gesture system.
+		if (android.os.Build.VERSION.SDK_INT >= 33) {
+			ApiLevel33.registerBackCallback(this);
 		}
 
 	}
@@ -3371,6 +3379,44 @@ public class CoronaActivity extends Activity {
 	 *              modifiers such as Shift/Ctrl, and the device it came from.
 	 * @return Returns true if the key event was handled. Returns false if not.
 	 */
+
+	/**
+	 * Called by the OnBackInvokedCallback on Android 13+ when the user triggers the back gesture.
+	 * Replicates the onKeyDown(KEYCODE_BACK) flow: child views first, then Lua, then default.
+	 */
+	void onBackInvokedHandler() {
+		// Clear any stale pending state from a previous back event.
+		mBackInvokedPending = false;
+
+		// Let child views (e.g. web views) handle navigation first.
+		if (fCoronaRuntime != null) {
+			ViewManager viewManager = fCoronaRuntime.getViewManager();
+			if (viewManager != null && viewManager.goBack()) {
+				return;
+			}
+		}
+
+		// Send synthetic KEY_DOWN and KEY_UP to Lua via the input handler, mirroring what the
+		// system would deliver for a physical back key press.  Both are queued to the same
+		// runtime task queue, so Lua receives them in order.
+		long now = android.os.SystemClock.uptimeMillis();
+		android.view.KeyEvent backDown = new android.view.KeyEvent(
+				now, now, android.view.KeyEvent.ACTION_DOWN, android.view.KeyEvent.KEYCODE_BACK, 0);
+		android.view.KeyEvent backUp = new android.view.KeyEvent(
+				now, now, android.view.KeyEvent.ACTION_UP, android.view.KeyEvent.KEYCODE_BACK, 0);
+		boolean sentToLua = myInputHandler.handle(backDown);
+		myInputHandler.handle(backUp);
+		if (sentToLua) {
+			// Lua processes async; when it does not handle the UP event, RaiseKeyEventTask
+			// dispatches a CoronaKeyEvent back via dispatchKeyEvent().  onKeyUp() will
+			// detect mBackInvokedPending and call onBackPressed() at that point.
+			mBackInvokedPending = true;
+		} else {
+			// Runtime not yet started; perform the default back action immediately.
+			onBackPressed();
+		}
+	}
+
 	@Override
 	public boolean onKeyDown(int keyCode, android.view.KeyEvent event) {
 		// Send the key event to Corona's input handler and Lua listeners first, if not already received.
@@ -3414,8 +3460,18 @@ public class CoronaActivity extends Activity {
 			if (viewManager != null) {
 				boolean hasChildViewOverridenBackKey = viewManager.goBack();
 				if (hasChildViewOverridenBackKey) {
+					mBackInvokedPending = false;
 					return true;
 				}
+			}
+
+			// On Android 13+, back events arrive via OnBackInvokedCallback rather than as system
+			// key events.  Consume the CoronaKeyEvent DOWN here; onBackPressed() will be called
+			// from onKeyUp() when the paired CoronaKeyEvent UP is received unhandled by Lua.
+			if (android.os.Build.VERSION.SDK_INT >= 33
+					&& mBackInvokedPending
+					&& event instanceof com.ansca.corona.input.CoronaKeyEvent) {
+				return true;
 			}
 		}
 
@@ -3444,6 +3500,18 @@ public class CoronaActivity extends Activity {
 		}
 
 		// Corona's Lua listeners have not overriden the key event.
+
+		// On Android 13+, when the CoronaKeyEvent UP for a back gesture returns unhandled from Lua,
+		// perform the default back action (mirrors the old KEY_UP tracking + onBackPressed() path).
+		if (android.os.Build.VERSION.SDK_INT >= 33
+				&& mBackInvokedPending
+				&& keyCode == android.view.KeyEvent.KEYCODE_BACK
+				&& event instanceof com.ansca.corona.input.CoronaKeyEvent) {
+			mBackInvokedPending = false;
+			onBackPressed();
+			return true;
+		}
+
 		// Perform the default handling for the received event.
 		return super.onKeyUp(keyCode, event);
 	}
@@ -3836,6 +3904,26 @@ public class CoronaActivity extends Activity {
 					}));
 				}
 			}
+		}
+	}
+
+	/**
+	 * Provides access to Android 13 (API 33) back-navigation features.
+	 * Only accessed when running on API 33 or higher.
+	 */
+	private static class ApiLevel33 {
+		private ApiLevel33() {}
+
+		static void registerBackCallback(final CoronaActivity activity) {
+			activity.getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+				android.window.OnBackInvokedDispatcher.PRIORITY_DEFAULT,
+				new android.window.OnBackInvokedCallback() {
+					@Override
+					public void onBackInvoked() {
+						activity.onBackInvokedHandler();
+					}
+				}
+			);
 		}
 	}
 }
