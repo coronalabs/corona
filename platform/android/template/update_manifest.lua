@@ -783,10 +783,17 @@ if (string.len(stringBuffer) > 0) then
 end
 manifestKeys.USER_SUPPORTS_SCREENS = stringBuffer
 
--- Add Corona activity flags if provided
+-- Add Corona activity flags if provided. configChanges is pulled out
+-- here and spliced in below — the template hardcodes that attribute on
+-- CoronaActivity, so emitting it here too would duplicate it.
 stringBuffer = ""
+local userConfigChanges
 for settingName, settingValue in pairs(coronaActivityFlags) do
-	stringBuffer = stringBuffer .. 'android:' .. settingName .. '="' .. tostring(settingValue) .. '"\n'
+	if settingName == "configChanges" then
+		userConfigChanges = tostring(settingValue)
+	else
+		stringBuffer = stringBuffer .. 'android:' .. settingName .. '="' .. tostring(settingValue) .. '"\n'
+	end
 end
 -- set default (attributes can't appear multiple times)
 if string.find(stringBuffer, "resizeableActivity") == nil then
@@ -794,6 +801,13 @@ if string.find(stringBuffer, "resizeableActivity") == nil then
 end
 
 manifestKeys.USER_CORONA_ACTIVITY_ATTRIBUTES = stringBuffer
+
+-- CoronaActivity configChanges. Default adds smallestScreenSize/screenLayout/
+-- uiMode so tablet rotation rides onConfigurationChanged instead of
+-- recreating the activity (which replayed the splash screen).
+local oldConfigChanges = 'android:configChanges="keyboard|keyboardHidden|navigation|screenSize|orientation"'
+local newConfigChanges = 'android:configChanges="' ..
+	(userConfigChanges or "keyboard|keyboardHidden|navigation|screenSize|smallestScreenSize|screenLayout|orientation|uiMode") .. '"'
 
 -- Create "uses-feature" tags.
 
@@ -991,6 +1005,7 @@ end
 local newManifestFileHandle = io.open( newManifestFilePath, "w" )
 for line in manifestTemplateFileHandle:lines() do
 	local replacedLine = replace(line, manifestKeys)
+	replacedLine = string.gsub(replacedLine, oldConfigChanges, newConfigChanges, 1)
 	newManifestFileHandle:write( replacedLine, "\n" )
 end
 
