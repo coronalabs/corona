@@ -92,7 +92,7 @@ Texture::Format::GetBlockDims( int blockDimsID, U8& width, U8& height )
 #undef PACK_ASTC
 
 template<int N> inline int
-RoundUp( U8 dim )
+RoundUp( U16 dim )
 {
 	return ( dim + N - 1 ) / N;
 }
