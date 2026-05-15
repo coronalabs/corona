@@ -1170,6 +1170,349 @@ BlendMode::operator==( const BlendMode& rhs ) const
 
 // ----------------------------------------------------------------------------
 
+// These details are used to lug around some information for non-built-in or non-2D-target
+// texture and / or bitmap resources. Although this can be looked up, there are several
+// usual situations where doing so is inconvenient.
+
+enum {
+	// These bits describe whether a texture and sampler can pair up, so that paints
+	// know whether they can plug into a given shader input. Some bitmap operations
+	// can also take this into consideration, e.g. only considering vanilla 2D.
+	kFamilyBits = 2,
+	kTargetBits = 3,
+	kTargetSubtypeBits = 2,
+	
+	// If this flag is set, we have a "non-core" format and the remaining bits come
+	// into play; the stock bits themselves lose their meaning and may be repurposed.
+	// N.B. this flag could be anywhere, but together with the stock bits we follow
+	// the reasonable assumption and put them in the lowest few bits.
+	kFormatFlagBit = 1 << kStockFormatBits,
+
+	// Allow 512 possible texture formats and aliases.
+	// This value is fairly arbitrary: some research suggests a Vulkan backend, which
+	// seemed to be the most prolific case, might allow 300-some options. In practice
+	// this is probably overly generous, with the majority of these being irrelevant.
+	kFormatIndexBits = 9,
+
+	// These are some details used to interpret the format as a bitmap, e.g. to find
+	// the size or component layout. The format may be "normal", packed, or compressed,
+	// with the information interpreted accordingly.
+	kShiftBits = 2,
+	kComponentBits = 3,
+	kDataBits = 4,
+
+	// Sums of some related bits...
+	kTargetPartBits = kFamilyBits + kTargetBits + kTargetSubtypeBits,
+	kDetailBits = kShiftBits + kComponentBits + kDataBits,
+
+	// ...and # of bits maximally alloted, i.e. when the format flag bit is set and
+	// the stock format bits have been fully repurposed.
+	kAllBits = 1 + kFormatIndexBits + kTargetPartBits + kDetailBits
+
+	// Some validation of these is done in corresponding C++ files.
+};
+
+Rtt_STATIC_ASSERT( kAllBits <= 32 );
+
+// ----------------------------------------------------------------------------
+
+struct MaskInfo {
+	int fFirstBit;
+	int fNumBits;
+	U32 fIncludeMask;
+	U32 fExcludeMask;
+};
+
+#define INCLUDE_MASK( numBits ) ( ( 1U << ( numBits ) ) - 1 )
+#define MAKE_MASK_INFO( first, numBits, next ) { \
+	first, numBits, INCLUDE_MASK( numBits ), ~( INCLUDE_MASK( numBits ) << ( first ) ) \
+}; const int next = first + numBits
+
+static const MaskInfo FormatMask = MAKE_MASK_INFO( 0, kStockFormatBits, kFormatFlagOffset );
+static const U32 FormatFlag = 1U << kFormatFlagOffset;
+static const MaskInfo FormatAndFlagMask = MAKE_MASK_INFO( 0, kStockFormatBits + 1, kFormatIndexOffset );
+
+static const MaskInfo FormatIndexMask = MAKE_MASK_INFO( kFormatIndexOffset, kFormatIndexBits, kFamilyOffset );
+
+static const MaskInfo FamilyMask = MAKE_MASK_INFO( kFamilyOffset, kFamilyBits, kTargetOffset );
+static const MaskInfo TargetMask = MAKE_MASK_INFO( kTargetOffset, kTargetBits, kTargetSubtypeOffset );
+static const MaskInfo TargetSubtypeMask =  MAKE_MASK_INFO( kTargetSubtypeOffset, kTargetSubtypeBits, kShiftOffset );
+
+// n.b. repurposes stock format bits when using non-core format
+Rtt_STATIC_ASSERT(kStockFormatBits == kComponentBits);
+static const MaskInfo ComponentMask = FormatMask;
+
+static const MaskInfo ShiftMask = MAKE_MASK_INFO( kShiftOffset, kShiftBits, kDataOffset );
+static const MaskInfo DataMask = MAKE_MASK_INFO( kDataOffset, kDataBits, kDoneOffset );
+
+Rtt_STATIC_ASSERT( kDoneOffset == kAllBits );
+
+#undef INCLUDE_MASK
+#undef MAKE_MASK_INFO
+
+static U32
+GetBits( U32 v, const MaskInfo& info )
+{
+	return ( v >> info.fFirstBit ) & info.fIncludeMask;
+}
+
+static void
+SetBits( U32* v, U32 bits, const MaskInfo& info )
+{
+	Rtt_ASSERT( ( bits & info.fIncludeMask ) == bits );
+	
+	*v &= info.fExcludeMask;
+	*v |= bits << info.fFirstBit;
+}
+
+// ----------------------------------------------------------------------------
+
+bool
+HasFormatFlag( U32 v )
+{
+	return 0 != ( v & kFormatFlagBit );
+}
+
+U32
+GetStockFormatAndFlag( U32 v )
+{
+	return GetBits( v, FormatAndFlagMask );
+}
+
+U32
+GetFormatIndex( U32 v )
+{
+	return GetBits( v, FormatIndexMask );
+}
+
+void
+SetFormatIndex( U32* v, U32 index )
+{
+	SetBits( v, index, FormatIndexMask );
+}
+
+U32
+GetFamily( U32 v )
+{
+	return GetBits( v, FamilyMask );
+}
+
+void
+SetFamily( U32* v, U32 family )
+{
+	SetBits( v, family, FamilyMask );
+}
+
+U32
+GetTarget( U32 v )
+{
+	return GetBits( v, TargetMask );
+}
+
+void
+SetTarget( U32* v, U32 target )
+{
+	SetBits( v, target, TargetMask );
+}
+
+U32
+GetTargetSubtype( U32 v )
+{
+	return GetBits( v, TargetSubtypeMask );
+}
+
+void
+SetTargetSubtype( U32* v, U32 targetSubtype )
+{
+	SetBits( v, targetSubtype, TargetSubtypeMask );
+}
+
+U32
+GetComponents( U32 v )
+{
+	return GetBits( v, ComponentMask );
+}
+
+void
+SetComponents( U32* v, U32 components )
+{
+	SetBits( v, components, ComponentMask );
+}
+
+U32
+GetShift( U32 v )
+{
+	return GetBits( v, ShiftMask );
+}
+
+void
+SetShift( U32* v, U32 shift )
+{
+	SetBits( v, shift, ShiftMask );
+}
+
+U32
+GetData( U32 v )
+{
+	return GetBits( v, DataMask );
+}
+
+void
+SetData( U32* v, U32 data )
+{
+	SetBits( v, data, DataMask );
+}
+
+// Grouped:
+
+// TODO?
+	// format-and-flag sort of abuses that #formats == 1 << StockFormatBits (and then uses those bits + flag)
+	// maybe should just make the enum have U32 class?
+
+// TODO?
+	// could save DetailMask::kNextBitIndex to use the remaining 6 or so bits
+
+// ----------------------------------------------------------------------------
+
+const U32 kASTCMask = 1U << ( kComponentBits - 1 ); // high bit, when compressed = has ASTC-style block
+
+bool
+FormatDetails::PackToValue( U32* v )
+{
+	// ensure power-of-2 in (1, 2, 4, 8)
+	Rtt_ASSERT( fBytesPerComponent > 0 );
+	Rtt_ASSERT( fBytesPerComponent < 16 );
+	Rtt_ASSERT( 0 == ( fBytesPerComponent & ( fBytesPerComponent - 1 ) ) );
+
+	// ensure power-of-2 in (1, 2, 4)
+	bool isCompressed = 0 != fBlockSize;
+
+	Rtt_ASSERT( !isCompressed || ( 0 != fBlockWidth && 0 != fBlockHeight ) );
+	Rtt_ASSERT( isCompressed || fBytesPerComponent > 0 );
+	Rtt_ASSERT( isCompressed || fBytesPerComponent < 8 );
+	Rtt_ASSERT( isCompressed || 0 == ( fBytesPerComponent & ( fBytesPerComponent - 1 ) ) );
+
+	// TODO: so far we only have simple schemes; fix up
+	// if and when more sophisticated cases arise
+
+	int componentCount = 1;
+	int indices[] = { fRedIndex, fGreenIndex, fBlueIndex, fAlphaIndex };
+	const char * names[] = { "red", "green", "blue", "index" };
+
+	for (int i = 0; i < 4; i++)
+	{
+		if (indices[i] != i)
+		{
+			if (-1 == indices[i] && i > 0)
+			{
+				break;
+			}
+			else
+			{
+				// CORONA_LOG_ERROR( "Formats with non-%i %s index not yet supported", i, names[i] );
+
+				return false;
+			}
+		}
+		else if (i > 0)
+		{
+			componentCount++;
+		}
+	}
+
+	U32 shift = 0, components = componentCount - 1, data = 0;
+	
+	if ( !isCompressed )
+	{
+		for ( ; shift < 3; shift++ )
+		{
+			if ( fBytesPerComponent == ( 1 << shift ) )
+			{
+				break;
+			}
+		}
+
+		Rtt_ASSERT( shift < 3 );
+	}
+	else
+	{
+		// TODO: any reason to worry about non-Texture case?
+		shift = 3; // cf. UnpackDetails()
+
+		if ( 16 == fBlockSize ) // ASTC or BC7?
+		{
+			Rtt_ASSERT( 0 == ( components & kASTCMask ) );
+
+			components |= kASTCMask;
+			data = Texture::Format::BlockDimsID( fBlockWidth, fBlockHeight );
+
+			Rtt_ASSERT( data >= 0 && data < ( 1 << kDataBits ) );
+		}
+	}
+
+	SetShift( v, shift );
+	SetComponents( v, components );
+	SetData( v, data );
+
+	return true;
+}
+
+FormatDetails
+FormatDetails::UnpackFromValue( U32 v )
+{
+	FormatDetails details;
+
+	details.fBytesPerComponent = 1U << GetShift( v );
+
+	U32 components = GetComponents( v );
+	if ( 8 == details.fBytesPerComponent ) // 8 not a valid bpc, encodes "compressed"
+	{
+		details.fBytesPerComponent = 1;
+
+		bool isASTCish = 0 != ( components & kASTCMask );
+		if ( isASTCish )
+		{
+			components &= ~kASTCMask;
+			
+			Texture::Format::GetBlockDims( GetData( v ), details.fBlockWidth, details.fBlockHeight );
+		}
+		else
+		{
+			details.fBlockWidth = 4;
+			details.fBlockHeight = 4;
+		}
+		
+		details.fBlockSize = isASTCish ? 16 : 8;
+	}
+
+	if ( components < 4 ) // 0-3: "normal" case, value = #components - 1
+	{
+		details.fNumComponents = components + 1;
+		switch ( details.fNumComponents )
+		{
+			case 1:
+				details.fAlphaIndex = -1;
+				// ...and fall through
+			case 2:
+				details.fBlueIndex = -1;
+				// ...and fall through
+			case 3:
+				details.fGreenIndex = -1;
+				// ...and fall through
+			default:
+				break;
+		}
+	}
+	else
+	{
+		// CORONA_LOG_ERROR( "NYI: unpacking non-count component formats" );
+	}
+	
+	return details;
+}
+
+// ----------------------------------------------------------------------------
+
 } // namespace Rtt
 
 // ----------------------------------------------------------------------------

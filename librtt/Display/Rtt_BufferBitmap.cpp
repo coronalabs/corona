@@ -25,7 +25,7 @@ BufferBitmap::BufferBitmap( Rtt_Allocator* allocator, size_t w, size_t h, Platfo
 	fWidth( (U32) w ),
 	fHeight( (U32) h ),
 	fProperties( 0 ),
-	fFormat( format ),
+	fFormat( format.GetValue() ),
 	fOrientation( orientation )
 {
 	Rtt_ASSERT( fData );
@@ -89,7 +89,7 @@ BufferBitmap::UprightHeight() const
 PlatformBitmap::Format
 BufferBitmap::GetFormat() const
 {
-	return (PlatformBitmap::Format)fFormat;
+	return (PlatformBitmap::FormatValue)fFormat;
 }
 
 bool
