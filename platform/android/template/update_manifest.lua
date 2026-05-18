@@ -784,8 +784,9 @@ end
 manifestKeys.USER_SUPPORTS_SCREENS = stringBuffer
 
 -- Add Corona activity flags if provided. configChanges is pulled out
--- here and spliced in below — the template hardcodes that attribute on
--- CoronaActivity, so emitting it here too would duplicate it.
+-- here and merged into the template's existing value below — the
+-- template hardcodes that attribute on CoronaActivity, so emitting it
+-- here too would duplicate the attribute.
 stringBuffer = ""
 local userConfigChanges
 for settingName, settingValue in pairs(coronaActivityFlags) do
@@ -802,12 +803,30 @@ end
 
 manifestKeys.USER_CORONA_ACTIVITY_ATTRIBUTES = stringBuffer
 
--- CoronaActivity configChanges. Default adds smallestScreenSize/screenLayout/
--- uiMode so tablet rotation rides onConfigurationChanged instead of
--- recreating the activity (which replayed the splash screen).
-local oldConfigChanges = 'android:configChanges="keyboard|keyboardHidden|navigation|screenSize|orientation"'
-local newConfigChanges = 'android:configChanges="' ..
-	(userConfigChanges or "keyboard|keyboardHidden|navigation|screenSize|smallestScreenSize|screenLayout|orientation|uiMode") .. '"'
+-- Merge coronaActivityFlags.configChanges into the template's existing
+-- list. Append-only with dedup — the engine never removes a flag the
+-- template ships with, and apps that don't opt in get the exact same
+-- manifest as before. Lets a developer add e.g.
+--   coronaActivityFlags = { configChanges = "smallestScreenSize|screenLayout|uiMode" }
+-- so tablet rotation rides onConfigurationChanged instead of recreating
+-- the activity (which replayed the splash screen on some OEM ROMs).
+local templateConfigChanges = "keyboard|keyboardHidden|navigation|screenSize|orientation"
+local mergedConfigChanges = templateConfigChanges
+if userConfigChanges and #userConfigChanges > 0 then
+	local seen = {}
+	for flag in string.gmatch(templateConfigChanges, "[^|]+") do
+		seen[flag] = true
+	end
+	for flag in string.gmatch(userConfigChanges, "[^|]+") do
+		if not seen[flag] then
+			mergedConfigChanges = mergedConfigChanges .. "|" .. flag
+			seen[flag] = true
+		end
+	end
+end
+
+local oldConfigChanges = 'android:configChanges="' .. templateConfigChanges .. '"'
+local newConfigChanges = 'android:configChanges="' .. mergedConfigChanges .. '"'
 
 -- Create "uses-feature" tags.
 
@@ -1005,7 +1024,9 @@ end
 local newManifestFileHandle = io.open( newManifestFilePath, "w" )
 for line in manifestTemplateFileHandle:lines() do
 	local replacedLine = replace(line, manifestKeys)
-	replacedLine = string.gsub(replacedLine, oldConfigChanges, newConfigChanges, 1)
+	if mergedConfigChanges ~= templateConfigChanges then
+		replacedLine = string.gsub(replacedLine, oldConfigChanges, newConfigChanges, 1)
+	end
 	newManifestFileHandle:write( replacedLine, "\n" )
 end
 
