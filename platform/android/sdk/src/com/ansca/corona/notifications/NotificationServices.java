@@ -1014,7 +1014,10 @@ public final class NotificationServices extends com.ansca.corona.ApplicationCont
 			// Set an intent to be invoked when the notification has been tapped.
 			android.content.Intent intent;
 			intent = OnNotificationReceiverActivity.createContentIntentFrom(context, settings);
-			builder.setContentIntent(android.app.PendingIntent.getActivity(context, 0, intent, android.app.PendingIntent.FLAG_IMMUTABLE));
+			// FLAG_UPDATE_CURRENT ensures that if this notification id is reused by a
+			// later schedule, the PendingIntent's embedded payload is refreshed to the
+			// newest notification rather than aliasing the previous one's extras.
+			builder.setContentIntent(android.app.PendingIntent.getActivity(context, 0, intent, android.app.PendingIntent.FLAG_IMMUTABLE | android.app.PendingIntent.FLAG_UPDATE_CURRENT));
 
 			// Set an intent to be invoked when the notification has been cleared/removed.
 			intent = StatusBarBroadcastReceiver.createDeleteIntentFrom(context, settings);
