@@ -21,6 +21,8 @@
 #include <cstring>
 #include "Rtt_Profiling.h"
 
+#include "Display/Rtt_BufferBitmap.h"
+
 // ----------------------------------------------------------------------------
 
 #define ENABLE_DEBUG_PRINT	0
@@ -270,6 +272,115 @@ GLFrameBufferObject::Blit( int srcX0, int srcY0, int srcX1, int srcY1, int dstX0
 	}
 	
 	sBlitFramebuffer( srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter );
+}
+
+static GLenum
+GPU_GetPixelFormat( PlatformBitmap::Format format )
+{
+#	ifdef Rtt_OPENGLES
+
+		switch ( format )
+		{
+			case PlatformBitmap::kRGBA:
+				return GL_RGBA;
+			case PlatformBitmap::kMask:
+				return GL_ALPHA;
+			case PlatformBitmap::kRGB:
+			case PlatformBitmap::kBGRA:
+			case PlatformBitmap::kARGB:
+			default:
+				Rtt_ASSERT_NOT_IMPLEMENTED();
+				return GL_ALPHA;
+		}
+
+#	else // Not Rtt_OPENGLES.
+
+		switch ( format.GetValue() )
+		{
+			case PlatformBitmap::kBGRA:
+			case PlatformBitmap::kARGB:
+				return GL_BGRA;
+			case PlatformBitmap::kRGBA:
+				return GL_RGBA;
+			case PlatformBitmap::kRGB:
+				return GL_BGR;
+			case PlatformBitmap::kMask:
+				return GL_ALPHA;
+			default:
+				Rtt_ASSERT_NOT_IMPLEMENTED();
+				return GL_ALPHA;
+		}
+
+#	endif // Rtt_OPENGLES
+}
+
+static GLenum
+GPU_GetPixelType( PlatformBitmap::Format format )
+{
+#	ifdef Rtt_OPENGLES
+
+		switch( format )
+		{
+			case PlatformBitmap::kMask:
+				return GL_UNSIGNED_BYTE;
+			case PlatformBitmap::kBGRA:
+			case PlatformBitmap::kARGB:
+			case PlatformBitmap::kRGBA:
+			default:
+				Rtt_ASSERT_NOT_IMPLEMENTED();
+				return GL_UNSIGNED_BYTE;
+		}
+
+#	else // Not Rtt_OPENGLES.
+
+		switch( format.GetValue() )
+		{
+			case PlatformBitmap::kBGRA:
+				#ifdef Rtt_BIG_ENDIAN
+					return GL_UNSIGNED_INT_8_8_8_8_REV;
+				#else
+					return GL_UNSIGNED_INT_8_8_8_8;
+				#endif
+			case PlatformBitmap::kARGB:
+				#ifdef Rtt_BIG_ENDIAN
+					return GL_UNSIGNED_INT_8_8_8_8;
+				#else
+					return GL_UNSIGNED_INT_8_8_8_8_REV;
+				#endif
+			case PlatformBitmap::kRGBA:
+				#ifdef Rtt_BIG_ENDIAN
+					return GL_UNSIGNED_INT_8_8_8_8_REV;
+				#else
+					return GL_UNSIGNED_INT_8_8_8_8;
+				#endif
+			case PlatformBitmap::kMask:
+				return GL_UNSIGNED_BYTE;
+			default:
+				Rtt_ASSERT_NOT_IMPLEMENTED();
+				return GL_UNSIGNED_BYTE;
+		}
+
+#	endif // Rtt_OPENGLES
+}
+
+void FrameBufferObject::Capture( BufferBitmap& bitmap, S32 x_in_pixels, S32 y_in_pixels, S32 w_in_pixels, S32 h_in_pixels )
+{
+#ifdef Rtt_OPENGLES
+	const GLenum kFormat = GL_RGBA;
+	const GLenum kType = GL_UNSIGNED_BYTE;
+#else
+	PlatformBitmap::Format format = bitmap.GetFormat();
+	const GLenum kFormat = GPU_GetPixelFormat( format );
+	GLenum kType = GPU_GetPixelType( format );
+#endif
+
+	glReadPixels( x_in_pixels,
+				y_in_pixels,
+				w_in_pixels,
+				h_in_pixels,
+				kFormat,
+				kType,
+				bitmap.WriteAccess() );
 }
 
 // ----------------------------------------------------------------------------

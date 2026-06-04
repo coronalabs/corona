@@ -39,7 +39,7 @@ namespace /*anonymous*/
 
     void getFormatTokens( Texture::Format format, GLint& internalFormat, GLenum& sourceFormat, GLenum& sourceType )
     {
-        switch( format )
+        switch( format.GetValue() )
         {
             case Texture::kAlpha:        internalFormat = GL_ALPHA;        sourceFormat = GL_ALPHA;        sourceType = GL_UNSIGNED_BYTE; break;
 #if defined( Rtt_MetalANGLE)

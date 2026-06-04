@@ -53,7 +53,7 @@ PlatformBitmapTexture::ConvertFormat( PlatformBitmap::Format format )
 {
 	Texture::Format result = Texture::kRGBA;
 
-	switch ( format )
+	switch ( format.GetValue() )
 	{
 		case PlatformBitmap::kRGB:
 			result = Texture::kRGB;
@@ -88,7 +88,14 @@ PlatformBitmapTexture::ConvertFormat( PlatformBitmap::Format format )
 			result = Texture::kLuminanceAlpha;
 			break;
 		default:
-			Rtt_ASSERT_NOT_IMPLEMENTED();
+			if ( format.IsNonCore() )
+			{
+				result.SetBackingValue( format.GetBackingValue() );
+			}
+			else
+			{
+				Rtt_ASSERT_NOT_IMPLEMENTED();
+			}
 			break;
 	}
 

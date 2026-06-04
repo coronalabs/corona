@@ -162,6 +162,10 @@ class GPU
 	#define GPUError()	do {} while(0)
 #endif
 
+#ifdef OLD_GRAPHICS
+	#error Details now moved to non-librtt code (tachyon)
+#endif
+
 // ----------------------------------------------------------------------------
 
 } // namespace Rtt

@@ -908,7 +908,7 @@ namespace Rtt
 					// Given image has a 4 channel color format. Fetch its color channel values.
 					color = Gdiplus::Color(bits[alphaIndex], bits[redIndex], bits[greenIndex], bits[blueIndex]);
 				}
-				else if (bitmap->GetFormat() == PlatformBitmap::kMask)
+				else if (bitmap->GetFormat().GetValue() == PlatformBitmap::kMask)
 				{
 					// Given image is a 1 channel grayscale bitmap. Convert it to a 3 channel RGB color value.
 					color = Gdiplus::Color((BYTE)(*bits / 0.30), (BYTE)(*bits / 0.59), (BYTE)(*bits / 0.11));

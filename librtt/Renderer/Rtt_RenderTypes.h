@@ -211,6 +211,64 @@ struct BlendMode
 
 // ----------------------------------------------------------------------------
 
+enum {
+	kStockFormatBits = 3 // bits alloted to built-in formats, for Texture::FormatValue and bitmap counterpart
+};
+
+bool HasFormatFlag( U32 v );
+U32 GetStockFormatAndFlag( U32 v );
+U32 GetFormatIndex( U32 v );
+void SetFormatIndex( U32* v, U32 index );
+U32 GetFamily( U32 v );
+void SetFamily( U32* v, U32 family );
+U32 GetTarget( U32 v );
+void SetTarget( U32* v, U32 target );
+U32 GetTargetSubtype( U32 v );
+void SetTargetSubtype( U32* v, U32 targetSubtype );
+U32 GetComponents( U32 v );
+void SetComponents( U32* v, U32 components );
+U32 GetShift( U32 v );
+void SetShift( U32* v, U32 shift );
+U32 GetData( U32 v );
+void SetData( U32* v, U32 data );
+
+// ----------------------------------------------------------------------------
+
+struct FormatDetails {
+	// TODO
+/*
+	typedef enum _InputType
+	{
+		kByte,
+		kUint16,
+		kUint32,
+		kFloat16,
+		kFloat32,
+		kNumTypes
+	}
+	InputType;
+
+	InputType fInputType = kByte
+*/
+	int fBytesPerComponent = 1;
+	int fNumComponents = 4;
+	int fRedIndex = 0;
+	int fGreenIndex = 1;
+	int fBlueIndex = 2;
+	int fAlphaIndex = 3;
+	U8 fBlockWidth = 0;
+	U8 fBlockHeight = 0;
+	U8 fBlockSize = 0; // if > 0, compressed
+	bool fIsFloat = false;
+	bool fIsPacked = false;
+	// TODO? bool fIssRGB = false;
+
+	bool PackToValue( U32* v );
+	static FormatDetails UnpackFromValue( U32 v );
+};
+
+// ----------------------------------------------------------------------------
+
 } // namespace Rtt
 
 // ----------------------------------------------------------------------------
