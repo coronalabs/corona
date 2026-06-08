@@ -210,6 +210,11 @@ namespace Rtt
 				{
 					fFormat = kRGBA;
 				}
+				else
+				{
+					fWidth = 0;
+					fHeight = 0;
+				}
 				fclose(f);
 			}
 		}
@@ -241,6 +246,11 @@ namespace Rtt
 						}
 					}
 					free(img);
+				}
+				else
+				{
+					fWidth = 0;
+					fHeight = 0;
 				}
 				fclose(f);
 				return fData != NULL;

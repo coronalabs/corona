@@ -278,7 +278,12 @@ TextureFactory::FindOrCreate(
 	if ( result.IsNull() )
 	{
 		PlatformBitmap *bitmap = CreateBitmap( filePath.GetString(), flags, isMask );
-		result = CreateAndAdd( key, bitmap, true, isRetina );
+
+		// Guards the NULL bitmap Linux returns on a failed load; no-op on emscripten (returns an empty bitmap).
+		if ( bitmap )
+		{
+			result = CreateAndAdd( key, bitmap, true, isRetina );
+		}
 	}
 
 	return result;
