@@ -884,13 +884,6 @@ namespace Rtt
 		}
 		case SDL_KEYDOWN:
 		{
-			SDL_Keycode	key = event.key.keysym.sym;
-			if (key == SDLK_ESCAPE)
-			{
-				event.type = SDL_QUIT;
-				return true;		// close app
-			}
-			
 			// ignore key repeat
 			if (event.key.repeat == 0)
 			{
