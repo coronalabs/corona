@@ -16,6 +16,8 @@
 #include "Core/Rtt_Types.h"
 #include "Rtt_BitmapUtils.h"
 #include <SDL2/SDL.h>
+#include <cctype>
+#include <cstring>
 
 #if defined(EMSCRIPTEN)
 #include "emscripten/emscripten.h"		// for native alert and etc
@@ -171,14 +173,24 @@ namespace Rtt
 	{
 		Rtt_ASSERT(fData == NULL);
 
-		// get file ext
-		int n = strlen(path);
-		if (n < 5)
+		if (path == NULL)
 		{
 			return false;
 		}
 
-		std::string ext = path + n - 4;
+		// Extract extension after the last dot. Case-insensitive to accept .JPG, .PNG, etc.
+		const char *dot = strrchr(path, '.');
+		if (dot == NULL || dot[1] == '\0')
+		{
+			return false;
+		}
+
+		std::string ext(dot);
+		for (size_t i = 0; i < ext.size(); i++)
+		{
+			ext[i] = (char)tolower((unsigned char)ext[i]);
+		}
+
 		if (ext == ".bmp")
 		{
 			fData = bitmapUtil::loadBMP(path, fWidth, fHeight, fFormat);
@@ -198,11 +210,16 @@ namespace Rtt
 				{
 					fFormat = kRGBA;
 				}
+				else
+				{
+					fWidth = 0;
+					fHeight = 0;
+				}
 				fclose(f);
 			}
 		}
 		else
-		if (ext == ".jpg")
+		if (ext == ".jpg" || ext == ".jpeg")
 		{
 			FILE* f = fopen(path, "rb");
 			if (f)
@@ -229,6 +246,11 @@ namespace Rtt
 						}
 					}
 					free(img);
+				}
+				else
+				{
+					fWidth = 0;
+					fHeight = 0;
 				}
 				fclose(f);
 				return fData != NULL;
