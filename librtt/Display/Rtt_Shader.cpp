@@ -255,6 +255,14 @@ Shader::Prepare( RenderData& objectData, int w, int h, ShaderResource::ProgramMo
 	
 	objectData.fProgram = program;
 
+	ShaderResource::UnitRegionPolicy policy = fResource->GetUnitRegionPolicy();
+	if ( objectData.fFromImageSheet && ShaderResource::kNone != policy )
+	{
+		objectData.fWantsUnitRegion = true;
+		objectData.fAlwaysUseUnitRegion = ShaderResource::kAlways == policy;
+		objectData.fHasDistortion = ShaderResource::k25D == mod;
+	}
+
     const CoronaEffectCallbacks * callbacks = fResource->GetEffectCallbacks();
 
     if (callbacks && callbacks->prepare)
@@ -275,7 +283,9 @@ Shader::Draw( Renderer& renderer, const RenderData& objectData, const GeometryWr
 {
     if ( !renderer.CanAddGeometryWriters() ) // ignore during raw draws
     {
-        renderer.SetGeometryWriters( writers, n );
+		bool encodeUnitRegion = objectData.fWantsUnitRegion &&
+			( objectData.fAlwaysUseUnitRegion || renderer.GetOptInToUnitRegionEncoding() );
+		renderer.SetGeometryWriters( writers, n, encodeUnitRegion, objectData.fHasDistortion );
     }
 
     DrawState state( fResource->GetEffectCallbacks(), fIsDrawing );

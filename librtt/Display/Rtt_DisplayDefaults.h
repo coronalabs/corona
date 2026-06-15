@@ -63,14 +63,17 @@ class DisplayDefaults
 		U8 GetEmitterMapping() const { return fEmitterMapping; }
 		void SetEmitterMapping( U8 newValue ) { fEmitterMapping = newValue; }
 
-		bool IsImageSheetSampledInsideFrame() const { return fIsImageSheetSampledInsideFrame;}
+		bool IsImageSheetSampledInsideFrame() const { return fIsImageSheetSampledInsideFrame; }
 		void SetImageSheetSampledInsideFrame( bool newValue ) { fIsImageSheetSampledInsideFrame = newValue; }
 
-		bool IsImageSheetFrameTrimCorrected() const { return fIsImageSheetFrameTrimCorrected;}
+		bool IsImageSheetFrameTrimCorrected() const { return fIsImageSheetFrameTrimCorrected; }
 		void SetImageSheetFrameTrimCorrected( bool newValue ) { fIsImageSheetFrameTrimCorrected = newValue; }
 
-    bool IsExternalTextureRetina() const { return fIsExternalTextureRetina;}
+		bool IsExternalTextureRetina() const { return fIsExternalTextureRetina; }
 		void SetExternalTextureRetina( bool newValue ) { fIsExternalTextureRetina = newValue; }
+
+		bool IsUnitRegionWantedForBuiltinEffects() const { return fIsUnitRegionWantedForBuiltinEffects; }
+		void SetIsUnitRegionWantedForBuiltinEffects( bool newValue ) { fIsUnitRegionWantedForBuiltinEffects = newValue; }
 
 	public:
 		bool IsV1Compatibility() const { return fV1Compatibility; }
@@ -144,6 +147,7 @@ class DisplayDefaults
         bool fIsImageSheetSampledInsideFrame;
 		bool fIsImageSheetFrameTrimCorrected;
 		bool fIsExternalTextureRetina;
+		bool fIsUnitRegionWantedForBuiltinEffects;
         bool fSkipsCull;
         bool fSkipsHitTest;
         bool fEnableDepthInScene;
