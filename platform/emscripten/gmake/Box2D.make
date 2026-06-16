@@ -110,11 +110,13 @@ OBJECTS := \
 	$(OBJDIR)/b2MotorJoint.o \
 	$(OBJDIR)/b2MouseJoint.o \
 	$(OBJDIR)/b2PrismaticJoint.o \
+	$(OBJDIR)/b2PrismaticJointV2.o \
 	$(OBJDIR)/b2PulleyJoint.o \
 	$(OBJDIR)/b2RevoluteJoint.o \
 	$(OBJDIR)/b2RopeJoint.o \
 	$(OBJDIR)/b2WeldJoint.o \
 	$(OBJDIR)/b2WheelJoint.o \
+	$(OBJDIR)/b2WheelJointV2.o \
 	$(OBJDIR)/b2Particle.o \
 	$(OBJDIR)/b2ParticleAssembly.o \
 	$(OBJDIR)/b2ParticleGroup.o \
@@ -348,6 +350,10 @@ $(OBJDIR)/b2PrismaticJoint.o: ../../../external/Box2D/Box2D/Dynamics/Joints/b2Pr
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
+$(OBJDIR)/b2PrismaticJointV2.o: ../../../external/Box2D/Box2D/Dynamics/Joints/b2PrismaticJointV2.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+
 $(OBJDIR)/b2PulleyJoint.o: ../../../external/Box2D/Box2D/Dynamics/Joints/b2PulleyJoint.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
@@ -365,6 +371,10 @@ $(OBJDIR)/b2WeldJoint.o: ../../../external/Box2D/Box2D/Dynamics/Joints/b2WeldJoi
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
 $(OBJDIR)/b2WheelJoint.o: ../../../external/Box2D/Box2D/Dynamics/Joints/b2WheelJoint.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+
+$(OBJDIR)/b2WheelJointV2.o: ../../../external/Box2D/Box2D/Dynamics/Joints/b2WheelJointV2.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
