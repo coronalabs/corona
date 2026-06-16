@@ -500,6 +500,12 @@ Java_com_ansca_corona_JavaToNativeShim_nativeWebViewHistoryUpdated(JNIEnv * env,
 }
 
 JNIEXPORT void JNICALL
+Java_com_ansca_corona_JavaToNativeShim_nativeWebViewJSInterfaceCommonEvent(JNIEnv * env, jclass cd, jlong bridgeAddress, jint id, jstring type, jstring data, jboolean noResult)
+{
+	JavaToNativeBridgeFromMemoryAddress(bridgeAddress)->WebViewJSInterfaceCommonEvent( env, id, type, data, noResult );
+}
+
+JNIEXPORT void JNICALL
 Java_com_ansca_corona_JavaToNativeShim_nativeWebViewClosed(JNIEnv * env, jclass cd, jlong bridgeAddress, jint id)
 {
 	JavaToNativeBridgeFromMemoryAddress(bridgeAddress)->WebViewClosed( env, id );

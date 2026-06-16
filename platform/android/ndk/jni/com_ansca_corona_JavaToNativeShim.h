@@ -429,6 +429,14 @@ JNIEXPORT void JNICALL Java_com_ansca_corona_JavaToNativeShim_nativeWebViewHisto
 
 /*
  * Class:     com_ansca_corona_JavaToNativeShim
+ * Method:    nativeWebViewJSInterfaceCommonEvent
+ * Signature: (ILjava/lang/String;Ljava/lang/String;I)V
+ */
+JNIEXPORT void JNICALL Java_com_ansca_corona_JavaToNativeShim_nativeWebViewJSInterfaceCommonEvent
+  (JNIEnv *, jclass, jlong, jint, jstring, jstring, jboolean);
+
+/*
+ * Class:     com_ansca_corona_JavaToNativeShim
  * Method:    nativeWebViewShouldLoadUrl
  * Signature: (I)V
  */

@@ -98,6 +98,7 @@ class JavaToNativeBridge
 		void WebViewFinishedLoadUrl( JNIEnv * env, int id, jstring url );
 		void WebViewDidFailLoadUrl( JNIEnv * env, int id, jstring url, jstring msg, int code );
 		void WebViewHistoryUpdated( JNIEnv * env, int id, jboolean canGoBack, jboolean canGoForward );
+		void WebViewJSInterfaceCommonEvent( JNIEnv * env, int id, jstring type, jstring data, jboolean noResult );
 		void WebViewClosed( JNIEnv * env, int id );
 		void AdsRequestEvent(bool isError);
 		void ImagePickerEvent(JNIEnv *env, jstring selectedImageFileName);

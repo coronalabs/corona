@@ -51,10 +51,15 @@ class AndroidWebViewObject : public AndroidDisplayObject
 		static int Reload( lua_State *L );
 		static int Resize( lua_State *L );
 		static int DeleteCookies( lua_State *L );
+		static int InjectJS( lua_State *L );
+		static int RegisterCallback( lua_State *L );
+		static int On( lua_State *L );
+		static int Send( lua_State *L );
 
 	public:
 		void Request(const char *url, const MPlatform::Directory baseDirectory);
 		void Request(const char *url, const char *baseUrl);
+		void InjectJSCode( const char *jsCode );
 		bool IsPopup() const { return fIsPopup; }
 		bool IsAutoCancelEnabled() const { return fAutoCancelEnabled; }
 		bool CanGoBack() const { return fCanGoBack; }

@@ -3108,6 +3108,31 @@ NativeToJavaBridge::WebViewRequestDeleteCookies( int id )
 }
 
 void
+NativeToJavaBridge::WebViewRequestInjectJS( int id, const char * jsCode )
+{
+	NativeTrace trace( "NativeToJavaBridge::WebViewRequestInjectJS" );
+
+	jclassInstance bridge( GetJNIEnv(), kNativeToJavaBridge );
+
+	if ( bridge.isValid() )
+	{
+		jmethodID mid = bridge.getEnv()->GetStaticMethodID( bridge.getClass(),
+			"callWebViewInjectJS", "(Lcom/ansca/corona/CoronaRuntime;ILjava/lang/String;)V" );
+
+		if ( mid != NULL )
+		{
+			jstringParam textJ( bridge.getEnv(), jsCode );
+			if ( textJ.isValid() )
+			{
+				bridge.getEnv()->CallStaticVoidMethod( bridge.getClass(), mid, fCoronaRuntime, id, textJ.getValue() );
+				HandleJavaException();
+			}
+		}
+	}
+}
+
+
+void
 NativeToJavaBridge::VideoViewCreate(
 	int id, int left, int top, int width, int height)
 {

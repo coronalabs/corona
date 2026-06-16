@@ -230,6 +230,7 @@ class NativeToJavaBridge
 		void WebViewRequestGoBack( int id );
 		void WebViewRequestGoForward( int id );
 		void WebViewRequestDeleteCookies( int id );
+		void WebViewRequestInjectJS( int id, const char * jsCode );
 		bool WebPopupShouldLoadUrl( int id, const char * url );
 		bool WebPopupDidFailLoadUrl( int id, const char * url, const char * msg, int code );
 

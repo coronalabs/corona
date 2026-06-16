@@ -1397,6 +1397,19 @@ public class ViewManager {
 		});
 	}
 
+	public void requestWebViewInjectJS(final int id,  final String jsCode) {
+		postOnUiThread(new Runnable() {
+			public void run() {
+				CoronaWebView view = getDisplayObjectById(CoronaWebView.class, id);
+				if (view != null) {
+					if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+						view.evaluateJavascript(jsCode, null);
+					}
+				}
+			}
+		});
+	}
+
 	public void addMapView(final int id, final int left, final int top, final int width, final int height) {
 		// Throw an exception if this application does not have the following permission.
 		android.content.Context context = CoronaEnvironment.getApplicationContext();

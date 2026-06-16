@@ -2624,6 +2624,10 @@ public class NativeToJavaBridge {
 		runtime.getViewManager().requestWebViewDeleteCookies(id);
 	}
 
+	protected static void callWebViewInjectJS( CoronaRuntime runtime, int id, String jsCode ) {
+		runtime.getViewManager().requestWebViewInjectJS(id, jsCode);
+	}
+
 	protected static void callVideoViewCreate(CoronaRuntime runtime, int id, int left, int top, int width, int height)
 	{
 		runtime.getViewManager().addVideoView(id, left, top, width, height);
