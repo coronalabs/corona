@@ -375,12 +375,21 @@ ProgramHeader::CopyHeaderSource( Program::Language language, char *dst, int dstS
 		{
 			Rtt_ASSERT( Program::kOpenGL_ES_2 == language );
 
+			// NOTE: previously emitted `#version 100\n` here to force GLSL ES 1.00
+			// for iOS 26's OpenGL ES 3 context.  That broke iPhone iOS 26 — the
+			// companion runtime-upgrade-to-#version-300 path in
+			// Rtt_ShaderFactory.cpp didn't fire on the real device, so shaders
+			// shipped #version 100 to an ES3 driver that rejected them (every
+			// program failed to link → black screen, console floods with
+			// "SHADER LINK ERROR:" lines).
+			//
+			// The iOS slice shipped pre-b272ed13 has been working in production
+			// with NO #version directive — the driver defaults to ES 1.00 and
+			// accepts the shaders as-is.  If a future iOS update genuinely
+			// requires #version 100, restore this line BEHIND a runtime check
+			// (mirror the ES3 detection in ShaderFactory.cpp) rather than
+			// unconditionally.
 			int dstLen = snprintf( dst, dstSize,
-				// Explicitly declare GLSL ES 1.00. Without this, iOS 26's OpenGL ES 3
-				// context (which Apple provides even when ES2 is requested) rejects
-				// the shaders because its stricter GLSL compiler doesn't default to ES 1.00.
-				// All ES3 implementations are required to support GLSL ES 1.00 shaders.
-				"#version 100\n"
 				"\n"
 				"#define P_DEFAULT	%s\n"
 				"#define P_RANDOM	%s\n"

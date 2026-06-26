@@ -330,37 +330,27 @@ ShaderFactory::NewProgram(
 		
 		std::string header = Program::HeaderForLanguage( language, * fProgramHeader );
 
-#if defined( Rtt_OPENGLES )
-		// iOS 26 gives an OpenGL ES 3 context even when ES2 is requested via the
-		// *native* Apple GLES driver.  GLSL ES 1.00 (#version 100) is rejected there.
-		// We detect at runtime whether the current context is genuinely ES3: if so,
-		// rewrite the header to GLSL ES 3.00 and inject backward-compat macros.
+		// NOTE: previously this block ran a runtime check for "OpenGL ES 3" in
+		// GL_VERSION and, if matched, prepended `#version 300 es\n` + GLSL ES
+		// 3.00 backward-compat macros (`#define attribute in`, `#define
+		// texture2D texture`, plus `Rtt_GLES3_COMPAT` to flip varying ↔ in/out
+		// and alias `gl_FragColor` in shell_default_gl.lua).
 		//
-		// MetalANGLE always creates a true ES 2.0 EGL context (GL_VERSION = "OpenGL
-		// ES 2.0 ...") and its own GLSL compiler correctly accepts #version 100.
-		// Passing #version 300 es to an ES2 context causes ANGLE to reject every
-		// shader, producing a black screen — so we must NOT upgrade there.
-		if ( language == Program::kOpenGL_ES_2 )
-		{
-			const char* glVersion = (const char*)glGetString( GL_VERSION );
-			if ( glVersion && strstr( glVersion, "OpenGL ES 3" ) )
-			{
-				const std::string kVersion100 = "#version 100\n";
-				std::string::size_type pos = header.find( kVersion100 );
-				if ( pos != std::string::npos )
-				{
-					header.replace( pos, kVersion100.length(), "#version 300 es\n" );
-				}
-				else
-				{
-					header = "#version 300 es\n" + header;
-				}
-				header += "#define Rtt_GLES3_COMPAT 1\n"
-				          "#define attribute in\n"
-				          "#define texture2D texture\n";
-			}
-		}
-#endif
+		// That was written to fix iPad Catalyst + iOS 26 once Apple started
+		// giving an ES3 context by default.  On a real iPhone iOS 26 it
+		// breaks every shader link with an empty info log (driver reports
+		// link failure but returns 0-length log text) — black screen on
+		// gameplay.  The pre-existing iOS slice that worked in production
+		// for weeks had NO version handling at all and shipped shaders
+		// unmodified; restoring that behaviour is the safe option.
+		//
+		// Catalyst is unaffected: MetalANGLE always returns "OpenGL ES 2.0"
+		// for GL_VERSION, so the strstr check never matched there anyway —
+		// removing the block changes nothing on Catalyst.
+		//
+		// If a future iOS update genuinely starts rejecting unversioned
+		// shaders, restore this block — but gate it on a fresh runtime check
+		// you've verified on a real device, not just on Catalyst-via-ANGLE.
 
 		if (ShaderResource::k25D == mod)
 		{

@@ -1738,8 +1738,6 @@ Display::WindowSizeChanged()
         RenderingStream *stream = fStream;
         if ( stream && stream->IsProperty( RenderingStream::kInitialized ) )
         {
-            stream->UpdateViewport( fTarget->Width(), fTarget->Height() );
-
             // When surface is sideways (simulator), then the surface w,h
             // need to be swapped to match the content w,h.
             S32 screenW = fTarget->DeviceWidth();
@@ -1779,7 +1777,17 @@ Display::WindowSizeChanged()
             }
 
             // Update the display's content scales using the new widths and heights up above.
+            // This must run BEFORE UpdateViewport, because UpdateViewport now
+            // uses fSx/fSy to recompute fRenderedContentWidth/Height.
             stream->UpdateContentScale( screenW, screenH );
+
+            // Recompute the rendered-content extent and oriented variants
+            // from the (now-current) surface size + sx/sy.  This was
+            // previously called first and did nothing — meaning
+            // ViewableContentWidth/Height stayed clamped at their
+            // init-time values forever after a window resize.  Moved
+            // here AND given a real implementation in GPUStream.
+            stream->UpdateViewport( fTarget->Width(), fTarget->Height() );
         }
     }
     runtime.End();

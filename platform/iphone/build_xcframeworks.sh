@@ -434,7 +434,21 @@ if [[ -n "$GAME_RESOURCES" ]]; then
     cp -R  "$LIBPLAYER_XCF"   "$GAME_RESOURCES/libplayer.xcframework"
     rm -rf "$GAME_RESOURCES/CoronaCards.xcframework"
     cp -R  "$CORONACARDS_XCF" "$GAME_RESOURCES/CoronaCards.xcframework"
-    ok "libplayer.xcframework installed"
+    # Patterned World Tour's App.xcodeproj links libplayer-angle.xcframework
+    # at App/Apple/libplayer-angle.xcframework — not the App/Resources path
+    # above.  Also stage a copy under the App.xcodeproj-linked name so a
+    # bare `xcodebuild` picks up the fresh engine without a manual rename
+    # step.  Both names point at the same binaries — pick whichever your
+    # project references.
+    rm -rf "$GAME_RESOURCES/libplayer-angle.xcframework"
+    cp -R  "$LIBPLAYER_XCF"   "$GAME_RESOURCES/libplayer-angle.xcframework"
+    APPLE_DIR="$(cd "$GAME_RESOURCES/../Apple" 2>/dev/null && pwd || true)"
+    if [[ -n "$APPLE_DIR" && -d "$APPLE_DIR" ]]; then
+        rm -rf "$APPLE_DIR/libplayer-angle.xcframework"
+        cp -R  "$LIBPLAYER_XCF" "$APPLE_DIR/libplayer-angle.xcframework"
+        ok "libplayer-angle.xcframework installed → $APPLE_DIR"
+    fi
+    ok "libplayer.xcframework + libplayer-angle.xcframework installed"
     ok "CoronaCards.xcframework installed"
 else
     warn "Game project not found — copy manually from $OUTPUT_DIR to App/Resources/"

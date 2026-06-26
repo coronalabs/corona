@@ -30,6 +30,7 @@
 #include "Corona/CoronaLog.h"
 #include "Corona/CoronaGraphics.h"
 
+#include <new>      // std::nothrow
 #include <string>
 #include <vector>
 #include "Rtt_Profiling.h"
@@ -47,34 +48,57 @@ namespace /*anonymous*/
     using namespace Rtt;
 
     // Check that the given shader compiled and log any errors
+    // GL drivers in a degraded state (observed on iOS after Game Center
+    // auth failures + repeated link failures during an offline cold-launch)
+    // can return garbage from glGetProgramiv / glGetShaderiv when asked for
+    // the info-log length — sometimes 0, sometimes negative, sometimes a
+    // multi-gigabyte value. The previous unbounded `new GLchar[length]`
+    // crashed the app with `std::bad_alloc` instead of just dropping the
+    // error log on the floor. Clamp aggressively and fall back to nothrow
+    // allocation so any future weirdness logs and recovers instead of
+    // taking the renderer down with it.
+    static const GLint kMaxShaderInfoLogLength = 64 * 1024;
+
     void CheckShaderCompilationStatus( GLuint name, bool isVerbose, const char *label, int startLine )
     {
         GLint result;
         glGetShaderiv( name, GL_COMPILE_STATUS, &result );
         if( result == GL_FALSE )
         {
-            GLint length;
+            GLint length = 0;
             glGetShaderiv( name, GL_INFO_LOG_LENGTH, &length );
 
-            GLchar* infoLog = new GLchar[length];
-            glGetShaderInfoLog( name, length, NULL, infoLog );
-
-            // Always log shader compile errors (isVerbose controls extra context lines
-            // but the raw error is always useful; shader failures silently produce a
-            // black screen which is very hard to diagnose otherwise).
-            if ( label )
+            if ( length <= 0 || length > kMaxShaderInfoLogLength )
             {
-                Rtt_LogException( "SHADER COMPILE ERROR (%s kernel): %s\n", label, infoLog );
+                Rtt_LogException( "SHADER COMPILE ERROR%s%s: (info log length=%d, skipping log)\n",
+                    label ? " (" : "", label ? label : "", length );
             }
             else
             {
-                Rtt_LogException( "SHADER COMPILE ERROR: %s\n", infoLog );
+                GLchar* infoLog = new (std::nothrow) GLchar[length];
+                if ( !infoLog )
+                {
+                    Rtt_LogException( "SHADER COMPILE ERROR%s%s: (allocation failed for %d-byte log)\n",
+                        label ? " (" : "", label ? label : "", length );
+                }
+                else
+                {
+                    glGetShaderInfoLog( name, length, NULL, infoLog );
+                    if ( label )
+                    {
+                        Rtt_LogException( "SHADER COMPILE ERROR (%s kernel): %s\n", label, infoLog );
+                    }
+                    else
+                    {
+                        Rtt_LogException( "SHADER COMPILE ERROR: %s\n", infoLog );
+                    }
+                    delete[] infoLog;
+                }
             }
             if ( isVerbose )
             {
                 Rtt_LogException( "\tNOTE: Kernel starts at line number (%d), so subtract that from the line numbers above.\n", startLine );
             }
-            delete[] infoLog;
         }
     }
 
@@ -85,17 +109,29 @@ namespace /*anonymous*/
         glGetProgramiv( name, GL_LINK_STATUS, &result );
         if( result == GL_FALSE )
         {
-            GLint length;
+            GLint length = 0;
             glGetProgramiv( name, GL_INFO_LOG_LENGTH, &length );
 
-            GLchar* infoLog = new GLchar[length];
-            glGetProgramInfoLog( name, length, NULL, infoLog );
-
-			// Always log the actual link error — bypass isVerbose gate
-			Rtt_LogException( "SHADER LINK ERROR: %s\n", infoLog );
-			delete[] infoLog;
-		}
-	}
+            if ( length <= 0 || length > kMaxShaderInfoLogLength )
+            {
+                Rtt_LogException( "SHADER LINK ERROR: (info log length=%d, skipping log)\n", length );
+            }
+            else
+            {
+                GLchar* infoLog = new (std::nothrow) GLchar[length];
+                if ( !infoLog )
+                {
+                    Rtt_LogException( "SHADER LINK ERROR: (allocation failed for %d-byte log)\n", length );
+                }
+                else
+                {
+                    glGetProgramInfoLog( name, length, NULL, infoLog );
+                    Rtt_LogException( "SHADER LINK ERROR: %s\n", infoLog );
+                    delete[] infoLog;
+                }
+            }
+        }
+    }
 	
     // Dump the full assembled GLSL source of a shader to the log.
     // Retrieves whatever glShaderSource() stored — the actual text the driver compiles.

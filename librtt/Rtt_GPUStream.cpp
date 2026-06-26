@@ -426,14 +426,70 @@ GPUStream::UpdateProjection( S32 renderedContentWidth, S32 renderedContentHeight
 #endif
 }
 
+// Recompute the rendered-content extent (and oriented variants) from the
+// current surface dimensions + content scale factors.  Mirrors the
+// fRenderedContentWidth/Height calculation in GPUStream::Initialize, but
+// usable post-init when the host window resizes.
+//
+// Why this exists: Display::Initialize wires fRenderedContentWidth from
+// surface.DeviceWidth() × sx ONCE.  Solar2D's only public resize hook —
+// Display::WindowSizeChanged — historically updated fContentWidth/Height
+// (via Preinitialize) and fSx/fSy (via UpdateContentScale) but never
+// touched fRenderedContentWidth/Height.  ViewableContentWidth() then
+// returned Min(content, rendered) — clamped at the stale rendered value.
+// On platforms where the window CAN change size post-launch (Mac Catalyst
+// windowed → fullscreen, multi-window iPad, Windows desktop), the engine
+// reported the new content width but kept rendering through the old
+// viewport.  Lua content drawn at the new content extent got squeezed
+// into the old viewport box, visibly offset and clipped.
+//
+// windowWidth/Height are PIXELS — exactly what Display::WindowSizeChanged
+// reads from fTarget->Width()/Height() (PlatformSurface::Width returns
+// scale * view.bounds.width, NOT orientation-swapped — that's what we
+// want here; we apply the content-orientation swap below to match
+// Initialize's contract).
 void
 GPUStream::UpdateViewport( S32 windowWidth, S32 windowHeight )
 {
-#if 0
+	if ( ! IsProperty( kInitialized ) ) { return; }
+	if ( windowWidth <= 0 || windowHeight <= 0 ) { return; }
+
 	fWindowWidth = windowWidth;
 	fWindowHeight = windowHeight;
-	glViewport( 0, 0, windowWidth, windowHeight );
-#endif
+
+	// Mirror GPUStream::Initialize's calculation, but starting from the
+	// current (post-resize) surface dimensions instead of init-time ones.
+	S32 w = windowWidth;
+	S32 h = windowHeight;
+
+	// Initialize used surface.DeviceWidth() which is already orientation-
+	// corrected, then conditionally swapped if content is sideways.
+	// Display::WindowSizeChanged passes surface.Width()/Height() — NOT
+	// orientation-corrected.  Apply the same sideways swap here so
+	// landscape content renders into a landscape viewport.
+	if ( DeviceOrientation::IsSideways( GetContentOrientation() ) )
+	{
+		Swap( w, h );
+	}
+
+	Real sx = GetSx();
+	if ( ! Rtt_RealIsOne( sx ) )
+	{
+		w = Rtt_RealToInt( Rtt_RealMul( sx, Rtt_IntToReal( w ) ) );
+	}
+
+	Real sy = GetSy();
+	if ( ! Rtt_RealIsOne( sy ) )
+	{
+		h = Rtt_RealToInt( Rtt_RealMul( sy, Rtt_IntToReal( h ) ) );
+	}
+
+	fRenderedContentWidth = w;
+	fRenderedContentHeight = h;
+	fOrientedContentWidth = w;
+	fOrientedContentHeight = h;
+
+	UpdateOffsets( w, h );
 }
 
 S32

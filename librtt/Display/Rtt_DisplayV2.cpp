@@ -1088,10 +1088,8 @@ DisplayV2::WindowSizeChanged()
 		RenderingStream *stream = fStream;
 		if ( stream && stream->IsProperty( RenderingStream::kInitialized ) )
 		{
-			stream->UpdateViewport( fTarget->Width(), fTarget->Height() );
-
 			// When surface is sideways (simulator), then the surface w,h
-			// need to be swapped to match the content w,h. 
+			// need to be swapped to match the content w,h.
 			S32 screenW = fTarget->DeviceWidth();
 			S32 screenH = fTarget->DeviceHeight();
 			if ( DeviceOrientation::IsSideways( fTarget->GetOrientation() ) )
@@ -1099,7 +1097,16 @@ DisplayV2::WindowSizeChanged()
 				Swap( screenW, screenH );
 			}
 
+			// Update sx/sy first so UpdateViewport (below) sees current
+			// content scale when recomputing fRenderedContentWidth/Height.
 			stream->UpdateContentScale( screenW, screenH );
+
+			// Now recompute the rendered-content extent.  Prior to the
+			// matching GPUStream::UpdateViewport rewrite, this call was a
+			// no-op and ViewableContentWidth/Height stayed clamped at
+			// the init-time rendered values — leaving Lua content
+			// squeezed through a stale viewport after any window resize.
+			stream->UpdateViewport( fTarget->Width(), fTarget->Height() );
 		}
 	}
 	runtime.End();
