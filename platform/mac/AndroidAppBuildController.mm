@@ -895,54 +895,6 @@ static NSString *kChooseFromFollowing = @"Choose from the following…";
 	platformServices->Platform().PathForFile( NULL, Rtt::MPlatform::kResourceDir, Rtt::MPlatform::kDefaultPathFlags, resourcesDir );
 
 	return listKeyStore.AreKeyStoreAndAliasPasswordsValid(keyStore, keyPW, alias, aliasPW, resourcesDir.GetString());
-
-#if 0
-	Rtt::String resourcesDir;
-
-	self.authorizer->GetServices().Platform().PathForFile( NULL, Rtt::MPlatform::kResourceDir, Rtt::MPlatform::kDefaultPathFlags, resourcesDir );
-
-	NSString *resourceDir = [NSString stringWithExternalString:resourcesDir.GetString()];
-//	NSString *buildFilePath = [resourceDir stringByAppendingPathComponent:@"build.xml"];
-	NSString *tmpDir = NSTemporaryDirectory();
-	NSString *srcTestJar = [resourceDir stringByAppendingPathComponent:@"_coronatest.jar"];
-	NSString *dstTestJar = [tmpDir stringByAppendingPathComponent:@"_coronatest.jar"];
-
-// Escape quotes in the strings by replacing single quotes with "'\''" and then enclosing in single quotes when we build the command
-    NSString *keyStoreStr = [[NSString stringWithExternalString:keyStore] stringByReplacingOccurrencesOfString:@"'" withString:@"'\''"];
-    NSString *keyPWStr = [[NSString stringWithExternalString:keyPW] stringByReplacingOccurrencesOfString:@"'" withString:@"'\''"];
-    NSString *aliasStr = [[NSString stringWithExternalString:alias] stringByReplacingOccurrencesOfString:@"'" withString:@"'\''"];
-    NSString *aliasPWStr = [[NSString stringWithExternalString:aliasPW] stringByReplacingOccurrencesOfString:@"'" withString:@"'\''"];
-    
-	NSString *script = [[NSString alloc] initWithFormat:
-		@"cp -f '%@' '%@'; JAVA_TOOL_OPTIONS='-Duser.language=en' jarsigner -tsa http://timestamp.digicert.com -keystore '%@' -storepass '%@' -keypass '%@' '%@' '%@'; exit $?",
-		srcTestJar, tmpDir, keyStoreStr, keyPWStr, aliasPWStr, dstTestJar, aliasStr];
-
-//	NSLog( @"tmp dir(%@)", tmpDir );
-//	NSLog( @"<script>\n%@\n</script>", script ); 
-
-    // The command we run to test the password emits the string "jar signed", this makes that look sensible
-    printf("Testing credentials for '%s': ", keyStore);
-
-	NSArray *arguments = [[NSArray alloc] initWithObjects:@"-c", script, nil];
-	[script release];
-
-	NSTask* task = [[NSTask alloc] init];
-	[task setLaunchPath:@"/bin/sh"];
-	[task setArguments:arguments];
-	[arguments release];
-//	NSFileHandle* devNull = [NSFileHandle fileHandleWithNullDevice];
-//	[task setStandardOutput:devNull];
-//	[task setStandardError:devNull];
-	[task launch];
-	[task waitUntilExit];
-	int exitCode = [task terminationStatus];
-//	[task setStandardOutput:[NSFileHandle fileHandleWithStandardOutput]];
-//	[task setStandardError:[NSFileHandle fileHandleWithStandardOutput]];
-	[task release];
-//	Rtt_TRACE_SIM( ( "ERROR: Failed to verify alias password.  Error code(%d)\n", exitCode ) );
-//	NSLog( @"alias password.  exit code(%d)\n", exitCode );
-	return ( 0 == exitCode );
-#endif
 }
 
 - (NSString*)appExtension

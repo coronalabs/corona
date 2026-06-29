@@ -353,7 +353,7 @@ ListKeyStore::AreKeyStoreAndAliasPasswordsValid( const char *keyStore, const cha
 
 #if defined(Rtt_MAC_ENV) || defined(Rtt_LINUX_ENV)
 
-	const char kCmdFormat[] = "JAVA_TOOL_OPTIONS='-Duser.language=en' /usr/bin/jarsigner -tsa http://timestamp.digicert.com -keystore %s -storepass %s -keypass %s %s %s; exit $?";
+	const char kCmdFormat[] = "JAVA_TOOL_OPTIONS='-Duser.language=en' /usr/bin/jarsigner -keystore %s -storepass %s -keypass %s %s %s; exit $?";
 
 	snprintf(cmdBuf, sizeof(cmdBuf), kCmdFormat, keyStoreStr.c_str(), keyPWStr.c_str(), aliasPWStr.c_str(), dstTestJarStr.c_str(), aliasStr.c_str() );
 
@@ -367,7 +367,7 @@ ListKeyStore::AreKeyStoreAndAliasPasswordsValid( const char *keyStore, const cha
 	keytoolPath = jdkPath + "\\bin\\jarsigner.exe";
 	_putenv_s("JAVA_TOOL_OPTIONS", "-Duser.language=en");
 
-	const char kCmdFormat[] = "\"%s\" -tsa http://timestamp.digicert.com -keystore %s -storepass %s -keypass %s %s %s";
+	const char kCmdFormat[] = "\"%s\" -keystore %s -storepass %s -keypass %s %s %s";
 
 	snprintf(cmdBuf, sizeof(cmdBuf), kCmdFormat, keytoolPath.c_str(), keyStoreStr.c_str(), keyPWStr.c_str(), aliasPWStr.c_str(), dstTestJarStr.c_str(), aliasStr.c_str() );
 
