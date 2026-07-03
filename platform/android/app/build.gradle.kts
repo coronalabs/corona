@@ -131,7 +131,7 @@ val parsedBuildProperties: JsonObject = run {
 }
 
 extra["minSdkVersion"] = parsedBuildProperties.lookup<Any?>("buildSettings.android.minSdkVersion").firstOrNull()?.toString()?.toIntOrNull()
-        ?: 15
+        ?: 21
 
 val coronaBuilder = if (windows) {
     "$nativeDir/Corona/win/bin/CoronaBuilder.exe"
@@ -1150,4 +1150,5 @@ dependencies {
         implementation(project(":plugin"))
     }
     implementation("androidx.multidex:multidex:2.0.1")
+    implementation("androidx.core:core:1.17.0")
 }

@@ -41,6 +41,7 @@
             @USER_CORONA_WINDOW_MOVES_WHEN_KEYBOARD_APPEARS@
             @USER_INITIAL_SYSTEM_UI_VISIBILITY@
             @USER_REQUESTED_DEFAULT_ORIENTATION@
+            @USER_EDGE_TO_EDGE@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 @USER_MAIN_INTENT_FILTER_CATEGORIES@
