@@ -300,11 +300,14 @@ Renderer::BeginDrawing()
 void
 Renderer::CaptureFrameBuffer( RenderingStream & stream, BufferBitmap & bitmap, S32 x_in_pixels, S32 y_in_pixels, S32 w_in_pixels, S32 h_in_pixels )
 {
+/*
 	stream.CaptureFrameBuffer( bitmap,
 		x_in_pixels,
 		y_in_pixels,
 		w_in_pixels,
 		h_in_pixels );
+*/
+	FrameBufferObject::Capture(bitmap, x_in_pixels, y_in_pixels, w_in_pixels, h_in_pixels);
 }
 
 void 
