@@ -344,17 +344,17 @@ Runtime._proxy =
 
 local needsHardwareSupport = { orientation=true, accelerometer=true, gyroscope=true, location=true, heading=true }
 
-function Runtime:addEventListener( eventName, listener )
+function Runtime:addEventListener( eventName, listener, suppressSimulatorWarning )
 	local super = self._super
 	local noListeners = not self:respondsToEvent( eventName )
 	local wasAdded = super.addEventListener( self, eventName, listener )
 
-	-- If a "key" event listener is installed on a simulated iOS/tvOS/WinPhone device,
-	-- warn it wont be effective on a real device
-	if eventName and eventName == "key" and system.getInfo("environment") == "simulator" then
+	-- If a "key" or "mouse" listener is added on a simulated iOS/tvOS/WinPhone device, warn it won't
+	-- fire on a real device. The Simulator's own internal mouse listener passes suppressSimulatorWarning.
+	if not suppressSimulatorWarning and eventName and (eventName == "key" or eventName == "mouse") and system.getInfo("environment") == "simulator" then
 		local osName = system.getInfo("platform")
 		if osName == "ios" or osName == "tvos" or osName == "winphone" then
-			print("WARNING: Runtime:addEventListener: real "..osName.." devices don't generate 'key' events")
+			print("WARNING: Runtime:addEventListener: real "..osName.." devices don't generate '"..eventName.."' events")
 		end
 	end
 
