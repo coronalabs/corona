@@ -3846,6 +3846,83 @@ LuaGroupObjectProxyVTable::Constant()
     return kVTable;
 }
 
+// Marks a single object as removed via its Lua proxy table
+static void
+MarkObjectAsRemoved( lua_State *L, DisplayObject* object )
+{
+    LuaProxy* proxy = object->GetProxy();
+    if ( proxy )
+    {
+        proxy->PushTable( L );
+        lua_pushstring( L, "_isRemoved" );
+        lua_pushboolean( L, 1 );
+        lua_rawset( L, -3 );
+        lua_pop( L, 1 );
+    }
+}
+
+// Forward declaration for MarkSnapshotInternalsAsRemoved <-> MarkDescendantsAsRemoved recursion.
+static void MarkDescendantsAsRemoved( lua_State *L, GroupObject* group );
+
+// SnapshotObject extends RectObject, not GroupObject, so snapshot.group and
+// snapshot.canvas are not walked by the normal child cascade. Mark them and their
+// contents explicitly.
+static void
+MarkSnapshotInternalsAsRemoved( lua_State *L, SnapshotObject* snap )
+{
+    GroupObject& snapshotGroup = snap->GetGroup();
+    MarkObjectAsRemoved( L, &snapshotGroup );
+    MarkDescendantsAsRemoved( L, &snapshotGroup );
+
+    GroupObject& snapshotCanvas = snap->GetCanvas();
+    MarkObjectAsRemoved( L, &snapshotCanvas );
+    MarkDescendantsAsRemoved( L, &snapshotCanvas );
+}
+
+// Recursively marks all descendants of a group as removed
+static void
+MarkDescendantsAsRemoved( lua_State *L, GroupObject* group )
+{
+    for ( S32 i = group->NumChildren(); --i >= 0; )
+    {
+        DisplayObject& child = group->ChildAt( i );
+        MarkObjectAsRemoved( L, &child );
+
+        GroupObject* subGroup = child.AsGroupObject();
+        if ( subGroup )
+        {
+            MarkDescendantsAsRemoved( L, subGroup );
+        }
+        else if ( &child.ProxyVTable() == &LuaSnapshotObjectProxyVTable::Constant() )
+        {
+            MarkSnapshotInternalsAsRemoved( L, static_cast< SnapshotObject* >( &child ) );
+        }
+    }
+}
+
+// Recursively clears _isRemoved flag on an object and all descendants
+static void
+ClearRemovedFlag( lua_State *L, DisplayObject* object )
+{
+    LuaProxy* proxy = object->GetProxy();
+    if ( proxy )
+    {
+        proxy->PushTable( L );
+        lua_pushstring( L, "_isRemoved" );
+        lua_pushnil( L );
+        lua_rawset( L, -3 );
+        lua_pop( L, 1 );
+    }
+    GroupObject* group = object->AsGroupObject();
+    if ( group )
+    {
+        for ( S32 i = group->NumChildren(); --i >= 0; )
+        {
+            ClearRemovedFlag( L, &group->ChildAt( i ) );
+        }
+    }
+}
+
 int
 LuaGroupObjectProxyVTable::Insert( lua_State *L, GroupObject *parent )
 {
@@ -3897,13 +3974,31 @@ LuaGroupObjectProxyVTable::Insert( lua_State *L, GroupObject *parent )
             if ( oldParent != parent )
             {
                 StageObject* canvas = parent->GetStage();
-                if ( canvas && oldParent == canvas->GetDisplay().Orphanage() )
+                if ( canvas )
                 {
-                    lua_pushvalue( L, childIndex ); // push table representing child
-                    child->GetProxy()->AcquireTableRef( L ); // reacquire a ref for table
-                    lua_pop( L, 1 );
+                    if ( oldParent == canvas->GetDisplay().Orphanage() )
+                    {
+                        lua_pushvalue( L, childIndex ); // push table representing child
+                        child->GetProxy()->AcquireTableRef( L ); // reacquire a ref for table
+                        lua_pop( L, 1 );
 
-                    child->WillMoveOnscreen();
+                        child->WillMoveOnscreen();
+                    }
+
+                    // Clear _isRemoved on re-insertion; flag may be set directly or via
+                    // MarkDescendantsAsRemoved on an ancestor.
+                    LuaProxy* proxy = child->GetProxy();
+                    if ( proxy )
+                    {
+                        proxy->PushTable( L );
+                        lua_getfield( L, -1, "_isRemoved" );
+                        bool wasMarkedRemoved = lua_toboolean( L, -1 );
+                        lua_pop( L, 2 );
+                        if ( wasMarkedRemoved )
+                        {
+                            ClearRemovedFlag( L, child );
+                        }
+                    }
                 }
             }
         }
@@ -3943,8 +4038,15 @@ LuaDisplayObjectProxyVTable::PushAndRemove( lua_State *L, GroupObject* parent, S
 		StageObject *stage = parent->GetStage();
 		if ( stage )
 		{
-			Rtt_ASSERT( LuaContext::GetRuntime( L )->GetDisplay().HitTestOrphanage() != parent
-						&& LuaContext::GetRuntime( L )->GetDisplay().Orphanage() != parent );
+			Display& display = LuaContext::GetRuntime( L )->GetDisplay();
+			if ( display.HitTestOrphanage() == parent || display.Orphanage() == parent )
+			{
+				// Parent is already the orphanage: the object is mid-removal.
+				// Treat as a no-op so double-remove (direct, or via stale
+				// reference after a parent group was removed) stays safe.
+				lua_pushnil( L );
+				return;
+			}
 
 			SUMMED_TIMING( par1, "Object: PushAndRemove (release)" );
 
@@ -3972,14 +4074,30 @@ LuaDisplayObjectProxyVTable::PushAndRemove( lua_State *L, GroupObject* parent, S
                 LuaProxy* proxy = child->GetProxy();
                 proxy->PushTable( L );
 
+                // Mark the object as removed for immediate Lua-side detection
+                lua_pushstring( L, "_isRemoved" );
+                lua_pushboolean( L, 1 );
+                lua_rawset( L, -3 );
+
+                // If the object is a group, recursively mark all descendants.
+                // Snapshots are not GroupObjects but expose internal snapshot.group /
+                // snapshot.canvas via their proxy, so cascade those separately.
+                GroupObject* childGroup = child->AsGroupObject();
+                if ( childGroup )
+                {
+                    MarkDescendantsAsRemoved( L, childGroup );
+                }
+                else if ( &child->ProxyVTable() == &LuaSnapshotObjectProxyVTable::Constant() )
+                {
+                    MarkSnapshotInternalsAsRemoved( L, static_cast< SnapshotObject* >( child ) );
+                }
+
                 // Rtt_TRACE( ( "release table ref(%x)\n", lua_topointer( L, -1 ) ) );
 
                 // Anytime we add to the Orphanage, it means the DisplayObject is no
                 // longer on the display. Therefore, we should luaL_unref the
                 // DisplayObject's table. If it's later re-inserted, then we simply
                 // luaL_ref the incoming table.
-                Display& display = LuaContext::GetRuntime( L )->GetDisplay();
-
 
                 // NOTE: Snapshot renamed to HitTest orphanage to clarify usage
                 // TODO: Remove snapshot orphanage --- or verify that we still need it?

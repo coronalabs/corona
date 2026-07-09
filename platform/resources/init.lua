@@ -575,6 +575,13 @@ display.remove = function( object )
 	end
 end
 
+-- check if object is a valid, usable display object.
+-- removeSelf confirms it's a display object. _isRemoved is set by the engine at the moment of removal, bypassing the one-frame delay where
+-- an object's properties are still valid. _isInvalid is set by display.newImage / newImageRect when the file is not an image or is corrupted.
+display.isValidObject = function( object )
+	return "table" == type( object ) and "function" == type( object.removeSelf ) and not (object._isRemoved or object._isInvalid)
+end
+
 -- display function to create retina-compatible text for double-pixel devices
 function display.newRetinaText( ... )
 	print( "WARNING: display.newRetinaText() has been deprecated. display.newText() is now retina-aware." )
