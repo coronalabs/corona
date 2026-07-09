@@ -28,10 +28,12 @@ int main(int argc, const char *argv[])
 	string skinDir;
 
 	// setup directory paths
-	documentsDir.append("/Documents");
-	temporaryDir.append("/TemporaryFiles");
-	cachesDir.append("/CachedFiles");
-	systemCachesDir.append("/.system");
+	const char *tmpBase = getenv("TMPDIR");
+	if (!tmpBase || tmpBase[0] == '\0') tmpBase = "/tmp";
+	documentsDir = std::string(tmpBase) + "/Documents";
+	temporaryDir = std::string(tmpBase) + "/TemporaryFiles";
+	cachesDir = std::string(tmpBase) + "/CachedFiles";
+	systemCachesDir = std::string(tmpBase) + "/.system";
 
 	Rtt::LinuxConsolePlatform *platform = new Rtt::LinuxConsolePlatform(pathToApp.c_str(), documentsDir.c_str(), temporaryDir.c_str(), cachesDir.c_str(), systemCachesDir.c_str(), skinDir.c_str(), GetStartupPath(NULL));
 	Rtt::LinuxPlatformServices services(platform);
