@@ -136,7 +136,7 @@ CoronaTaskDialogHandler::ShowResult CoronaTaskDialogHandler::ShowUsing(
 	// Create a new task dialog and copy the given settings to it.
 	handlerPointer->fTaskDialogPointer = new TaskDialog();
 	TaskDialogSettings& dialogSettings = handlerPointer->fTaskDialogPointer->GetSettings();
-	WinString stringTranscoder;
+	RttString stringTranscoder;
 	stringTranscoder.SetUTF8(settings.Title);
 	dialogSettings.SetTitleText(stringTranscoder.GetUTF16());
 	stringTranscoder.SetUTF8(settings.Message);

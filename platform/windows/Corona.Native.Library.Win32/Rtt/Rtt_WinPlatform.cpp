@@ -48,7 +48,7 @@
 #include "Rtt_WinVideoProvider.h"
 #include "Rtt_WinWebPopup.h"
 #include "Rtt_WinWebViewObject.h"
-#include "WinString.h"
+#include "RttString.h"
 #include <algorithm>
 #include <Gdiplus.h>
 #include <Gdipluscolor.h>
@@ -169,7 +169,7 @@ namespace Rtt
 	///         Returns FALSE if unable to save or was given an invalid bitmap object.
 	bool WinPlatform::AddBitmapToPhotoLibrary(PlatformBitmap* bitmap) const
 	{
-		WinString appName;
+		RttString appName;
 		wchar_t utf16FileName[MAX_PATH];
 		wchar_t utf16PathName[MAX_PATH];
 		HRESULT hr;
@@ -224,7 +224,7 @@ namespace Rtt
 		}
 
 		// Save the bitmap to file.
-		WinString finalFilePath(utf16FileName);
+		RttString finalFilePath(utf16FileName);
 		return SaveBitmap(bitmap, finalFilePath.GetUTF8(), 1.0f);
 	}
 
@@ -243,7 +243,7 @@ namespace Rtt
 		}
 
 		// Copy the given URL.
-		WinString updatedUrl(url);
+		RttString updatedUrl(url);
 
 		// Check if the given string is actually a URL and validate its URL scheme.
 		DWORD urlSchemeLength = INTERNET_MAX_SCHEME_LENGTH;
@@ -354,7 +354,7 @@ namespace Rtt
 		}
 
 		// Don't allow executables or batch files to be opened.
-		WinString stringBuffer;
+		RttString stringBuffer;
 		stringBuffer.SetUTF8(url);
 		stringBuffer.MakeLowerCase();
 		if (stringBuffer.EndsWith(".exe") || stringBuffer.EndsWith(".bat"))
@@ -499,7 +499,7 @@ namespace Rtt
 		// Do not continue if failed to display the dialog.
 		if (showResult.HasFailed() || !showResult.GetValue())
 		{
-			WinString stringTranscoder(showResult.GetMessage());
+			RttString stringTranscoder(showResult.GetMessage());
 			if (stringTranscoder.IsEmpty())
 			{
 				stringTranscoder.SetUTF8("Failed to display native alert. Reason: Unknown");
@@ -701,7 +701,7 @@ namespace Rtt
 
 		// Check if the file exists, if enabled.
 		// Result will be set to an empty string if the file could not be found.
-		WinString coronaResourceDirectoryPath;
+		RttString coronaResourceDirectoryPath;
 		if (flags & MPlatform::kTestFileExists)
 		{
 			// Check if the given file name exists.
@@ -713,7 +713,7 @@ namespace Rtt
 				// File not found. Since it is a resource file, check if it is installed under the Corona Simulator directory.
 				coronaResourceDirectoryPath.SetUTF16(Interop::ApplicationServices::GetDirectoryPath());
 				coronaResourceDirectoryPath.Append(L"\\Resources\\Corona");
-				WinString coronaResourceFilePath(coronaResourceDirectoryPath.GetUTF16());
+				RttString coronaResourceFilePath(coronaResourceDirectoryPath.GetUTF16());
 				coronaResourceFilePath.Append(L'\\');
 				coronaResourceFilePath.Append(filename);
 				doesFileExist = FileExists(coronaResourceFilePath.GetUTF8());
@@ -725,7 +725,7 @@ namespace Rtt
 				else
 				{
 					// Not found in the Resource directory, try the plugins directory
-					WinString pluginDirectoryPath;
+					RttString pluginDirectoryPath;
 
 					#if defined(Rtt_AUTHORING_SIMULATOR)
 					pluginDirectoryPath.SetUTF16(fEnvironment.GetUtf16PathFor(MPlatform::kPluginsDir));
@@ -734,7 +734,7 @@ namespace Rtt
 					pluginDirectoryPath.Append(L"\\corona-plugins");
 					#endif
 
-					WinString pluginFilePath;
+					RttString pluginFilePath;
 
 					pluginFilePath.SetUTF16(pluginDirectoryPath.GetUTF16());
 					pluginFilePath.Append(L'\\');
@@ -770,7 +770,7 @@ namespace Rtt
 		}
 	}
 
-	void WinPlatform::CopyAppNameTo(WinString& destinationString) const
+	void WinPlatform::CopyAppNameTo(RttString& destinationString) const
 	{
 		destinationString.Clear();
 		if (Interop::ApplicationServices::IsCoronaSdkApp())
@@ -848,7 +848,7 @@ namespace Rtt
 	// Returns true if bitmap was saved successfully. Returns false if not.
 	bool WinPlatform::SaveBitmap(PlatformBitmap* bitmap, const char* filePath, float jpegQuality) const
 	{
-		WinString stringBuffer;
+		RttString stringBuffer;
 		CLSID encoderId;
 		Gdiplus::Color color;
 		WCHAR* encoderName;
@@ -1563,7 +1563,7 @@ namespace Rtt
 	{
 		fontInfo* f = (fontInfo*)lParam;
 		lua_State* L = f->L;
-		WinString stringConverter;
+		RttString stringConverter;
 		stringConverter.SetUTF16(lpelfe->lfFaceName);
 		lua_pushstring(L, stringConverter.GetUTF8());
 		lua_rawseti(L, f->index, ++f->fontCount);
@@ -1694,7 +1694,7 @@ namespace Rtt
 			HWND windowHandle = windowPointer ? windowPointer->GetWindowHandle() : nullptr;
 			if (windowHandle && (lua_type(L, valueIndex) == LUA_TSTRING))
 			{
-				WinString stringConverter;
+				RttString stringConverter;
 				stringConverter.SetUTF8(lua_tostring(L, valueIndex));
 				::SetWindowTextW(windowHandle, stringConverter.GetUTF16());
 			}
@@ -1774,7 +1774,7 @@ namespace Rtt
 			{
 				WinInputDeviceManager& inputDeviceManager =
 					(WinInputDeviceManager&)const_cast<Rtt::WinDevice&>(fDevice).GetInputDeviceManager();
-				WinString requestedStyle = lua_tostring(L, valueIndex);
+				RttString requestedStyle = lua_tostring(L, valueIndex);
 				WinInputDeviceManager::CursorStyle style = WinInputDeviceManager::CursorStyle::kDefaultArrow;
 
 				if (Rtt_StringCompare(requestedStyle, "appStarting") == 0)
@@ -1960,7 +1960,7 @@ namespace Rtt
 		if (Rtt_StringCompare(key, "appName") == 0)
 		{
 			// Fetch the application's name.
-			WinString appName;
+			RttString appName;
 			CopyAppNameTo(appName);
 			lua_pushstring(L, appName.GetUTF8());
 			pushedValues = 1;
@@ -1974,7 +1974,7 @@ namespace Rtt
 			}
 			else
 			{
-				WinString stringConverter(Interop::ApplicationServices::GetFileVersionString());
+				RttString stringConverter(Interop::ApplicationServices::GetFileVersionString());
 				lua_pushstring(L, stringConverter.GetUTF8());
 			}
 			pushedValues = 1;
@@ -1998,7 +1998,7 @@ namespace Rtt
 			// Fetch the ISO 639 language code with an ISO 15924 script code appended to it if available.
 			// Note: This will return a 3 letter ISO 639-2 code if current language is not in the 2 letter ISO 639-1 standard.
 			//       For example, this can happen with the Hawaiian language, which will return "haw".
-			WinString languageCode;
+			RttString languageCode;
 			const size_t kUtf16StringBufferMaxLength = 128;
 			wchar_t utf16StringBuffer[kUtf16StringBufferMaxLength];
 			utf16StringBuffer[0] = L'\0';
@@ -2045,8 +2045,8 @@ namespace Rtt
 		bool isSimulatingDevice = (fEnvironment.GetDeviceSimulatorServices() != nullptr);
 
 		// Set up the error message to be displayed to the user.
-		WinString strMessage;
-		WinString strResourcePath;
+		RttString strMessage;
+		RttString strResourcePath;
 		strMessage.SetUTF8(message);
 		if (stacktrace && (strlen(stacktrace) > 0))
 		{
@@ -2102,7 +2102,7 @@ namespace Rtt
 
 	void WinPlatform::SetProjectResourceDirectory(const char* path)
 	{
-		WinString stringTranscoder(path);
+		RttString stringTranscoder(path);
 		fEnvironment.SetPathForProjectResourceDirectory(stringTranscoder.GetUTF16());
 	}
 

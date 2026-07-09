@@ -59,4 +59,7 @@
     <ClInclude Include="..\..\..\external\lua-5.1.3\src\lvm.h" />
     <ClInclude Include="..\..\..\external\lua-5.1.3\src\lzio.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
 </Project>

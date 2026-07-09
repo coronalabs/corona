@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "TextBox.h"
 #include "Interop\Graphics\HorizontalAlignment.h"
-#include "WinString.h"
+#include "RttString.h"
 #include <CommCtrl.h>
 
 #include <regex>
@@ -250,7 +250,7 @@ void TextBox::SetText(const wchar_t* text)
 
 	// If this is a multiline text box, then ensure that all newlines are preceded by a carriage return.
 	// Note: Text boxes will not show a line break with just a "\n". It must be formatted as "\r\n".
-	WinString normalizedText;
+	RttString normalizedText;
 	if (IsMultiline() && wcschr(text, L'\n'))
 	{
 		normalizedText.SetUTF16(text);

@@ -9,7 +9,7 @@
 
 #include "stdafx.h"
 #include "AboutDlg.h"
-#include "WinString.h"
+#include "RttString.h"
 #include "Core/Rtt_Build.h"
 
 
@@ -50,8 +50,8 @@ BOOL CAboutDlg::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	// Set up SDK version label.
-	WinString buildVersion;
-	WinString buildDate;
+	RttString buildVersion;
+	RttString buildDate;
 	CString fullVersionString;
 	buildVersion.SetUTF8( Rtt_STRING_BUILD );
 	buildDate.SetUTF8( Rtt_STRING_BUILD_DATE );

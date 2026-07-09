@@ -12,7 +12,7 @@
 #include "Core\Rtt_Assert.h"
 #include "Rtt_KeyName.h"
 #include <unordered_map>
-#include "WinString.h"
+#include "RttString.h"
 
 namespace Interop { namespace Input {
 
@@ -369,7 +369,7 @@ std::string Key::GetCharacter()
 		case 0:
 			return std::string();
 		default:
-			WinString stringConverter;
+			RttString stringConverter;
 			stringConverter.SetUTF16(chars);
 			return std::string(stringConverter.GetUTF8());
 		}

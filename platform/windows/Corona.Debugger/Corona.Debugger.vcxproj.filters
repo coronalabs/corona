@@ -34,4 +34,7 @@
       <Filter>external\remdebug-1.0\src</Filter>
     </LuaToCpp>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
 </Project>

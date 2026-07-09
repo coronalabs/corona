@@ -137,7 +137,7 @@ InitJavaPaths(CString resourceDir)
 	}
 
 	// Look for jarsigner.exe in PATH
-	WinString jarSignerFilePath;
+	RttString jarSignerFilePath;
 	jarSignerFilePath.SetUTF8(utf8JdkPath);
 	if ((jarSignerFilePath.GetLength() > 0) && !jarSignerFilePath.EndsWith("\\"))
 	{
@@ -159,7 +159,7 @@ InitJavaPaths(CString resourceDir)
 	if (bInitialized)
 	{
 		// Set the JAVA_HOME environment variable.
-		WinString stringConverter;
+		RttString stringConverter;
 		stringConverter.SetUTF8(utf8JdkPath);
 		::SetEnvironmentVariableW(L"JAVA_HOME", stringConverter.GetUTF16());
 
@@ -217,7 +217,7 @@ InitJavaPaths(CString resourceDir)
 	if (bInitialized)
 	{
 		CString jarPath;
-		WinString strJarPath;
+		RttString strJarPath;
 
 		jarPath = resourceDir + _T("\\ListKeyStore.jar");
 		if (!CheckJarPath(jarPath))

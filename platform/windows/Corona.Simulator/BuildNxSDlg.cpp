@@ -16,7 +16,7 @@
 #include "BuildProgressDlg.h"
 #include "BuildResult.h"
 #include "WinGlobalProperties.h"
-#include "WinString.h"
+#include "RttString.h"
 #include "BrowseDirDialog.h"
 #include "HtmlMessageDlg.h"
 #include "MessageDlg.h"
@@ -55,7 +55,7 @@ END_MESSAGE_MAP()
 // Choose likely defaults for non-saved settings.
 BOOL CBuildNxSDlg::OnInitDialog()
 {
-	WinString stringConverter;
+	RttString stringConverter;
 
 	// Initialize base class first.
 	CDialog::OnInitDialog();
@@ -152,7 +152,7 @@ void CBuildNxSDlg::OnClickedIncludeStandartResources()
 // call core code to package project and send to server for building
 void CBuildNxSDlg::OnOK()  // OnBuild()
 {
-	WinString stringBuffer;
+	RttString stringBuffer;
 	CString sValue;
 	CString sBuildDir;
 	CString sNmetaPath;

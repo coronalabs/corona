@@ -139,7 +139,7 @@ SimulatorRuntimeEnvironment::CreationResult SimulatorRuntimeEnvironment::CreateU
 		auto appProperties = GetWinProperties();
 		if (appProperties && appProperties->GetResourcesDir())
 		{
-			WinString stringConverter;
+			RttString stringConverter;
 			stringConverter.SetUTF8(appProperties->GetResourcesDir());
 			systemResourceDirectoryPath = stringConverter.GetUTF16();
 		}

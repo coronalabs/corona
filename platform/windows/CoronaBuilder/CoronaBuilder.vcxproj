@@ -200,7 +200,7 @@
     <ClCompile Include="..\Corona.Native.Library.Win32\Interop\OperationResult.cpp" />
     <ClCompile Include="..\Corona.Native.Library.Win32\Rtt\Rtt_WinCrypto.cpp" />
     <ClCompile Include="..\Corona.Native.Library.Win32\WinFile.cpp" />
-    <ClCompile Include="..\Corona.Native.Library.Win32\WinString.cpp" />
+    <ClCompile Include="..\Corona.Native.Library.Win32\RttString.cpp" />
     <ClCompile Include="..\Corona.Simulator\Rtt\Rtt_Win32AppPackager.cpp" />
     <ClCompile Include="..\Corona.Simulator\Rtt\Rtt_Win32AppPackagerParams.cpp" />
     <ClCompile Include="..\Corona.Simulator\Rtt\Rtt_WinPlatformServices.cpp" />
@@ -300,7 +300,7 @@
     <ClInclude Include="..\Corona.Native.Library.Win32\Interop\OperationResult.h" />
     <ClInclude Include="..\Corona.Native.Library.Win32\Rtt\Rtt_WinCrypto.h" />
     <ClInclude Include="..\Corona.Native.Library.Win32\WinFile.h" />
-    <ClInclude Include="..\Corona.Native.Library.Win32\WinString.h" />
+    <ClInclude Include="..\Corona.Native.Library.Win32\RttString.h" />
     <ClInclude Include="..\Corona.Simulator\Rtt\Rtt_Win32AppPackager.h" />
     <ClInclude Include="..\Corona.Simulator\Rtt\Rtt_Win32AppPackagerParams.h" />
     <ClInclude Include="..\Corona.Simulator\Rtt\Rtt_WinPlatformServices.h" />

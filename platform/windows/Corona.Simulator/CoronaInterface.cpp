@@ -31,7 +31,7 @@
 #include "Rtt_LuaFile.h"
 #include "Rtt_LuaResource.h"
 #include "Rtt_SimulatorAnalytics.h"
-#include "WinString.h"
+#include "RttString.h"
 #include "WinGlobalProperties.h"
 #include "CoronaInterface.h"
 #include "Simulator.h"
@@ -177,7 +177,7 @@ CBuildResult appAndroidBuild(
     TCHAR *sCompanyName = _T("Corona Labs");
     _tcsncpy_s(TempPath + tempBaseLen, MAX_PATH - tempBaseLen, sCompanyName, _tcslen(sCompanyName));
     TempPath[ _tcslen( TempPath ) ] = '\0';  // ensure null-termination
-	WinString strTempDir;
+	RttString strTempDir;
 	strTempDir.SetTCHAR( TempPath );
 
 	// Have the server build the app. (Warning! This is a long blocking call.)
@@ -200,7 +200,7 @@ CBuildResult appAndroidBuild(
 	}
 	else
 	{
-		WinString serverMsg;
+		RttString serverMsg;
 
 		serverMsg.SetUTF8(params.GetBuildMessage() ? params.GetBuildMessage() : "Error while building app");
 
@@ -281,7 +281,7 @@ CBuildResult appWebBuild(
 	TCHAR *sCompanyName = _T("Corona Labs");
 	_tcsncpy_s( TempPath + _tcslen( TempPath ), (MAX_PATH - _tcslen( TempPath )), sCompanyName, _tcslen( sCompanyName ) );
 	TempPath[ _tcslen( TempPath ) ] = '\0';  // ensure null-termination
-	WinString strTempDir;
+	RttString strTempDir;
 	strTempDir.SetTCHAR( TempPath );
 
 	// Have the server build the app. (Warning! This is a long blocking call.)
@@ -297,7 +297,7 @@ CBuildResult appWebBuild(
 	}
 	else
 	{
-		WinString serverMsg;
+		RttString serverMsg;
 
 		serverMsg.SetUTF8(params.GetBuildMessage() ? params.GetBuildMessage() : "Error while building app");
 
@@ -377,7 +377,7 @@ CBuildResult appLinuxBuild(
 	TCHAR *sCompanyName = _T("Corona Labs");
 	_tcsncpy_s( TempPath + _tcslen( TempPath ), (MAX_PATH - _tcslen( TempPath )), sCompanyName, _tcslen( sCompanyName ) );
 	TempPath[ _tcslen( TempPath ) ] = '\0';  // ensure null-termination
-	WinString strTempDir;
+	RttString strTempDir;
 	strTempDir.SetTCHAR( TempPath );
 
 	// Have the server build the app. (Warning! This is a long blocking call.)
@@ -393,7 +393,7 @@ CBuildResult appLinuxBuild(
 	}
 	else
 	{
-		WinString serverMsg;
+		RttString serverMsg;
 
 		serverMsg.SetUTF8(params.GetBuildMessage() ? params.GetBuildMessage() : "Error while building app");
 
@@ -474,7 +474,7 @@ CBuildResult appNxSBuild(
 	TCHAR* sCompanyName = _T("Corona Labs");
 	_tcsncpy_s(TempPath + _tcslen(TempPath), (MAX_PATH - _tcslen(TempPath)), sCompanyName, _tcslen(sCompanyName));
 	TempPath[_tcslen(TempPath)] = '\0';  // ensure null-termination
-	WinString strTempDir;
+	RttString strTempDir;
 	strTempDir.SetTCHAR(TempPath);
 
 	// Have the server build the app. (Warning! This is a long blocking call.)
@@ -490,7 +490,7 @@ CBuildResult appNxSBuild(
 	}
 	else
 	{
-		WinString serverMsg;
+		RttString serverMsg;
 
 		serverMsg.SetUTF8(params.GetBuildMessage() ? params.GetBuildMessage() : "Error while building app");
 

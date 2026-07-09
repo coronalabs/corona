@@ -22,7 +22,7 @@
 #include "SimulatorView.h"
 
 #include "resource.h"
-#include "WinString.h"
+#include "RttString.h"
 #include "ProgressWnd.h"
 #include "CoronaInterface.h"
 #include "WinGlobalProperties.h"  // set the properties
@@ -116,10 +116,10 @@ BOOL CSimulatorApp::InitInstance()
 	// the specific initialization routines you do not need
 	// Change the registry key under which our settings are stored
 	{
-		WinString stringTranscoder(Interop::Storage::RegistryStoredPreferences::kAnscaCoronaKeyName);
+		RttString stringTranscoder(Interop::Storage::RegistryStoredPreferences::kAnscaCoronaKeyName);
 		SetRegistryKey(stringTranscoder.GetTCHAR());
 
-		WinString profileName(Interop::Storage::RegistryStoredPreferences::kCoronaSimulatorKeyName);
+		RttString profileName(Interop::Storage::RegistryStoredPreferences::kCoronaSimulatorKeyName);
 		m_pszProfileName = _tcsdup(profileName.GetTCHAR());
 
 		// Hacks to make life easier
@@ -141,7 +141,7 @@ BOOL CSimulatorApp::InitInstance()
 	}
 	// Initialize WinGlobalProperties object which mirrors theApp properties
 	// Make sure this is done before accessing any Solar2D functions
-	WinString strRegistryKey, strRegistryProfile, strResourcesDir;
+	RttString strRegistryKey, strRegistryProfile, strResourcesDir;
 	strRegistryKey.SetTCHAR(m_pszRegistryKey);
 	strRegistryProfile.SetTCHAR(m_pszProfileName);
 	strResourcesDir.SetTCHAR(GetResourceDir());
@@ -267,8 +267,8 @@ BOOL CSimulatorApp::InitInstance()
 	if (m_isConsoleEnabled)
 	{
 		// Use the following Solar2D application as our logging window.
-		WinString outputViewerFilePath(GetApplicationDir());
-		WinString outputViewerArgs;
+		RttString outputViewerFilePath(GetApplicationDir());
+		RttString outputViewerArgs;
 
 		outputViewerArgs.Format("/parentProcess:%ld", ::GetCurrentProcessId());
 		outputViewerArgs.Append(L" /disableClose /windowName:\"Corona Simulator Console\"");
@@ -508,7 +508,7 @@ CSimulatorApp::InitJavaPaths()
 	}
 
     // Look for jarsigner.exe in PATH
-	WinString jarSignerFilePath;
+	RttString jarSignerFilePath;
 	jarSignerFilePath.SetUTF8(utf8JdkPath);
 	if ((jarSignerFilePath.GetLength() > 0) && !jarSignerFilePath.EndsWith("\\"))
 	{
@@ -540,7 +540,7 @@ CSimulatorApp::InitJavaPaths()
     if (bInitialized)
 	{
 		// Set the JAVA_HOME environment variable.
-		WinString stringConverter;
+		RttString stringConverter;
 		stringConverter.SetUTF8(utf8JdkPath);
 		::SetEnvironmentVariableW(L"JAVA_HOME", stringConverter.GetUTF16());
 
@@ -599,7 +599,7 @@ CSimulatorApp::InitJavaPaths()
 	{
 		CString resourceDir = ((CSimulatorApp *)AfxGetApp())->GetResourceDir();
 		CString jarPath;
-		WinString strJarPath;
+		RttString strJarPath;
 
 		jarPath = resourceDir + _T("\\ListKeyStore.jar");
 		if ( !CheckJarPath( jarPath ) )

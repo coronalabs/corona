@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "WinString.h"
+#include "RttString.h"
 #include <GdiPlus.h>
 
 
@@ -134,7 +134,7 @@ class FontSettings
 
 	private:
 		#pragma region Private Member Variables
-		WinString fName;
+		RttString fName;
 		bool fIsBold;
 		bool fIsItalic;
 		float fPixelSize;

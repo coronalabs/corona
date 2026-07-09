@@ -9,7 +9,7 @@
 
 #include "stdafx.h"
 #include "WinFile.h"
-#include "WinString.h"
+#include "RttString.h"
 
 WinFile::WinFile()
 {
@@ -28,7 +28,7 @@ void
 WinFile::Open(const char * path, const char *mode /* = "r" */, 
               DWORD size_high /* = 0 */, DWORD size_low /* = 0 */ )
 {
-	WinString	filePath;
+	RttString	filePath;
 
 	filePath.SetUTF8( path );
 

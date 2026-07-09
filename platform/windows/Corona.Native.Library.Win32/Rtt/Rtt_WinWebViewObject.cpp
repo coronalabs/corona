@@ -237,12 +237,12 @@ int WinWebViewObject::OnRequest(lua_State *L)
 	{
 		luaL_error(L, "Function WebView.request() was given an invalid URL argument. Was expecting a string.");
 	}
-	WinString url(lua_tostring(L, 2));
+	RttString url(lua_tostring(L, 2));
 
 	// If the optional base directory argument was provided, then update the above URL path with it.
 	if (lua_type(L, 3) == LUA_TSTRING)
 	{
-		WinString baseUrl(lua_tostring(L, 3));
+		RttString baseUrl(lua_tostring(L, 3));
 		if (!baseUrl.IsEmpty())
 		{
 			auto baseUrlLength = baseUrl.GetLength();

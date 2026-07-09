@@ -7,4 +7,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\external\sqlite3\sqlite3.c" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
 </Project>

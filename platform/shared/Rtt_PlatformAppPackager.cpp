@@ -22,7 +22,7 @@
 #	include "Core/Rtt_FileSystem.h"
 #	include "stdafx.h"
 #	include "Interop/Ipc/CommandLine.h"
-#	include "WinString.h"
+#	include "RttString.h"
 #	include <Shlobj.h>
 #if !defined( Rtt_NO_GUI )
 #	include "Simulator.h"
@@ -276,7 +276,7 @@ PlatformAppPackager::mkdir( const char *sDir )
 	bool hasSucceeded = false;
 
 #if defined(Rtt_WIN_ENV) && !defined(Rtt_LINUX_ENV)
-	WinString stringConverter;
+	RttString stringConverter;
 	stringConverter.SetUTF8( sDir );
 	int result = ::SHCreateDirectoryEx( NULL, stringConverter.GetTCHAR(), NULL );
 	if (ERROR_SUCCESS == result)
@@ -305,7 +305,7 @@ PlatformAppPackager::rmdir( const char *sDir )
 
 #if defined(Rtt_WIN_ENV) && !defined(Rtt_LINUX_ENV)
 	// Convert the given directory path to UTF-16.
-	WinString directoryPath;
+	RttString directoryPath;
 	directoryPath.SetUTF8(sDir);
 
 	// Remove the read-only and hidden attributes from all files and subdirectories under the given directory.
@@ -403,10 +403,10 @@ PlatformAppPackager::Prepackage( AppPackagerParams * params, const char* tmpDir 
 		}
 		free( cmd );
 #elif defined(Rtt_WIN_ENV) && !defined(Rtt_LINUX_ENV)
-		WinString dstFileconverter;
+		RttString dstFileconverter;
 		dstFileconverter.SetUTF8( dstFile );
 
-		WinString tmpDirConverter;
+		RttString tmpDirConverter;
 		tmpDirConverter.SetUTF8( tmpDir );
 
 		CString cmdIssue;
@@ -473,7 +473,7 @@ IsDirectory( const char *path )
 	bool result = false;
 
 #if defined(Rtt_WIN_ENV) && !defined(Rtt_LINUX_ENV)
-	WinString stringConverter;
+	RttString stringConverter;
 	stringConverter.SetUTF8( path );
 	result = ::PathIsDirectoryW( stringConverter.GetUTF16() ) ? true : false;
 #else
@@ -498,7 +498,7 @@ CompileScriptsInDirectory( lua_State *L, AppPackagerParams& params, const char *
 
 #if defined(Rtt_WIN_ENV) && !defined(Rtt_LINUX_ENV)
 	struct _stat statbuf;
-	WinString stringConverter;
+	RttString stringConverter;
 	stringConverter.SetUTF8( srcDir );
 	if (_tstat(stringConverter.GetTCHAR(), &statbuf) >= 0)
 	{
@@ -736,7 +736,7 @@ ReplaceMainLuaWithLiveDebug( lua_State *L, AppPackagerParams& params, const char
 	bool createConfig = true;
 	std::string configPath = std::string(params.GetSrcDir()) + LUA_DIRSEP + ".CoronaLiveBuild";
 #if defined(Rtt_WIN_ENV) && !defined(Rtt_LINUX_ENV)
-	WinString transcodedConfigPath(configPath.c_str());
+	RttString transcodedConfigPath(configPath.c_str());
 	std::ifstream fsconfig(transcodedConfigPath.GetUTF16(), std::ios_base::binary);
 #else
 	std::ifstream fsconfig(configPath);
@@ -1246,7 +1246,7 @@ PlatformAppPackager::CopyDirectoryTree( const PlatformAppPackager::CopyDirectory
 								(LPWSTR)&utf16Buffer, 0, nullptr);
 						if ( utf16Buffer )
 						{
-							WinString stringConverter;
+							RttString stringConverter;
 							stringConverter.SetUTF16( utf16Buffer );
 							message.append( "\r\n\r\nReason:\r\n   " );
 							message.append( stringConverter.GetUTF8() );

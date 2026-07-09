@@ -20,7 +20,7 @@
 #include "Interop\ScopedComInitializer.h"
 #include "Rtt_Event.h"
 #include "Rtt_Runtime.h"
-#include "WinString.h"
+#include "RttString.h"
 #include <iphlpapi.h>
 #include <Sddl.h>
 #include <sstream>
@@ -72,7 +72,7 @@ const char* WinDevice::GetName() const
 		BOOL result = GetComputerNameW(buffer, &bufferSize);
 		if (result && buffer[0])
 		{
-			WinString stringConverter;
+			RttString stringConverter;
 			stringConverter.SetUTF16(buffer);
 			int length = strlen(stringConverter.GetUTF8()) + 1;
 			fComputerName = new char[length];
@@ -98,7 +98,7 @@ const char* WinDevice::GetManufacturer() const
 			// *** Fetch the PC's manufacturer name, if available. ***
 
 			// Default to an unknown name if we can't fetch it below.
-			WinString manufacturerName("Unknown");
+			RttString manufacturerName("Unknown");
 
 			// Fetch the PC's manufacturer name via WMI and COM.
 			auto comApartmentType = Interop::ScopedComInitializer::ApartmentType::kSingleThreaded;
@@ -187,7 +187,7 @@ const char* WinDevice::GetModel() const
 			// *** Fetch the PC's model name, if available. ***
 
 			// Default to an unknown name if we can't fetch it below.
-			WinString modelName("Unknown");
+			RttString modelName("Unknown");
 
 			// Fetch the PC's model name via WMI and COM.
 			auto comApartmentType = Interop::ScopedComInitializer::ApartmentType::kSingleThreaded;
@@ -632,7 +632,7 @@ const char* WinDevice::GetPlatformVersion() const
 							result = objectPointer->Get(L"Version", 0, &variantValue, nullptr, nullptr);
 							if (SUCCEEDED(result))
 							{
-								WinString fullVersionString;
+								RttString fullVersionString;
 								if ((VT_BSTR == variantValue.vt) && (variantValue.bstrVal[0] != L'\0'))
 								{
 									fullVersionString.SetUTF16(variantValue.bstrVal);
