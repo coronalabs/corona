@@ -22,6 +22,7 @@ application = {
 	showRuntimeErrors = true,
 	isTransparent = false,
 	backend = "gl",
+	listName = "",
 
 	content = {
 		graphicsCompatibility = 1,
