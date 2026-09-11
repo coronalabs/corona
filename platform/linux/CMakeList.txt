@@ -960,6 +960,7 @@ add_executable( Solar2DBuilder
 	${CORONA_ROOT}/tools/CoronaBuilder/Rtt_CoronaBuilder.cpp
 	${CORONA_ROOT}/tools/CoronaBuilder/Rtt_AppPackagerFactory.cpp
 	${CORONA_ROOT}/tools/CoronaBuilder/Rtt_AppPackagerAndroidFactory.cpp
+	${CORONA_ROOT}/platform/shared/Rtt_AndroidSupportTools.c
 	${CORONA_ROOT}/tools/CoronaBuilder/Rtt_AppPackagerHTML5Factory.cpp
 	${CORONA_ROOT}/tools/CoronaBuilder/Rtt_AppPackagerLinuxFactory.cpp
 	${CORONA_ROOT}/tools/CoronaBuilder/Rtt_BuildParams.cpp
@@ -1028,7 +1029,7 @@ target_compile_definitions( Solar2DSimulator PUBLIC
 
 target_compile_definitions( Solar2DBuilder PUBLIC
 	Rtt_BUILD_REVISION=${BUILD_NUMBER} Rtt_BUILD_YEAR=${YEAR}
-	LUA_USE_POPEN Rtt_LUA_COMPILER Rtt_SIMULATOR CORONABUILDER_LINUX LUA_DL_DLOPEN 
+	LUA_USE_POPEN Rtt_LUA_COMPILER Rtt_SIMULATOR CORONABUILDER_LINUX CORONABUILDER_ANDROID LUA_DL_DLOPEN 
 	Rtt_LINUX_ENV ALMIXER_COMPILE_WITHOUT_SDL SOUND_SUPPORTS_WAV SOUND_SUPPORTS_MPG123 SOUND_SUPPORTS_OGG
 	OPT_GENERIC HAVE_STRERROR NO_REAL ENABLE_ALMIXER_THREADS LINUX_LIB) 
 
