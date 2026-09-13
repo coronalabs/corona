@@ -482,7 +482,7 @@ while true do
 	print("")
     print("Corona Debugger")
     print("version 1.1")
-	print("Copyright © 2008-2021 Solar2D. All rights reserved.")
+	print("Copyright © 2008-2023 Solar2D. All rights reserved.")
 	print("")
     print("Portions contain:")
 	print("    Lua, Copyright © 1994-2008 Lua.org, PUC-Rio.")
