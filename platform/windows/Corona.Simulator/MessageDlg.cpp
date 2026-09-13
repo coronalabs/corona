@@ -11,7 +11,7 @@
 #include "simulator.h"
 #include "MessageDlg.h"
 #include "afxinet.h"  // AfxParseUrl()
-#include "winstring.h"
+#include "RttString.h"
 #include "CoronaInterface.h"
 
 
@@ -197,7 +197,7 @@ bool CMessageDlg::SetUrl( const char *url )
          return true;
 	 }
 
-     WinString strUrl;
+     RttString strUrl;
      strUrl.SetUTF8( url );
 
      return SetUrl( strUrl.GetTCHAR() );

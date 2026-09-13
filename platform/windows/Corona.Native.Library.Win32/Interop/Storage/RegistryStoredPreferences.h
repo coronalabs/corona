@@ -12,7 +12,7 @@
 #include "Core\Rtt_Macros.h"
 #include "MStoredPreferences.h"
 #include "StoredPreferencesChain.h"
-#include "WinString.h"
+#include "RttString.h"
 #include <memory>
 #include <string>
 #include <Windows.h>
@@ -282,7 +282,7 @@ class RegistryStoredPreferences : public MStoredPreferences
 		///  <para>Stores the base registry path that preference key names will be appended to.</para>
 		///  <para>Set to empty string if a base path was not set. Key names must be fully qualified in this case.</para>
 		/// </summary>
-		WinString fBaseRegistryPath;
+		RttString fBaseRegistryPath;
 
 		/// <summary>Determines how the registry should be accessed on a 64-bit machine.</summary>
 		RegistryStoredPreferences::Wow64ViewType fWow64ViewType;

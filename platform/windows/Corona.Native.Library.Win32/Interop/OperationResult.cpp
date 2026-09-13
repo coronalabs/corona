@@ -9,7 +9,7 @@
 
 #include "stdafx.h"
 #include "OperationResult.h"
-#include "WinString.h"
+#include "RttString.h"
 
 
 namespace Interop {
@@ -28,7 +28,7 @@ OperationResult::OperationResult(bool hasSucceeded, const char *message)
 {
 	if (message && (message[0] != '\0'))
 	{
-		WinString stringConverter;
+		RttString stringConverter;
 		stringConverter.SetUTF8(message);
 		fMessage = std::make_shared<const std::wstring>(stringConverter.GetUTF16());
 	}

@@ -9,4 +9,7 @@
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
 </Project>

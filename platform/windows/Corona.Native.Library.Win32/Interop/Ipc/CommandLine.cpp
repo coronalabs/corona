@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "CommandLine.h"
 #include "CommandLineRunner.h"
-#include "WinString.h"
+#include "RttString.h"
 
 
 namespace Interop { namespace Ipc {
@@ -66,7 +66,7 @@ void CommandLine::SetOutputCaptureEnabled(bool value)
 
 CommandLineRunResult CommandLine::RunUntilExit(const char* commandLine)
 {
-	WinString stringTranscoder(commandLine);
+	RttString stringTranscoder(commandLine);
 	return CommandLine::RunUntilExit(stringTranscoder.GetUTF16());
 }
 
@@ -82,7 +82,7 @@ CommandLineRunResult CommandLine::RunUntilExit(const wchar_t* commandLine)
 
 CommandLineRunResult CommandLine::RunShellCommandUntilExit(const char* commandLine)
 {
-	WinString stringTranscoder(commandLine);
+	RttString stringTranscoder(commandLine);
 	return CommandLine::RunShellCommandUntilExit(stringTranscoder.GetUTF16());
 }
 

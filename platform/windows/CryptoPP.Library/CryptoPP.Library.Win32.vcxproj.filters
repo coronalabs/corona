@@ -254,4 +254,7 @@
     <ClInclude Include="..\..\..\external\CryptoPP\CryptoPP\zinflate.h" />
     <ClInclude Include="..\..\..\external\CryptoPP\CryptoPP\zlib.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
 </Project>

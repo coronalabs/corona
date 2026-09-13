@@ -18,6 +18,25 @@
 #include <sstream>
 #include <string>
 #include <strsafe.h>
+#include <stdlib.h>
+
+// Microsoft Edge WebView2 SDK is provided by the "Microsoft.Web.WebView2" NuGet package.
+// Guarded by __has_include so the file still compiles if the SDK is absent (in which case
+// the IE-based ActiveX backend is always used).
+#if defined(__has_include)
+    #if __has_include(<WebView2.h>)
+        #include <Windows.h>
+		#include <winstring.h>
+        #include <wrl.h>
+        #include <wrl/event.h>
+        #include <WebView2.h>
+        #define Rtt_WIN_WEBVIEW2_ENABLED 1
+    #endif
+#endif
+
+#ifndef Rtt_WIN_WEBVIEW2_ENABLED
+    #define Rtt_WIN_WEBVIEW2_ENABLED 0
+#endif
 
 
 namespace Interop { namespace UI {
@@ -25,7 +44,8 @@ namespace Interop { namespace UI {
 #pragma region Constructors/Destructors
 WebBrowser::WebBrowser(const WebBrowser::CreationSettings& settings)
 :	Control(),
-	fWebBrowserHandlerPointer(nullptr)
+	fWebBrowserHandlerPointer(nullptr),
+	fEdgeWebViewHandlerPointer(nullptr)
 {
 	// Store the Internet Explorer registy path, if given.
 	if (settings.IEOverrideRegistryPath && (settings.IEOverrideRegistryPath[0] != L'\0'))
@@ -33,7 +53,8 @@ WebBrowser::WebBrowser(const WebBrowser::CreationSettings& settings)
 		fIEOverrideRegistryPath = settings.IEOverrideRegistryPath;
 	}
 
-	// Create a control to be used as a container for the Microsoft Web Browser ActiveX control.
+	// Create a control to be used as a container for the embedded web browser.
+	// Both the IE ActiveX object and the Edge WebView2 controller parent themselves to this HWND.
 	DWORD styles = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 	auto windowHandle = ::CreateWindowExW(
 			WS_EX_CONTROLPARENT, L"BUTTON", L"", styles,
@@ -49,12 +70,28 @@ WebBrowser::WebBrowser(const WebBrowser::CreationSettings& settings)
 	// Store the window handle and start listening to its Windows message events.
 	OnSetWindowHandle(windowHandle);
 
-	// Create the ActiveX web browser object and embed into this container control.
-	fWebBrowserHandlerPointer = MicrosoftWebBrowserHandler::CreateAndAttachTo(this);
+	// Prefer the Microsoft Edge WebView2 control when available on the system.
+	// CreateAndAttachTo returns null if either the WebView2 SDK was not compiled in or
+	// the Edge WebView2 Runtime is not installed; in that case fall back to the IE ActiveX control
+	// to preserve the original behavior.
+	fEdgeWebViewHandlerPointer = EdgeWebViewHandler::CreateAndAttachTo(this);
+	if (!fEdgeWebViewHandlerPointer)
+	{
+		fWebBrowserHandlerPointer = MicrosoftWebBrowserHandler::CreateAndAttachTo(this);
+	}
 }
 
 WebBrowser::~WebBrowser()
 {
+	// Detach the embedded Edge WebView2 control from this container, if active.
+	// Done before window destruction so the controller can release its child window cleanly.
+	if (fEdgeWebViewHandlerPointer)
+	{
+		fEdgeWebViewHandlerPointer->DetachFromControl();
+		fEdgeWebViewHandlerPointer->Release();
+		fEdgeWebViewHandlerPointer = nullptr;
+	}
+
 	// Detach the embedded ActiveX web browser from this control.
 	if (fWebBrowserHandlerPointer)
 	{
@@ -104,17 +141,29 @@ const wchar_t* WebBrowser::GetIEOverrideRegistryPath() const
 
 bool WebBrowser::CanNavigateBack()
 {
+	if (fEdgeWebViewHandlerPointer)
+	{
+		return fEdgeWebViewHandlerPointer->CanNavigateBack();
+	}
 	return fWebBrowserHandlerPointer ? fWebBrowserHandlerPointer->CanNavigateBack() : false;
 }
 
 bool WebBrowser::CanNavigateForward()
 {
+	if (fEdgeWebViewHandlerPointer)
+	{
+		return fEdgeWebViewHandlerPointer->CanNavigateForward();
+	}
 	return fWebBrowserHandlerPointer ? fWebBrowserHandlerPointer->CanNavigateForward() : false;
 }
 
 void WebBrowser::NavigateBack()
 {
-	if (fWebBrowserHandlerPointer)
+	if (fEdgeWebViewHandlerPointer)
+	{
+		fEdgeWebViewHandlerPointer->NavigateBack();
+	}
+	else if (fWebBrowserHandlerPointer)
 	{
 		fWebBrowserHandlerPointer->NavigateBack();
 	}
@@ -122,7 +171,11 @@ void WebBrowser::NavigateBack()
 
 void WebBrowser::NavigateForward()
 {
-	if (fWebBrowserHandlerPointer)
+	if (fEdgeWebViewHandlerPointer)
+	{
+		fEdgeWebViewHandlerPointer->NavigateForward();
+	}
+	else if (fWebBrowserHandlerPointer)
 	{
 		fWebBrowserHandlerPointer->NavigateForward();
 	}
@@ -130,7 +183,11 @@ void WebBrowser::NavigateForward()
 
 void WebBrowser::NavigateTo(const wchar_t* url)
 {
-	if (fWebBrowserHandlerPointer)
+	if (fEdgeWebViewHandlerPointer)
+	{
+		fEdgeWebViewHandlerPointer->NavigateTo(url);
+	}
+	else if (fWebBrowserHandlerPointer)
 	{
 		fWebBrowserHandlerPointer->NavigateTo(url);
 	}
@@ -138,7 +195,11 @@ void WebBrowser::NavigateTo(const wchar_t* url)
 
 void WebBrowser::Reload()
 {
-	if (fWebBrowserHandlerPointer)
+	if (fEdgeWebViewHandlerPointer)
+	{
+		fEdgeWebViewHandlerPointer->Reload();
+	}
+	else if (fWebBrowserHandlerPointer)
 	{
 		fWebBrowserHandlerPointer->Reload();
 	}
@@ -146,7 +207,11 @@ void WebBrowser::Reload()
 
 void WebBrowser::StopLoading()
 {
-	if (fWebBrowserHandlerPointer)
+	if (fEdgeWebViewHandlerPointer)
+	{
+		fEdgeWebViewHandlerPointer->StopLoading();
+	}
+	else if (fWebBrowserHandlerPointer)
 	{
 		fWebBrowserHandlerPointer->StopLoading();
 	}
@@ -207,7 +272,7 @@ WebBrowser::MicrosoftWebBrowserHandler::MicrosoftWebBrowserHandler(WebBrowser* c
 		if (majorVersion > 0)
 		{
 			majorVersion *= 1000;
-			WinString keyName(
+			RttString keyName(
 					L"HKCU\\Software\\Microsoft\\Internet Explorer\\Main\\FeatureControl\\FEATURE_BROWSER_EMULATION\\");
 			keyName.Append(ApplicationServices::GetExeFileName());
 			registryStoredPreferences.UpdateWith(Rtt::Preference(keyName.GetUTF8(), majorVersion));
@@ -1108,6 +1173,562 @@ HRESULT WebBrowser::MicrosoftWebBrowserHandler::Stat(__RPC__out STATSTG *pstatst
 	return E_NOTIMPL;
 }
 
+#pragma endregion
+
+
+#pragma region EdgeWebViewHandler Methods
+#if Rtt_WIN_WEBVIEW2_ENABLED
+
+WebBrowser::EdgeWebViewHandler::EdgeWebViewHandler(WebBrowser* controlPointer)
+:	fWebBrowserControlPointer(controlPointer),
+	fEnvironmentPointer(nullptr),
+	fControllerPointer(nullptr),
+	fWebViewPointer(nullptr),
+	fNavigationStartingToken{},
+	fNavigationCompletedToken{},
+	fSourceChangedToken{},
+	fHistoryChangedToken{},
+	fReferenceCount(1),
+	fIsDetached(false),
+	fIsReady(false),
+	fHasPendingUrl(false),
+	fCanNavigateBack(false),
+	fCanNavigateForward(false),
+	fResizedEventHandler(this, &EdgeWebViewHandler::OnResized)
+{
+}
+
+WebBrowser::EdgeWebViewHandler::~EdgeWebViewHandler()
+{
+	DetachFromControl();
+}
+
+bool WebBrowser::EdgeWebViewHandler::IsRuntimeAvailable()
+{
+	// Returns success only when the Edge WebView2 Runtime is installed on the host machine.
+	// We probe synchronously here so the caller can fall back to the IE backend without spinning
+	// up any async work.
+	LPWSTR versionString = nullptr;
+	HRESULT hr = ::GetAvailableCoreWebView2BrowserVersionString(nullptr, &versionString);
+	bool available = SUCCEEDED(hr) && (versionString != nullptr) && (versionString[0] != L'\0');
+	if (versionString)
+	{
+		::CoTaskMemFree(versionString);
+	}
+	return available;
+}
+
+WebBrowser::EdgeWebViewHandler* WebBrowser::EdgeWebViewHandler::CreateAndAttachTo(WebBrowser* controlPointer)
+{
+	if (!controlPointer || !controlPointer->GetWindowHandle())
+	{
+		return nullptr;
+	}
+	if (!IsRuntimeAvailable())
+	{
+		return nullptr;
+	}
+
+	auto handler = new EdgeWebViewHandler(controlPointer);
+	if (!handler->BeginAsyncCreation())
+	{
+		// Synchronous failure starting WebView2 environment creation. Tear down and let the caller
+		// fall back to the IE ActiveX backend so the WebView still works (just on the legacy stack).
+		handler->fIsDetached = true;
+		handler->Release();
+		return nullptr;
+	}
+
+	// Listen for container resizes so we can keep the WebView2 controller's bounds in sync.
+	controlPointer->GetResizedEventHandlers().Add(&handler->fResizedEventHandler);
+	return handler;
+}
+
+bool WebBrowser::EdgeWebViewHandler::BeginAsyncCreation()
+{
+	// WebView2 requires a writable user-data folder. Use a per-app subfolder under %LOCALAPPDATA%.
+	// Falls back to %TEMP% in unusual environments where LOCALAPPDATA is unset.
+	wchar_t userDataFolder[MAX_PATH] = { 0 };
+	wchar_t baseFolder[MAX_PATH] = { 0 };
+	DWORD len = ::GetEnvironmentVariableW(L"LOCALAPPDATA", baseFolder, MAX_PATH);
+	if ((len == 0) || (len >= MAX_PATH))
+	{
+		len = ::GetEnvironmentVariableW(L"TEMP", baseFolder, MAX_PATH);
+	}
+	if ((len > 0) && (len < MAX_PATH))
+	{
+		const wchar_t* exeName = ApplicationServices::GetExeFileName();
+		if (!exeName || (exeName[0] == L'\0'))
+		{
+			exeName = L"Corona";
+		}
+		::StringCchPrintfW(userDataFolder, MAX_PATH, L"%s\\%s\\WebView2", baseFolder, exeName);
+	}
+	else
+	{
+		::StringCchCopyW(userDataFolder, MAX_PATH, L"WebView2Data");
+	}
+
+	// Capture self via a ComPtr so the handler stays alive until the async completion fires.
+	Microsoft::WRL::ComPtr<EdgeWebViewHandler> selfRef(this);
+	auto envHandler = Microsoft::WRL::Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
+		[selfRef](HRESULT result, ICoreWebView2Environment* env) -> HRESULT
+		{
+			return selfRef->OnEnvironmentCreated(result, env);
+		});
+	if (!envHandler)
+	{
+		return false;
+	}
+
+	HRESULT hr = ::CreateCoreWebView2EnvironmentWithOptions(nullptr, userDataFolder, nullptr, envHandler.Get());
+	return SUCCEEDED(hr);
+}
+
+HRESULT WebBrowser::EdgeWebViewHandler::OnEnvironmentCreated(
+	HRESULT result, ICoreWebView2Environment* environmentPointer)
+{
+	// If the host has been torn down before this async callback fired, do nothing.
+	// The handler is still alive (held by the captured ComPtr) but the WebBrowser is gone.
+	if (fIsDetached || !fWebBrowserControlPointer)
+	{
+		return S_OK;
+	}
+	if (FAILED(result) || !environmentPointer)
+	{
+		return S_OK;
+	}
+
+	fEnvironmentPointer = environmentPointer;
+	fEnvironmentPointer->AddRef();
+
+	HWND parentHwnd = fWebBrowserControlPointer->GetWindowHandle();
+	if (!parentHwnd)
+	{
+		return S_OK;
+	}
+
+	Microsoft::WRL::ComPtr<EdgeWebViewHandler> selfRef(this);
+	auto controllerHandler = Microsoft::WRL::Callback<ICoreWebView2CreateCoreWebView2ControllerCompletedHandler>(
+		[selfRef](HRESULT result, ICoreWebView2Controller* controller) -> HRESULT
+		{
+			return selfRef->OnControllerCreated(result, controller);
+		});
+	if (!controllerHandler)
+	{
+		return E_FAIL;
+	}
+
+	return fEnvironmentPointer->CreateCoreWebView2Controller(parentHwnd, controllerHandler.Get());
+}
+
+HRESULT WebBrowser::EdgeWebViewHandler::OnControllerCreated(
+	HRESULT result, ICoreWebView2Controller* controllerPointer)
+{
+	if (fIsDetached || !fWebBrowserControlPointer)
+	{
+		return S_OK;
+	}
+	if (FAILED(result) || !controllerPointer)
+	{
+		return S_OK;
+	}
+
+	fControllerPointer = controllerPointer;
+	fControllerPointer->AddRef();
+
+	HRESULT hr = fControllerPointer->get_CoreWebView2(&fWebViewPointer);
+	if (FAILED(hr) || !fWebViewPointer)
+	{
+		return S_OK;
+	}
+
+	// Apply default settings comparable to what we configured on the IE ActiveX backend.
+	{
+		ICoreWebView2Settings* settingsPointer = nullptr;
+		if (SUCCEEDED(fWebViewPointer->get_Settings(&settingsPointer)) && settingsPointer)
+		{
+			settingsPointer->put_IsScriptEnabled(TRUE);
+			settingsPointer->put_AreDefaultScriptDialogsEnabled(TRUE);
+			settingsPointer->put_AreDefaultContextMenusEnabled(TRUE);
+			settingsPointer->put_AreDevToolsEnabled(FALSE);
+			settingsPointer->put_IsStatusBarEnabled(FALSE);
+			settingsPointer->put_IsZoomControlEnabled(TRUE);
+			settingsPointer->Release();
+		}
+	}
+
+	UpdateBounds();
+
+	// NavigationStarting → maps to WebBrowser::NavigatingEvent (cancellable).
+	{
+		Microsoft::WRL::ComPtr<EdgeWebViewHandler> selfRef(this);
+		auto navStartHandler = Microsoft::WRL::Callback<ICoreWebView2NavigationStartingEventHandler>(
+			[selfRef](ICoreWebView2* sender, ICoreWebView2NavigationStartingEventArgs* args) -> HRESULT
+			{
+				if (selfRef->fIsDetached || !selfRef->fWebBrowserControlPointer || !args)
+				{
+					return S_OK;
+				}
+				LPWSTR uri = nullptr;
+				if (FAILED(args->get_Uri(&uri)) || !uri)
+				{
+					return S_OK;
+				}
+				WebBrowserNavigatingEventArgs eventArgs(uri);
+				selfRef->fWebBrowserControlPointer->fNavigatingEvent.Raise(
+						*selfRef->fWebBrowserControlPointer, eventArgs);
+				if (eventArgs.WasCanceled())
+				{
+					args->put_Cancel(TRUE);
+				}
+				::CoTaskMemFree(uri);
+				return S_OK;
+			});
+		if (navStartHandler)
+		{
+			fWebViewPointer->add_NavigationStarting(navStartHandler.Get(), &fNavigationStartingToken);
+		}
+	}
+
+	// NavigationCompleted → maps to NavigatedEvent (success) or NavigationFailedEvent (failure).
+	{
+		Microsoft::WRL::ComPtr<EdgeWebViewHandler> selfRef(this);
+		auto navCompleteHandler = Microsoft::WRL::Callback<ICoreWebView2NavigationCompletedEventHandler>(
+			[selfRef](ICoreWebView2* sender, ICoreWebView2NavigationCompletedEventArgs* args) -> HRESULT
+			{
+				if (selfRef->fIsDetached || !selfRef->fWebBrowserControlPointer || !args || !sender)
+				{
+					return S_OK;
+				}
+				BOOL isSuccess = FALSE;
+				args->get_IsSuccess(&isSuccess);
+				LPWSTR sourceUrl = nullptr;
+				sender->get_Source(&sourceUrl);
+				const wchar_t* url = sourceUrl ? sourceUrl : L"";
+				if (isSuccess)
+				{
+					WebBrowserNavigatedEventArgs eventArgs(url);
+					selfRef->fWebBrowserControlPointer->fNavigatedEvent.Raise(
+							*selfRef->fWebBrowserControlPointer, eventArgs);
+				}
+				else
+				{
+					COREWEBVIEW2_WEB_ERROR_STATUS status = COREWEBVIEW2_WEB_ERROR_STATUS_UNKNOWN;
+					args->get_WebErrorStatus(&status);
+					std::wstringstream stringStream;
+					stringStream << L"WebView2 navigation failed (web error status ";
+					stringStream << static_cast<int>(status);
+					stringStream << L")";
+					std::wstring errorMessage = stringStream.str();
+					selfRef->RaiseNavigationFailed(url, static_cast<int>(status), errorMessage.c_str());
+				}
+				if (sourceUrl)
+				{
+					::CoTaskMemFree(sourceUrl);
+				}
+				return S_OK;
+			});
+		if (navCompleteHandler)
+		{
+			fWebViewPointer->add_NavigationCompleted(navCompleteHandler.Get(), &fNavigationCompletedToken);
+		}
+	}
+
+	// HistoryChanged → updates the cached canGoBack / canGoForward flags.
+	{
+		Microsoft::WRL::ComPtr<EdgeWebViewHandler> selfRef(this);
+		auto historyHandler = Microsoft::WRL::Callback<ICoreWebView2HistoryChangedEventHandler>(
+			[selfRef](ICoreWebView2* sender, IUnknown* /*args*/) -> HRESULT
+			{
+				if (selfRef->fIsDetached || !sender)
+				{
+					return S_OK;
+				}
+				BOOL canBack = FALSE;
+				BOOL canForward = FALSE;
+				sender->get_CanGoBack(&canBack);
+				sender->get_CanGoForward(&canForward);
+				selfRef->fCanNavigateBack = canBack ? true : false;
+				selfRef->fCanNavigateForward = canForward ? true : false;
+				return S_OK;
+			});
+		if (historyHandler)
+		{
+			fWebViewPointer->add_HistoryChanged(historyHandler.Get(), &fHistoryChangedToken);
+		}
+	}
+
+	fControllerPointer->put_IsVisible(TRUE);
+	fIsReady = true;
+
+	// If a navigation was requested before WebView2 finished initializing, dispatch it now.
+	DispatchPendingNavigation();
+	return S_OK;
+}
+
+void WebBrowser::EdgeWebViewHandler::DetachFromControl()
+{
+	if (fIsDetached)
+	{
+		return;
+	}
+	fIsDetached = true;
+
+	if (fWebBrowserControlPointer)
+	{
+		fWebBrowserControlPointer->GetResizedEventHandlers().Remove(&fResizedEventHandler);
+	}
+
+	if (fWebViewPointer)
+	{
+		fWebViewPointer->remove_NavigationStarting(fNavigationStartingToken);
+		fWebViewPointer->remove_NavigationCompleted(fNavigationCompletedToken);
+		fWebViewPointer->remove_HistoryChanged(fHistoryChangedToken);
+		fWebViewPointer->Release();
+		fWebViewPointer = nullptr;
+	}
+
+	if (fControllerPointer)
+	{
+		// Close() detaches the WebView2 from the parent HWND synchronously and stops further events.
+		fControllerPointer->Close();
+		fControllerPointer->Release();
+		fControllerPointer = nullptr;
+	}
+
+	if (fEnvironmentPointer)
+	{
+		fEnvironmentPointer->Release();
+		fEnvironmentPointer = nullptr;
+	}
+
+	fWebBrowserControlPointer = nullptr;
+	fIsReady = false;
+	fHasPendingUrl = false;
+	fPendingUrl.clear();
+	fCanNavigateBack = false;
+	fCanNavigateForward = false;
+}
+
+bool WebBrowser::EdgeWebViewHandler::CanNavigateBack()
+{
+	return fCanNavigateBack;
+}
+
+bool WebBrowser::EdgeWebViewHandler::CanNavigateForward()
+{
+	return fCanNavigateForward;
+}
+
+void WebBrowser::EdgeWebViewHandler::NavigateBack()
+{
+	if (fIsDetached || !fWebViewPointer)
+	{
+		return;
+	}
+	BOOL canGoBack = FALSE;
+	fWebViewPointer->get_CanGoBack(&canGoBack);
+	if (canGoBack)
+	{
+		fWebViewPointer->GoBack();
+	}
+}
+
+void WebBrowser::EdgeWebViewHandler::NavigateForward()
+{
+	if (fIsDetached || !fWebViewPointer)
+	{
+		return;
+	}
+	BOOL canGoForward = FALSE;
+	fWebViewPointer->get_CanGoForward(&canGoForward);
+	if (canGoForward)
+	{
+		fWebViewPointer->GoForward();
+	}
+}
+
+void WebBrowser::EdgeWebViewHandler::NavigateTo(const wchar_t* url)
+{
+	if (fIsDetached)
+	{
+		return;
+	}
+	if (!url || (url[0] == L'\0'))
+	{
+		return;
+	}
+
+	// WebView2 init is asynchronous. If a Lua call to native.newWebView():request() arrives
+	// before the controller is ready, queue the URL and load it once init completes.
+	if (!fIsReady || !fWebViewPointer)
+	{
+		fPendingUrl = url;
+		fHasPendingUrl = true;
+		return;
+	}
+
+	fWebViewPointer->Navigate(url);
+}
+
+void WebBrowser::EdgeWebViewHandler::Reload()
+{
+	if (fIsDetached || !fWebViewPointer)
+	{
+		return;
+	}
+	fWebViewPointer->Reload();
+}
+
+void WebBrowser::EdgeWebViewHandler::StopLoading()
+{
+	if (fIsDetached || !fWebViewPointer)
+	{
+		return;
+	}
+	fWebViewPointer->Stop();
+}
+
+void WebBrowser::EdgeWebViewHandler::OnResized(
+	Interop::UI::Control& sender, const Interop::EventArgs& arguments)
+{
+	UpdateBounds();
+}
+
+void WebBrowser::EdgeWebViewHandler::UpdateBounds()
+{
+	if (fIsDetached || !fControllerPointer || !fWebBrowserControlPointer)
+	{
+		return;
+	}
+	RECT bounds = fWebBrowserControlPointer->GetClientBounds();
+	fControllerPointer->put_Bounds(bounds);
+}
+
+void WebBrowser::EdgeWebViewHandler::DispatchPendingNavigation()
+{
+	if (!fHasPendingUrl || !fIsReady || !fWebViewPointer)
+	{
+		return;
+	}
+	std::wstring url = fPendingUrl;
+	fHasPendingUrl = false;
+	fPendingUrl.clear();
+	fWebViewPointer->Navigate(url.c_str());
+}
+
+void WebBrowser::EdgeWebViewHandler::RaiseNavigationFailed(
+	const wchar_t* url, int errorCode, const wchar_t* message)
+{
+	if (!fWebBrowserControlPointer)
+	{
+		return;
+	}
+	WebBrowserNavigationFailedEventArgs eventArgs(
+			url ? url : L"", errorCode, message ? message : L"");
+	fWebBrowserControlPointer->fNavigationFailedEvent.Raise(*fWebBrowserControlPointer, eventArgs);
+}
+
+HRESULT WebBrowser::EdgeWebViewHandler::QueryInterface(REFIID riid, void** ppvObject)
+{
+	if (!ppvObject)
+	{
+		return E_POINTER;
+	}
+	if (riid == IID_IUnknown)
+	{
+		*ppvObject = static_cast<IUnknown*>(this);
+		AddRef();
+		return S_OK;
+	}
+	*ppvObject = nullptr;
+	return E_NOINTERFACE;
+}
+
+ULONG WebBrowser::EdgeWebViewHandler::AddRef(void)
+{
+	return ++fReferenceCount;
+}
+
+ULONG WebBrowser::EdgeWebViewHandler::Release(void)
+{
+	ULONG count = --fReferenceCount;
+	if (count == 0)
+	{
+		delete this;
+	}
+	return count;
+}
+
+#else  // Rtt_WIN_WEBVIEW2_ENABLED == 0
+
+// Stub implementations used when the Microsoft.Web.WebView2 SDK is unavailable at compile time.
+// CreateAndAttachTo always returns null, so the WebBrowser ctor falls through to the IE backend
+// and these member functions are never actually invoked at runtime — but the linker still needs
+// definitions for the methods declared in the header.
+
+WebBrowser::EdgeWebViewHandler::EdgeWebViewHandler(WebBrowser* /*controlPointer*/)
+:	fWebBrowserControlPointer(nullptr),
+	fEnvironmentPointer(nullptr),
+	fControllerPointer(nullptr),
+	fWebViewPointer(nullptr),
+	fNavigationStartingToken{},
+	fNavigationCompletedToken{},
+	fSourceChangedToken{},
+	fHistoryChangedToken{},
+	fReferenceCount(1),
+	fIsDetached(true),
+	fIsReady(false),
+	fHasPendingUrl(false),
+	fCanNavigateBack(false),
+	fCanNavigateForward(false),
+	fResizedEventHandler(this, &EdgeWebViewHandler::OnResized)
+{
+}
+
+WebBrowser::EdgeWebViewHandler::~EdgeWebViewHandler() {}
+
+bool WebBrowser::EdgeWebViewHandler::IsRuntimeAvailable() { return false; }
+
+WebBrowser::EdgeWebViewHandler* WebBrowser::EdgeWebViewHandler::CreateAndAttachTo(WebBrowser*)
+{
+	return nullptr;
+}
+
+bool WebBrowser::EdgeWebViewHandler::BeginAsyncCreation() { return false; }
+HRESULT WebBrowser::EdgeWebViewHandler::OnEnvironmentCreated(HRESULT, ICoreWebView2Environment*) { return E_NOTIMPL; }
+HRESULT WebBrowser::EdgeWebViewHandler::OnControllerCreated(HRESULT, ICoreWebView2Controller*) { return E_NOTIMPL; }
+
+void WebBrowser::EdgeWebViewHandler::DetachFromControl() {}
+bool WebBrowser::EdgeWebViewHandler::CanNavigateBack() { return false; }
+bool WebBrowser::EdgeWebViewHandler::CanNavigateForward() { return false; }
+void WebBrowser::EdgeWebViewHandler::NavigateBack() {}
+void WebBrowser::EdgeWebViewHandler::NavigateForward() {}
+void WebBrowser::EdgeWebViewHandler::NavigateTo(const wchar_t*) {}
+void WebBrowser::EdgeWebViewHandler::Reload() {}
+void WebBrowser::EdgeWebViewHandler::StopLoading() {}
+void WebBrowser::EdgeWebViewHandler::OnResized(Interop::UI::Control&, const Interop::EventArgs&) {}
+void WebBrowser::EdgeWebViewHandler::UpdateBounds() {}
+void WebBrowser::EdgeWebViewHandler::DispatchPendingNavigation() {}
+void WebBrowser::EdgeWebViewHandler::RaiseNavigationFailed(const wchar_t*, int, const wchar_t*) {}
+
+HRESULT WebBrowser::EdgeWebViewHandler::QueryInterface(REFIID, void** ppvObject)
+{
+	if (ppvObject) { *ppvObject = nullptr; }
+	return E_NOINTERFACE;
+}
+
+ULONG WebBrowser::EdgeWebViewHandler::AddRef(void) { return ++fReferenceCount; }
+
+ULONG WebBrowser::EdgeWebViewHandler::Release(void)
+{
+	ULONG count = --fReferenceCount;
+	if (count == 0) { delete this; }
+	return count;
+}
+
+#endif  // Rtt_WIN_WEBVIEW2_ENABLED
 #pragma endregion
 
 } }	// namespace Interop::UI

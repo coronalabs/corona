@@ -11,12 +11,12 @@
 
 
 #if defined(Rtt_WIN_ENV) && defined(_UNICODE)
-#include "WinString.h"
+#include "RttString.h"
 
 int
 wmain(int argc, wchar_t *argv[], wchar_t *envp[])
 {
-	WinString stringConverter;
+	RttString stringConverter;
 	const char **utf8ArgumentArray = NULL;
 	int result;
 

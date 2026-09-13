@@ -189,7 +189,7 @@
     <ClCompile Include="..\..\..\librtt\Display\Rtt_PlatformBitmap.cpp" />
     <ClCompile Include="..\..\..\librtt\Corona\CoronaLua.cpp" />
     <ClCompile Include="..\..\..\librtt\Core\Rtt_Math.c" />
-    <ClCompile Include="..\Corona.Native.Library.Win32\WinString.cpp" />
+    <ClCompile Include="..\Corona.Native.Library.Win32\RttString.cpp" />
     <ClCompile Include="..\Corona.Native.Library.Win32\WinFile.cpp" />
     <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_AppPackagerAndroidFactory.cpp" />
     <ClCompile Include="..\..\..\tools\CoronaBuilder\Rtt_AppPackagerHTML5Factory.cpp" />
@@ -346,7 +346,7 @@
     <ClInclude Include="..\..\..\librtt\Display\Rtt_PlatformBitmap.h" />
     <ClInclude Include="..\..\..\librtt\Corona\CoronaLua.h" />
     <ClInclude Include="..\..\..\librtt\Core\Rtt_Math.h" />
-    <ClInclude Include="..\Corona.Native.Library.Win32\WinString.h" />
+    <ClInclude Include="..\Corona.Native.Library.Win32\RttString.h" />
     <ClInclude Include="..\Corona.Native.Library.Win32\WinFile.h" />
     <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_WinConsolePlatform.h" />
     <ClInclude Include="..\..\..\tools\CoronaBuilder\Rtt_WinConsoleDevice.h" />

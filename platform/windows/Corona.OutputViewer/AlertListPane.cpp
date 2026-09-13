@@ -11,7 +11,7 @@
 #include "AlertListPane.h"
 #include "resource.h"
 #include "VisualTheme.h"
-#include "WinString.h"
+#include "RttString.h"
 
 
 #ifdef _DEBUG
@@ -229,7 +229,7 @@ void AlertListPane::AddLogEntry(const LogEntry& entry)
 	// Copy the given log entry text and modify it as follows:
 	// - Strip off the newline character at the end of the message. Must be shown in single line form.
 	// - Replace all embed carriage returns, newlines, tabs, and nulls with "[\r]", "[\n]", "[\t]", and "[\0]".
-	WinString updatedMessage(entry.GetText());
+	RttString updatedMessage(entry.GetText());
 	updatedMessage.TrimEnd(L"\r\n");
 //TODO: Add support for embedded nulls in the message. They currently truncate the message.
 //	updatedMessage.Replace("\0", "[\\0]");

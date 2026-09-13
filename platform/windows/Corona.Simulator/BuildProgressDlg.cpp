@@ -16,7 +16,7 @@
 #include "CoronaProject.h"
 #include "SimulatorView.h"
 #include "WinGlobalProperties.h"
-#include "WinString.h"
+#include "RttString.h"
 #include "Simulator.h"
 
 
@@ -226,8 +226,8 @@ void CBuildProgressDlg::BuildForAndroid()
 	CWaitCursor waitCursor;
 
 	// Get copy of string settings.
-	WinString strSrcDir, strName, strVersion, strPackage;
-    WinString strKeystore, strKeystorePwd, strAlias, strAliasPwd, strSaveDir, strTargetOS;
+	RttString strSrcDir, strName, strVersion, strPackage;
+    RttString strKeystore, strKeystorePwd, strAlias, strAliasPwd, strSaveDir, strTargetOS;
 
     strSrcDir.SetTCHAR( fProjectSettingsPointer->GetDir() );
     strName.SetTCHAR( fProjectSettingsPointer->GetName() );
@@ -278,8 +278,8 @@ void CBuildProgressDlg::BuildForWeb()
 	CWaitCursor waitCursor;
 
 	// Get copy of string settings.
-	WinString strSrcDir, strName, strVersion, strPackage;
-	WinString strKeystore, strKeystorePwd, strAlias, strAliasPwd, strSaveDir, strTargetOS;
+	RttString strSrcDir, strName, strVersion, strPackage;
+	RttString strKeystore, strKeystorePwd, strAlias, strAliasPwd, strSaveDir, strTargetOS;
 
 	strSrcDir.SetTCHAR( fProjectSettingsPointer->GetDir() );
 	strName.SetTCHAR( fProjectSettingsPointer->GetName() );
@@ -324,8 +324,8 @@ void CBuildProgressDlg::BuildForLinux()
 	CWaitCursor waitCursor;
 
 	// Get copy of string settings.
-	WinString strSrcDir, strName, strVersion, strPackage;
-	WinString strKeystore, strKeystorePwd, strAlias, strAliasPwd, strSaveDir, strTargetOS;
+	RttString strSrcDir, strName, strVersion, strPackage;
+	RttString strKeystore, strKeystorePwd, strAlias, strAliasPwd, strSaveDir, strTargetOS;
 
 	strSrcDir.SetTCHAR( fProjectSettingsPointer->GetDir() );
 	strName.SetTCHAR( fProjectSettingsPointer->GetName() );
@@ -363,8 +363,8 @@ void CBuildProgressDlg::BuildForNxS()
 	CWaitCursor waitCursor;
 
 	// Get copy of string settings.
-	WinString strSrcDir, strName, strVersion, strPackage, strNmetaPath;
-	WinString strKeystore, strKeystorePwd, strAlias, strAliasPwd, strSaveDir, strTargetOS;
+	RttString strSrcDir, strName, strVersion, strPackage, strNmetaPath;
+	RttString strKeystore, strKeystorePwd, strAlias, strAliasPwd, strSaveDir, strTargetOS;
 
 	strSrcDir.SetTCHAR(fProjectSettingsPointer->GetDir());
 	strName.SetTCHAR(fProjectSettingsPointer->GetName());

@@ -10,7 +10,7 @@
 #pragma once
 
 #include "Interop\EventArgs.h"
-#include "WinString.h"
+#include "RttString.h"
 
 
 namespace Interop { namespace UI {
@@ -51,7 +51,7 @@ class WebBrowserNavigatingEventArgs : public EventArgs
 		void SetCanceled();
 
 	private:
-		WinString fUrl;
+		RttString fUrl;
 		bool fWasCanceled;
 };
 

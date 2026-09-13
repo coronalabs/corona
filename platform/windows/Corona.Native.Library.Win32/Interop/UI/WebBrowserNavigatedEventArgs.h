@@ -10,7 +10,7 @@
 #pragma once
 
 #include "Interop\EventArgs.h"
-#include "WinString.h"
+#include "RttString.h"
 
 
 namespace Interop { namespace UI {
@@ -35,7 +35,7 @@ class WebBrowserNavigatedEventArgs : public EventArgs
 		const wchar_t* GetUrlAsUtf16() const;
 
 	private:
-		WinString fUrl;
+		RttString fUrl;
 };
 
 } }	// namespace Interop::UI

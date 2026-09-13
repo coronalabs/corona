@@ -20,6 +20,14 @@
 #include <MsHtmHst.h>
 #include <string>
 #include <Windows.h>
+#include <EventToken.h>
+
+
+// Forward declarations for Microsoft Edge WebView2 COM types.
+// Defined here so the header does not pull in <WebView2.h> for every translation unit.
+struct ICoreWebView2;
+struct ICoreWebView2Controller;
+struct ICoreWebView2Environment;
 
 
 namespace Interop { namespace UI {
@@ -341,6 +349,99 @@ class WebBrowser : public Control
 		#pragma endregion
 
 
+		#pragma region EdgeWebViewHandler Class
+		/// <summary>
+		///  <para>Handler which creates and interfaces with a Microsoft Edge WebView2 control.</para>
+		///  <para>Used as the preferred backend when the WebView2 Runtime is installed on the system.</para>
+		///  <para>Falls back to the IE-based MicrosoftWebBrowserHandler when WebView2 is unavailable.</para>
+		/// </summary>
+		class EdgeWebViewHandler : public IUnknown
+		{
+			public:
+				#pragma region IUnknown Methods
+				virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void** ppvObject) override;
+				virtual ULONG STDMETHODCALLTYPE AddRef(void) override;
+				virtual ULONG STDMETHODCALLTYPE Release(void) override;
+
+				#pragma endregion
+
+
+				#pragma region Public Methods
+				void DetachFromControl();
+				bool CanNavigateBack();
+				bool CanNavigateForward();
+				void NavigateBack();
+				void NavigateForward();
+				void NavigateTo(const wchar_t* url);
+				void Reload();
+				void StopLoading();
+
+				#pragma endregion
+
+
+				#pragma region Public Static Functions
+				/// <summary>
+				///  <para>Creates a new Edge WebView2 handler attached to the given WebBrowser control.</para>
+				///  <para>
+				///   Returns null if the WebView2 SDK was not available at compile time or the WebView2 Runtime
+				///   is not installed on the system. The caller should fall back to the IE handler in that case.
+				///  </para>
+				/// </summary>
+				static EdgeWebViewHandler* CreateAndAttachTo(WebBrowser* controlPointer);
+
+				/// <summary>
+				///  Returns true if the Edge WebView2 Runtime is installed on this machine and a handler
+				///  can plausibly be created. Returns false if the runtime is missing.
+				/// </summary>
+				static bool IsRuntimeAvailable();
+
+				#pragma endregion
+
+			private:
+				#pragma region Constructors/Destructors
+				EdgeWebViewHandler(WebBrowser* controlPointer);
+				EdgeWebViewHandler(const EdgeWebViewHandler&) = delete;
+				virtual ~EdgeWebViewHandler();
+
+				#pragma endregion
+
+
+				#pragma region Private Methods
+				bool BeginAsyncCreation();
+				HRESULT OnEnvironmentCreated(HRESULT result, ICoreWebView2Environment* environmentPointer);
+				HRESULT OnControllerCreated(HRESULT result, ICoreWebView2Controller* controllerPointer);
+				void OnResized(Interop::UI::Control& sender, const Interop::EventArgs& arguments);
+				void UpdateBounds();
+				void DispatchPendingNavigation();
+				void RaiseNavigationFailed(const wchar_t* url, int errorCode, const wchar_t* message);
+
+				#pragma endregion
+
+
+				#pragma region Private Member Variables
+				WebBrowser* fWebBrowserControlPointer;
+				ICoreWebView2Environment* fEnvironmentPointer;
+				ICoreWebView2Controller* fControllerPointer;
+				ICoreWebView2* fWebViewPointer;
+				EventRegistrationToken fNavigationStartingToken;
+				EventRegistrationToken fNavigationCompletedToken;
+				EventRegistrationToken fSourceChangedToken;
+				EventRegistrationToken fHistoryChangedToken;
+				ULONG fReferenceCount;
+				bool fIsDetached;
+				bool fIsReady;
+				bool fHasPendingUrl;
+				std::wstring fPendingUrl;
+				bool fCanNavigateBack;
+				bool fCanNavigateForward;
+				Control::ResizedEvent::MethodHandler<EdgeWebViewHandler> fResizedEventHandler;
+
+				#pragma endregion
+		};
+
+		#pragma endregion
+
+
 		#pragma region Private Member Variables
 		/// <summary>Manages the "Navigating" event.</summary>
 		NavigatingEvent fNavigatingEvent;
@@ -360,7 +461,13 @@ class WebBrowser : public Control
 
 		/// <summary>Handler which creates and interfaces with the Internet Explorer ActiveX object.</summary>
 		MicrosoftWebBrowserHandler* fWebBrowserHandlerPointer;
-		
+
+		/// <summary>
+		///  Handler which creates and interfaces with the Microsoft Edge WebView2 control.
+		///  Will be null when WebView2 is not available on the host machine and the IE backend is used instead.
+		/// </summary>
+		EdgeWebViewHandler* fEdgeWebViewHandlerPointer;
+
 		/// <summary>
 		///  <para>
 		///   Registry path without the hive prefix used to store custom Internet Explorer settings that will

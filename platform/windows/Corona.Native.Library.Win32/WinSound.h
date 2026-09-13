@@ -11,7 +11,7 @@
 
 #include "Interop\UI\MessageOnlyWindow.h"
 #include "Interop\ScopedComInitializer.h"
-#include "WinString.h"
+#include "RttString.h"
 #include <dshow.h>
 
 
@@ -68,7 +68,7 @@ class WinSound
 		/// </summary>
 		Interop::ScopedComInitializer fScopedComInitializer;
 
-		WinString mFilename;
+		RttString mFilename;
 		Rtt::WinAudioPlayer *m_pPlayer;
 		IBaseFilter *pif;
 		IGraphBuilder *pigb;

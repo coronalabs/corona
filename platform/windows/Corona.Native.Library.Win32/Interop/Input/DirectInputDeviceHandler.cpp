@@ -13,7 +13,7 @@
 #include "InputAxisSettings.h"
 #include "InputDeviceSettings.h"
 #include "InputDeviceDriverType.h"
-#include "WinString.h"
+#include "RttString.h"
 #include <algorithm>
 #include <map>
 #include <vector>
@@ -128,7 +128,7 @@ void DirectInputDeviceHandler::AttachTo(LPDIRECTINPUTDEVICE8W devicePointer)
 		::StringFromGUID2(directInputDeviceInfo.guidInstance, utf16GuidString, kMaxCharacters);
 		if (utf16GuidString[0] != L'\0')
 		{
-			WinString permanentStringId;
+			RttString permanentStringId;
 			permanentStringId.SetUTF16(L"DirectInput:");
 			permanentStringId.Append(utf16GuidString);
 			deviceSettings.SetPermanentStringId(permanentStringId.GetUTF8());

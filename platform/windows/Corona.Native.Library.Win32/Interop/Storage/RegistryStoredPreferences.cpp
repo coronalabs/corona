@@ -78,7 +78,7 @@ Rtt::Preference::ReadValueResult RegistryStoredPreferences::Fetch(const char* ke
 	}
 
 	// Build an absolute registry path.
-	WinString registryPath(fBaseRegistryPath);
+	RttString registryPath(fBaseRegistryPath);
 	if (registryPath.IsEmpty() == false)
 	{
 		if ((keyName[0] != '\\') && (!fIsUsingForwardSlashAsPathSeparator || (keyName[0] != '/')))
@@ -121,7 +121,7 @@ Rtt::Preference::ReadValueResult RegistryStoredPreferences::Fetch(const char* ke
 	}
 	if ((openResult != ERROR_SUCCESS) || (0 == keyHandle))
 	{
-		WinString errorMessage;
+		RttString errorMessage;
 		if (openResult != ERROR_SUCCESS)
 		{
 			LPWSTR utf16Buffer;
@@ -154,7 +154,7 @@ Rtt::Preference::ReadValueResult RegistryStoredPreferences::Fetch(const char* ke
 	}
 	if ((queryResult != ERROR_SUCCESS) || (REG_NONE == valueType) || (valueByteCount <= 0))
 	{
-		WinString errorMessage;
+		RttString errorMessage;
 		if (queryResult != ERROR_SUCCESS)
 		{
 			LPWSTR utf16Buffer;
@@ -179,7 +179,7 @@ Rtt::Preference::ReadValueResult RegistryStoredPreferences::Fetch(const char* ke
 
 	// Copy the registry value to a PreferenceValue object.
 	bool wasSuccessful = false;
-	WinString errorMessage;
+	RttString errorMessage;
 	Rtt::PreferenceValue preferenceValue;
 	switch (valueType)
 	{
@@ -227,7 +227,7 @@ Rtt::Preference::ReadValueResult RegistryStoredPreferences::Fetch(const char* ke
 		case REG_EXPAND_SZ:
 		{
 			int characterCount = valueByteCount / sizeof(wchar_t);
-			WinString stringBuffer;
+			RttString stringBuffer;
 			stringBuffer.Expand(characterCount);
 			queryResult = ::RegQueryValueExW(
 					keyHandle, registryPathComponents.ValueName->c_str(), nullptr,
@@ -318,7 +318,7 @@ Rtt::OperationResult RegistryStoredPreferences::UpdateWith(const Rtt::Preference
 	}
 
 	// Attempt to insert/update all of the given preferences to the registry.
-	WinString errorMessage;
+	RttString errorMessage;
 	int preferencesWritten = 0;
 	for (int index = 0; index < preferences.GetCount(); index++)
 	{
@@ -356,7 +356,7 @@ Rtt::OperationResult RegistryStoredPreferences::UpdateWith(const Rtt::Preference
 		}
 
 		// Build an absolute registry path.
-		WinString registryPath(fBaseRegistryPath);
+		RttString registryPath(fBaseRegistryPath);
 		if (registryPath.IsEmpty() == false)
 		{
 			auto keyName = preferencePointer->GetKeyName();
@@ -478,7 +478,7 @@ Rtt::OperationResult RegistryStoredPreferences::UpdateWith(const Rtt::Preference
 					else
 					{
 						// Write a null terminated string to the registry.
-						WinString stringTranscoder(stringPointer->c_str());
+						RttString stringTranscoder(stringPointer->c_str());
 						writeResult = ::RegSetValueExW(
 								keyHandle, registryPathComponents.ValueName->c_str(), 0,
 								REG_SZ, (LPBYTE)stringTranscoder.GetUTF16(),
@@ -571,7 +571,7 @@ Rtt::OperationResult RegistryStoredPreferences::Delete(const char* keyNameArray[
 	}
 
 	// Delete all of the given preferences from the registry.
-	WinString errorMessage;
+	RttString errorMessage;
 	int preferencesDeleted = 0;
 	for (int keyIndex = 0; keyIndex < count; keyIndex++)
 	{
@@ -588,7 +588,7 @@ Rtt::OperationResult RegistryStoredPreferences::Delete(const char* keyNameArray[
 		}
 
 		// Build an absolute registry path.
-		WinString registryPath(fBaseRegistryPath);
+		RttString registryPath(fBaseRegistryPath);
 		if (registryPath.IsEmpty() == false)
 		{
 			if ((keyName[0] != L'\\') && (!fIsUsingForwardSlashAsPathSeparator || (keyName[0] != L'/')))
@@ -825,7 +825,7 @@ RegistryStoredPreferences::ExtractComponentsFromRegistryPath(const wchar_t* path
 	if (0 == hiveKeyHandle)
 	{
 		std::wstring hiveName(path, hiveNameLength);
-		WinString message;
+		RttString message;
 		message.Format(L"Given unknown registry hive name: %s", hiveName.c_str());
 		return Rtt::ValueResult<ExtractComponentsResult>::FailedWith(message.GetUTF8());
 	}
