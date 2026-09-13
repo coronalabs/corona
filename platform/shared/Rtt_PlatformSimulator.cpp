@@ -371,9 +371,14 @@ PlatformSimulator::LoadConfig( const char deviceConfigFile[], Config& rConfig )
 		rConfig.supportsMouse = false;
 		switch (rConfig.platform)
 		{
+			// In the Simulator we allow mouse events in all skins though we
+			// warn if the simulated device doesn't support them (see init.lua)
 			case TargetDevice::kAndroidPlatform:
+			case TargetDevice::kIPhonePlatform:
 			case TargetDevice::kOSXPlatform:
+			case TargetDevice::kTVOSPlatform:
 			case TargetDevice::kWin32Platform:
+			case TargetDevice::kWinPhoneSilverlightPlatform:
 				rConfig.supportsMouse = true;
 				break;
 			default:
