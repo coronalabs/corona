@@ -1046,9 +1046,11 @@ InitializeFixtureFromLua( lua_State *L,
 static const char kDistanceJointType[] = "distance";
 static const char kPivotJointType[] = "pivot";
 static const char kPistonJointType[] = "piston";
+static const char kPistonJointV2Type[] = "pistonV2";
 static const char kFrictionJointType[] = "friction";
 static const char kWeldJointType[] = "weld"; // note: has no type-specific methods
 static const char kWheelJointType[] = "wheel"; // combines a piston and a pivot joint, like a wheel on a shock absorber
+static const char kWheelV2JointType[] = "wheelV2"; // wheel joint v2.4.2
 static const char kPulleyJointType[] = "pulley";
 static const char kTouchJointType[] = "touch";
 static const char kGearJointType[] = "gear";
@@ -1262,6 +1264,29 @@ newJoint( lua_State *L )
 			result = CreateAndPushJoint( luaStateHandle, physics, jointDef );
 		}
 
+		else if (strcmp(kPistonJointV2Type, jointType) == 0)
+		{
+			b2Body* body1 = e1->GetBody();
+			b2Body* body2 = e2->GetBody();
+
+			Real px = luaL_torealphysics(L, 4, scale);
+			Real py = luaL_torealphysics(L, 5, scale);
+
+			// Don't scale the axis vector
+			Real axisX = luaL_toreal(L, 6);
+			Real axisY = luaL_toreal(L, 7);
+
+			b2PrismaticJointDefV2 jointDef;
+
+			b2Vec2 anchor(px, py);
+			b2Vec2 axis(axisX, axisY);
+			axis.Normalize();
+
+			jointDef.Initialize(body1, body2, anchor, axis);
+
+			result = CreateAndPushJoint(luaStateHandle, physics, jointDef);
+		}
+
 		else if ( strcmp( kFrictionJointType, jointType ) == 0 )
 		{
 			b2Body *body1 = e1->GetBody();
@@ -1321,6 +1346,29 @@ newJoint( lua_State *L )
 			jointDef.Initialize( body1, body2, point, axis );
 
 			result = CreateAndPushJoint( luaStateHandle, physics, jointDef );
+		}
+
+		else if (strcmp(kWheelV2JointType, jointType) == 0)
+		{
+			b2Body* body1 = e1->GetBody();
+			b2Body* body2 = e2->GetBody();
+
+			Real px = luaL_torealphysics(L, 4, scale);
+			Real py = luaL_torealphysics(L, 5, scale);
+
+			Real qx = luaL_torealphysics(L, 6, scale);
+			Real qy = luaL_torealphysics(L, 7, scale);
+
+			b2WheelJointDefV2 jointDef;
+
+			b2Vec2 point(px, py);
+			b2Vec2 axis(qx, qy);
+			
+			axis.Normalize();
+
+			jointDef.Initialize(body1, body2, point, axis);
+
+			result = CreateAndPushJoint(luaStateHandle, physics, jointDef);
 		}
 
 		else if ( strcmp( kPulleyJointType, jointType ) == 0 )
