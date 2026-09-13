@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md 
+// For overview and more information on licensing please refer to README.md
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
 //
@@ -45,6 +45,7 @@
 #define REGISTRY_ALIAS_DEFAULT _T("")
 #define REGISTRY_SAVEDIR_DEFAULT _T("")
 #define REGISTRY_CREATE_LIVE_BUILD_DEFAULT _T("0")
+#define REGISTRY_AFTER_BUILD _T("0")
 #define REGISTRY_ENABLE_MONETIZATION_DEFAULT _T("1")
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -66,7 +67,7 @@ public:
 	void SetSave( bool bSave ) { m_bSaveToRegistry = bSave; }
 
     void RegistryGet( CString sSection, CString sKey, CString sMatch );
-    void RegistryPut( CString sSection, CString sKey, CString sMatch ); 
+    void RegistryPut( CString sSection, CString sKey, CString sMatch );
 
     void ClearCurrent();
     void ClearSaved();
@@ -163,6 +164,8 @@ public:
 
 	bool GetCreateLiveBuild();
 	void SetCreateLiveBuild(bool createLiveBuild);
+  CString GetAfterBuild();
+	void SetAfterBuild(CString afterBuild);
 
 #ifdef AUTO_INCLUDE_MONETIZATION_PLUGIN
 	bool GetEnableMonetization();
@@ -219,10 +222,11 @@ protected:
 
 	bool m_CreateLiveBuild;
 
+  CString m_sAfterBuild;
+
 #ifdef AUTO_INCLUDE_MONETIZATION_PLUGIN
 	bool m_EnableMonetization;
 #endif
 
 	bool m_sCreateFBInstantArchive;
 };
-

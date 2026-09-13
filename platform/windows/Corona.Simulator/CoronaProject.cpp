@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md 
+// For overview and more information on licensing please refer to README.md
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
 //
@@ -224,9 +224,10 @@ CCoronaProject::RegistryGet( CString sSection )
 
 	// Third argument is what this is a password for, not value of password
     m_KeystorePassword.RegistryGet( sSection, REGISTRY_KEYSTOREPWD, GetKeystorePath() );
-    m_AliasPassword.RegistryGet( sSection, REGISTRY_ALIASPWD, GetAlias() );    
+    m_AliasPassword.RegistryGet( sSection, REGISTRY_ALIASPWD, GetAlias() );
 	stringBuffer = pApp->GetProfileString(sSection, REGISTRY_CREATE_LIVE_BUILD, REGISTRY_CREATE_LIVE_BUILD_DEFAULT);
 	m_CreateLiveBuild = _ttoi(stringBuffer) ? true : false;
+	m_sAfterBuild = pApp->GetProfileString( sSection, REGISTRY_AFTER_BUILD );
 #ifdef AUTO_INCLUDE_MONETIZATION_PLUGIN
 	stringBuffer = pApp->GetProfileString(sSection, REGISTRY_ENABLE_MONETIZATION, REGISTRY_ENABLE_MONETIZATION_DEFAULT);
 	m_EnableMonetization = _ttoi(stringBuffer) ? true : false;
@@ -262,6 +263,8 @@ CCoronaProject::RegistryPut( CString sSection )
 	m_AliasPassword.RegistryPut(sSection, REGISTRY_ALIASPWD, GetAlias());
 	stringBuffer.Format(_T("%d"), m_CreateLiveBuild);
 	pApp->WriteProfileString(sSection, REGISTRY_CREATE_LIVE_BUILD, stringBuffer);
+
+	pApp->WriteProfileString( sSection, REGISTRY_AFTER_BUILD, m_sAfterBuild );
 #ifdef AUTO_INCLUDE_MONETIZATION_PLUGIN
 	stringBuffer.Format(_T("%d"), m_EnableMonetization);
 	pApp->WriteProfileString(sSection, REGISTRY_ENABLE_MONETIZATION, stringBuffer);
@@ -356,7 +359,7 @@ CCoronaProject::ValidatePackage( CString sPackage )
 		 if( (nextPeriod == 0)  // starting with period
              || (nextPeriod == length - 1) // ending with period
              || (nextPeriod == prevPeriod + 1 ) // two periods in a row
-		     || ! allalphanum( sPackage, prevPeriod + 1, nextPeriod - 1) 
+		     || ! allalphanum( sPackage, prevPeriod + 1, nextPeriod - 1)
              || isJavaReservedWord( sPackage, prevPeriod + 1, nextPeriod - 1) )
 		 {
              bCorrect = false;
@@ -396,7 +399,7 @@ CCoronaProject::allalphanum( CString string, int start, int end )
     return true;
 }
 
-// isJavaReservedWord - return true if all the characters between start and end, inclusive, 
+// isJavaReservedWord - return true if all the characters between start and end, inclusive,
 // form a Java reserved word.  http://www.javacamp.org/javaI/reservedWords.html
 // Note that case matters: "interface" is reserved, but "Interface" isn't.
 bool
@@ -566,6 +569,15 @@ void CCoronaProject::SetCreateLiveBuild(bool createLiveBuild)
 	m_CreateLiveBuild = createLiveBuild;
 }
 
+CString CCoronaProject::GetAfterBuild()
+{
+	return m_sAfterBuild;
+}
+void CCoronaProject::SetAfterBuild(CString afterBuild)
+{
+	m_sAfterBuild = afterBuild;
+}
+
 #ifdef AUTO_INCLUDE_MONETIZATION_PLUGIN
 bool CCoronaProject::GetEnableMonetization()
 {
@@ -681,7 +693,7 @@ CEncryptedKeeper::RegistryPut( CString sSection, CString sKey, CString sMatch )
         ClearCurrent();
 	}
 	// Re-save of same data, could be to different registry location
-	else if( m_aSavedData != NULL && m_nSavedData > 0 ) 
+	else if( m_aSavedData != NULL && m_nSavedData > 0 )
 	{
 		pApp->WriteProfileBinary( sSection, sKey, m_aSavedData, m_nSavedData );
 	}
@@ -716,7 +728,7 @@ CEncryptedKeeper::ClearSaved()
 }
 
 // ClearAll - clear both current and saved data
-void 
+void
 CEncryptedKeeper::ClearAll()
 {
     ClearCurrent();
@@ -738,7 +750,7 @@ void CEncryptedKeeper::EncryptString( CString sSecret, BYTE **paBytes, UINT *pnB
     // byte character sets.
     unencryptedData.cbData = (sSecret.GetLength() + 1)  * sizeof( sSecret[0] );
     if (!CryptProtectData(
-        &unencryptedData, 
+        &unencryptedData,
         _T("Marker"),
         NULL,
         NULL,
@@ -763,7 +775,7 @@ void CEncryptedKeeper::EncryptString( CString sSecret, BYTE **paBytes, UINT *pnB
 CString CEncryptedKeeper::DecryptString( BYTE *aBytes, UINT nBytes )
 {
     DATA_BLOB encryptedData, unencryptedData;
-    
+
     encryptedData.pbData = aBytes;
     encryptedData.cbData = nBytes;
     LPWSTR dataDescription; // Receives the description saved with data
@@ -784,7 +796,7 @@ CString CEncryptedKeeper::DecryptString( BYTE *aBytes, UINT nBytes )
 
     // NOTE: Contains NULL terminator
     CString sSecret( (LPCTSTR) unencryptedData.pbData, unencryptedData.cbData );
-    
+
     // Cleanup
     LocalFree(unencryptedData.pbData);
 
