@@ -77,9 +77,9 @@ static int MPG123_init(void);
 static void MPG123_quit(void);
 static int MPG123_open(Sound_Sample *sample, const char *ext);
 static void MPG123_close(Sound_Sample *sample);
-static Uint32 MPG123_read(Sound_Sample *sample);
+static size_t MPG123_read(Sound_Sample *sample);
 static int MPG123_rewind(Sound_Sample *sample);
-static int MPG123_seek(Sound_Sample *sample, Uint32 ms);
+static int MPG123_seek(Sound_Sample *sample, size_t ms);
 
 /* !!! FIXME: MPEG and MPG extensions? */
 static const char *extensions_mpg123[] = { "MP3", NULL };
@@ -133,9 +133,9 @@ static int MPG123_init(void)
     assert(mpg123_mutex == NULL);
     if (mpg123_init() == MPG123_OK)
     {
-        char **supported = mpg123_supported_decoders();
-        print_decoders("ALL MPG123 DECODERS", mpg123_decoders());
-        print_decoders("SUPPORTED MPG123 DECODERS", mpg123_supported_decoders());
+        const char **supported = mpg123_supported_decoders();
+        print_decoders("ALL MPG123 DECODERS", (char **)mpg123_decoders());
+        print_decoders("SUPPORTED MPG123 DECODERS", (char **)mpg123_supported_decoders());
         if ((supported != NULL) && (*supported != NULL))
         {
             mpg123_mutex = SDL_CreateMutex();
@@ -192,7 +192,7 @@ static const char *set_error(mpg123_handle *mp, const int err)
 
     snprintf(buffer, sizeof (buffer), "MPG123: %s", str);
     __Sound_SetError(buffer);
-    
+
     return(NULL);  /* this is for BAIL_MACRO to not try to reset the string. */
 } /* set_error */
 
@@ -347,7 +347,7 @@ static void MPG123_close(Sound_Sample *sample)
 } /* MPG123_close */
 
 
-static Uint32 MPG123_read(Sound_Sample *sample)
+static size_t MPG123_read(Sound_Sample *sample)
 {
     Sound_SampleInternal *internal = (Sound_SampleInternal *) sample->opaque;
     mpg123_t *mp = ((mpg123_t *) internal->decoder_private);
@@ -376,7 +376,7 @@ static int MPG123_rewind(Sound_Sample *sample)
 } /* MPG123_rewind */
 
 
-static int MPG123_seek(Sound_Sample *sample, Uint32 ms)
+static int MPG123_seek(Sound_Sample *sample, size_t ms)
 {
     Sound_SampleInternal *internal = (Sound_SampleInternal *) sample->opaque;
     mpg123_t *mp = ((mpg123_t *) internal->decoder_private);
@@ -390,4 +390,3 @@ static int MPG123_seek(Sound_Sample *sample, Uint32 ms)
 #endif /* SOUND_SUPPORTS_MPG123 */
 
 /* end of mpg123.c ... */
-
