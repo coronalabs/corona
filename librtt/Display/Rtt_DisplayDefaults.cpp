@@ -52,6 +52,7 @@ DisplayDefaults::DisplayDefaults()
 	fIsImageSheetSampledInsideFrame( false ),
 	fIsImageSheetFrameTrimCorrected( false ),
 	fIsExternalTextureRetina( true ),
+	fIsUnitRegionWantedForBuiltinEffects( false ),
     fSkipsCull( false ),
     fSkipsHitTest( false ),
     fEnableDepthInScene( false ),

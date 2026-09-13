@@ -228,6 +228,7 @@ ShaderResource::ShaderResource( Program *program, ShaderTypes::Category category
     fDetailsCount( 0U ),
     fShellTransform( NULL ),
 	fTimeTransform( NULL ),
+	fUnitRegionPolicy( kNone ),
 	fUsesUniforms( false ),
 	fUsesTime( false )
 {
@@ -246,6 +247,7 @@ ShaderResource::ShaderResource( Program *program, ShaderTypes::Category category
     fDetailsCount( 0U ),
     fShellTransform( NULL ),
 	fTimeTransform( NULL ),
+	fUnitRegionPolicy( kNone ),
 	fUsesUniforms( false ),
 	fUsesTime( false )
 {

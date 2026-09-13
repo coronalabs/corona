@@ -36,6 +36,8 @@ class CompositePaint : public Paint
 	public:
 		virtual const Paint* AsPaint( Type t ) const;
 		virtual void ApplyPaintUVTransformations( ArrayVertex2& vertices ) const override;
+		
+		const Paint* GetPaint0() const { return fPaint0; }
 
 //		virtual const MLuaUserdataAdapter& GetAdapter() const;
 

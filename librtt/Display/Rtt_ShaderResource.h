@@ -66,6 +66,15 @@ class ShaderResource
         }
         ProgramMod;
     
+		typedef enum UnitRegionPolicy
+		{
+			kNone	 = 0,
+			kAlways	 = 1,
+			kOptIn	 = 2,
+			kNumUnitRegionPolicies
+		}
+		UnitRegionPolicy;
+    
         typedef std::map< std::string, int > VertexDataMap;
 
         struct UniformData
@@ -95,6 +104,9 @@ class ShaderResource
 
         bool UsesTime() const { return fUsesTime; }
         void SetUsesTime( bool newValue ) { fUsesTime = newValue; }
+    
+		UnitRegionPolicy GetUnitRegionPolicy() const { return fUnitRegionPolicy; }
+		void SetUnitRegionPolicy( UnitRegionPolicy policy ) { fUnitRegionPolicy = policy; }
     
         const CoronaEffectCallbacks * GetEffectCallbacks() const { return fEffectCallbacks; }
         void SetEffectCallbacks( CoronaEffectCallbacks * callbacks );
@@ -159,6 +171,7 @@ class ShaderResource
         std::vector< std::string > fDetailValues;
         U32 fDetailsCount;
         TimeTransform *fTimeTransform;
+        UnitRegionPolicy fUnitRegionPolicy;
         bool fUsesUniforms;
         bool fUsesTime;
         

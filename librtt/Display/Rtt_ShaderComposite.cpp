@@ -305,7 +305,9 @@ ShaderComposite::Draw( Renderer& renderer, const RenderData& objectData, const G
 {
     if ( !renderer.CanAddGeometryWriters() ) // ignore during raw draws
     {
-        renderer.SetGeometryWriters( writers, n );
+		bool encodeUnitRegion = objectData.fWantsUnitRegion &&
+			( objectData.fAlwaysUseUnitRegion || renderer.GetOptInToUnitRegionEncoding() );
+		renderer.SetGeometryWriters( writers, n, encodeUnitRegion, objectData.fHasDistortion );
     }
 
     DrawState state( fResource->GetEffectCallbacks(), fIsDrawing );

@@ -50,6 +50,12 @@ struct RenderData
 //	Real fMaxDepthRange;
 	BlendMode fBlendMode;
 	RenderTypes::BlendEquation fBlendEquation;
+	
+	// for unit region mechanics:
+	bool fFromImageSheet;
+	bool fWantsUnitRegion;
+	bool fAlwaysUseUnitRegion;
+	bool fHasDistortion;
 };
 
 // ----------------------------------------------------------------------------
