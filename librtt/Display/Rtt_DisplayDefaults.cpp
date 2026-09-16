@@ -34,7 +34,7 @@ static const Color kWhite = 0xFFFFFFFF;
 
 struct ExtraSpace {
 	TimeTransform fTimeTransform;
-	bool fWrittenTimeTransform;
+	bool fWrittenTimeTransform = false;
 };
 
 DisplayDefaults::DisplayDefaults()
