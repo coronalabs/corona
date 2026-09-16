@@ -653,7 +653,7 @@ VulkanRenderer::BeginFrame( Real totalTime, Real deltaTime, const TimeTransform 
 		SetFrameBufferObject( fPrimaryFBO );
 	}
 
-	Super::BeginFrame( totalTime, deltaTime, defTimeTransform, contentScaleX, contentScaleY );
+	Super::BeginFrame( totalTime, deltaTime, contentScaleX, contentScaleY );
 
 	vulkanCommandBuffer->ClearExecuteResult();
 }
