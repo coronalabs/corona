@@ -155,15 +155,9 @@ GLProgram::Create( CPUResource* resource )
 	fResource = resource;
 
 	#if !DEFER_CREATION
-		bool usesTime = false;
 		for( U32 i = 0; i < kMaximumMaskCount + 1; ++i )
 		{
 			Create( fData[i], i );
-			
-			if ( !usesTime && fData[i].HasTime() )
-			{
-				usesTime = true;
-			}
 		}
 	#endif
 
@@ -171,15 +165,6 @@ GLProgram::Create( CPUResource* resource )
     
     Program* program = static_cast<Program*>( fResource );
     ShaderResource* shaderResource = program->GetShaderResource();
-    
-    #if !DEFER_CREATION
-		if ( usesTime )
-		{
-			shaderResource->SetUsesTime( true );
-		
-			ShaderResource::SetAddedUsesTime( true );
-		}
-	#endif
 	
     const CoronaShellTransform * transform = shaderResource->GetShellTransform();
 
@@ -239,20 +224,20 @@ GLProgram::Bind( Program::Version version )
         if( !data.fProgram )
         {
             Create( version, data );
-            
-            if ( fData[version].HasTime() )
-            {
-				Program* program = (Program*)fResource;
-				
-				program->GetShaderResource()->SetUsesTime( true );
-				
-				ShaderResource::SetAddedUsesTime( true );
-            }
         }
     #endif
     
     glUseProgram( data.fProgram );
     GL_CHECK_ERROR();
+}
+
+bool
+GLProgram::UsesTime ( Program::Version version, bool includeDelta ) const
+{
+	Rtt_ASSERT( version < Program::kNumVersions );
+	Rtt_ASSERT( ( 0 != fData[version].fProgram ) || ( !fData[version].HasTotalTime() && !fData[version].HasDeltaTime() ) );
+
+	return fData[version].HasTotalTime() || ( includeDelta && fData[version].HasDeltaTime() );
 }
 
 void

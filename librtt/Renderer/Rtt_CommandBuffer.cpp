@@ -29,8 +29,7 @@ CommandBuffer::CommandBuffer( Rtt_Allocator* allocator )
 	fNumCommands( 0 ), 
 	fBytesAllocated( 0 ), 
 	fBytesUsed( 0 ),
-	fDefaultTransformedTime( -1.f ),
-	fTimeTransform( NULL )
+	fUsedTime( false )
 {
 
 }
@@ -41,8 +40,6 @@ CommandBuffer::~CommandBuffer()
     {
         delete [] fBuffer;
     }
-
-//	Rtt_DELETE( fDefaultTimeTransform );
 }
 
 void
@@ -72,27 +69,6 @@ CommandBuffer::WriteBytes( const void * value, size_t size )
 
 	memcpy( fBuffer + fBytesUsed, value, size );
 	fBytesUsed += size;
-}
- 
-void
-CommandBuffer::PrepareTimeTransforms( float rawTime, const TimeTransform* transform )
-{
-	fTimeTransform = NULL;
-
-	if ( transform->func )
-	{
-		fDefaultTransformedTime = transform->Apply( rawTime );
-	}
-	else
-	{
-		fDefaultTransformedTime = rawTime;
-	}
-}
-
-void
-CommandBuffer::AcquireTimeTransform( ShaderResource* resource )
-{
-	fTimeTransform = resource->GetTimeTransform();
 }
 
 // ----------------------------------------------------------------------------

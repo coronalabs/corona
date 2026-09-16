@@ -682,19 +682,23 @@ ShaderFactory::BindTimeTransform(lua_State *L, int index, const SharedPtr< Shade
 
     lua_getfield( L, index, "timeTransform" ); // ..., xform?
 
+	TimeTransform transform;
+
     if (lua_istable( L, -1 ))
     {
-        const char *func = TimeTransform::FindFunc( L, -1, "graphics.defineEffect()" );
+        TimeTransform::Method method = TimeTransform::FindMethod( L, -1, "graphics.defineEffect()" );
 
-        if (func)
+        if (TimeTransform::kNumMethodTypes != method )
         {
-            TimeTransform *transform = Rtt_NEW( fAllocator, TimeTransform );
- 
-            transform->SetFunc( L, -1, "graphics.defineEffect()", func );
-             
-            resource->SetTimeTransform( transform );
+            transform.SetMethod( L, -1, "graphics.defineEffect()", method );
         }
     }
+    else
+    {
+		transform = fOwner.GetDefaults().GetTimeTransform( fOwner.GetGpuSupportsHighPrecisionFragmentShaders() );
+    }
+
+	resource->SetTimeTransform( transform );
 
     lua_pop( L, 1 ); // ...
 }
