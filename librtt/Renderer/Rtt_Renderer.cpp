@@ -2079,7 +2079,7 @@ Renderer::GetVersionCode( bool addingMask ) const
 bool
 Renderer::AddedUsesTime()
 {
-	return fFrontCommandBuffer->GetUsedTime();
+	return fFrontCommandBuffer->GetDidUseTime();
 }
 
 void

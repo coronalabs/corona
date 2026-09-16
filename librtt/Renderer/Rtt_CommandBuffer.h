@@ -124,8 +124,8 @@ class CommandBuffer
         virtual Real Execute( bool measureGPU ) = 0;
 
 	public:
-		void SetUsedTime( bool newValue ) { fUsedTime = newValue; }
-		bool GetUsedTime() const { return fUsedTime; }
+		void SetDidUseTime( bool newValue ) { fDidUseTime = newValue; }
+		bool GetDidUseTime() const { return fDidUseTime; }
 
     private:
         virtual void InitializeFBO() = 0;
@@ -139,7 +139,7 @@ class CommandBuffer
         U32 fNumCommands;
         U32 fBytesAllocated;
         U32 fBytesUsed;
-		bool fUsedTime;
+		bool fDidUseTime;
 };
 
 // ----------------------------------------------------------------------------

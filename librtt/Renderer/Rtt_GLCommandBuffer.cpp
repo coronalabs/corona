@@ -953,7 +953,7 @@ GLCommandBuffer::Execute( bool measureGPU )
     U32 currentAttributeCount = 0, instanceCount = 0;
     bool clearingDepth = false, clearingStencil = false;
 
-	SetUsedTime( false );
+	SetDidUseTime( false );
 
     for( U32 i = 0; i < fNumCommands; ++i )
     {
@@ -1055,9 +1055,9 @@ GLCommandBuffer::Execute( bool measureGPU )
  
                 program->GetExtraUniformsInfo( fCurrentDrawVersion, extraUniforms );
 
-				if ( !GetUsedTime() && program->UsesTime( fCurrentDrawVersion, true ) )
+				if ( !GetDidUseTime() && program->UsesTime( fCurrentDrawVersion, true ) )
 				{
-					SetUsedTime( true );
+					SetDidUseTime( true );
 				}
 
                 DEBUG_PRINT( "Bind Program: program=%p version=%i", program, fCurrentDrawVersion );

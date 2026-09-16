@@ -29,7 +29,7 @@ CommandBuffer::CommandBuffer( Rtt_Allocator* allocator )
 	fNumCommands( 0 ), 
 	fBytesAllocated( 0 ), 
 	fBytesUsed( 0 ),
-	fUsedTime( false )
+	fDidUseTime( false )
 {
 
 }
