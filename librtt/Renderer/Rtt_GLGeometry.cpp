@@ -777,7 +777,7 @@ BindExtensionAttribute( const FormatExtensionList::Attribute& attribute, GLuint 
 
     U32 offset = attribute.offset + offsetExtra;
     
-    glVertexAttribPointer( attributeIndex, attribute.components, type, attribute.normalized, (GLsizei)size, start ? (GLvoid*)(start + offset) : (GLvoid*)offset ); GL_CHECK_ERROR();
+    glVertexAttribPointer( attributeIndex, attribute.GetComponentCount(), type, attribute.normalized, (GLsizei)size, start ? (GLvoid*)(start + offset) : (GLvoid*)offset ); GL_CHECK_ERROR();
 }
 
 void
