@@ -328,9 +328,9 @@ GatherAttributeExtensions( const FormatExtensionList* extensionList, std::string
         const FormatExtensionList::Attribute& attribute = extensionList->GetAttributes()[i];
         char buf[64], count[2] = {};
         
-        if (attribute.components > 1)
+        if (attribute.GetComponentCount() > 1)
         {
-            count[0] = '0' + attribute.components;
+            count[0] = '0' + attribute.GetComponentCount();
         }
         
         const char * prim = "float", * vec = "vec";

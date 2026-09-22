@@ -35,10 +35,11 @@ class FormatExtensionList {
             U32 nameHash;
             U16 type;
             U16 offset : 13;
-            U16 components : 2;
+            U16 comp_minus_1 : 2;
             U16 normalized : 1;
             
             U32 GetSize() const;
+            U16 GetComponentCount() const { return comp_minus_1 + 1; }
             bool IsFloat() const;
         };
     
