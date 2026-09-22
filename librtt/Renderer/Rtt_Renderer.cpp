@@ -886,6 +886,8 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
                 
                 effectCallbacks->shaderBind( renderer, shaderData->GetExtraSpace() );
 
+				// TODO: seems okay (should still include previous results), but
+				// redoes work... visit bitset idea down the road
                 if (fMaybeDirty)
                 {
                     dirtyIndices.Empty();
@@ -1161,7 +1163,7 @@ Renderer::AddStateBlock( const CoronaStateBlock & block )
     
     if (length > 0)
     {
-        const StateBlockInfo* lastInfo = fCustomInfo->fStateBlocks.ReadAccess()[length - 1];
+        const StateBlockInfo* lastInfo = fCustomInfo->fStateBlocks[length - 1];
         
         info.fOffset = lastInfo->fOffset + lastInfo->fSize;
     }
@@ -1200,7 +1202,10 @@ Renderer::GetStateBlockInfo( U16 id, U8 *& start, U32 & size, bool mightDirty )
         start = fWorkingState.WriteAccess() + info->fOffset;
         size = info->fSize;
 
-        fMaybeDirty = mightDirty && size > 0;
+        if (mightDirty)
+		{
+			fMaybeDirty = true; // TODO: use a couple bitsets, in lieu of dirtyIndices
+		}
         
         return true;
     }
