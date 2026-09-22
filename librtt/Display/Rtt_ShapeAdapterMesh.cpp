@@ -1,6 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
+// With contributions from Dianchu Technology
 // For overview and more information on licensing please refer to README.md 
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
@@ -602,11 +603,16 @@ int ShapeAdapterMesh::setVertex( lua_State *L )
     }
 
 	Vertex2& orig = tesselator->GetMesh().WriteAccess()[vertIndex];
-	
-    if( !Rtt_RealEqual(x, orig.x) || !Rtt_RealEqual(y, orig.y) || zChanged)
+
+	bool xyChanged = !Rtt_RealEqual( x, orig.x ) || !Rtt_RealEqual( y, orig.y );
+	if ( xyChanged || zChanged )
 	{
-		orig.x = x;
-		orig.y = y;
+		if ( xyChanged )
+		{
+			orig.x = x;
+			orig.y = y;
+			tesselator->Invalidate();
+		}
 
 		path->Invalidate( ClosedPath::kFillSource |
 						 ClosedPath::kStrokeSource );
