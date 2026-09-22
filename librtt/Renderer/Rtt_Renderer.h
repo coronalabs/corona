@@ -61,7 +61,7 @@ class Renderer
 		// Perform any per-frame preparation. Total time is the time in seconds
 		// since the start of the application. Delta time is the amount of time
 		// in seconds it took to complete the previous frame.
-		virtual void BeginFrame( Real totalTime, Real deltaTime, const TimeTransform *defTimeTransform, Real contentScaleX, Real contentScaleY, bool isCapture = false );
+		virtual void BeginFrame( Real totalTime, Real deltaTime, Real contentScaleX, Real contentScaleY, bool isCapture = false );
 
         // Perform any per-frame finalization.
         virtual void EndFrame();
@@ -411,6 +411,9 @@ class Renderer
         Array< GeometryWriter > fGeometryWriters;
         const GeometryWriter* fCurrentGeometryWriterList; // to detect change in writer; assumed to be stable object, i.e. either NULL (default) or some static array
         bool fCanAddGeometryWriters;
+        
+		const TimeTransform* fPrevTimeTransform;   
+		float fRawTime;
 };
 
 // ----------------------------------------------------------------------------

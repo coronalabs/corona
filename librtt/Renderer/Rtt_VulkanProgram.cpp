@@ -153,6 +153,15 @@ VulkanProgram::VulkanProgram( VulkanContext * context )
 	}
 }
 
+bool
+VulkanProgram::UsesTime ( Program::Version version, bool includeDelta ) const
+{
+	Rtt_ASSERT( version < Program::kNumVersions );
+	Rtt_ASSERT( ( 0 != fData[version].fProgram ) || ( !fData[version].HasTotalTime() && !fData[version].HasDeltaTime() ) );
+
+	return fData[version].HasTotalTime() || ( includeDelta && fData[version].HasDeltaTime() );
+}
+
 void 
 VulkanProgram::Create( CPUResource* resource )
 {
@@ -160,27 +169,9 @@ VulkanProgram::Create( CPUResource* resource )
 	fResource = resource;
 	
 	#if !DEFER_VK_CREATION
-		bool usesTime = false;
 		for( U32 i = 0; i < kMaximumMaskCount + 1; ++i )
 		{
 			Create( fData[i], i );
-			
-			if ( !usesTime && fData[i].HasTime() )
-			{
-				usesTime = true;
-			}
-		}
-	#endif
-
-    Program* program = static_cast<Program*>( fResource );
-    ShaderResource* shaderResource = program->GetShaderResource();
-    
-    #if !DEFER_VK_CREATION
-		if ( usesTime )
-		{
-			shaderResource->SetUsesTime( true );
-		
-			ShaderResource::SetAddedUsesTime( true );
 		}
 	#endif
 }
@@ -223,15 +214,6 @@ VulkanProgram::Bind( VulkanRenderer & renderer, Program::Version version )
 		if( !data.fAttemptedCreation )
 		{
 			Create( version, data );
-			
-			if ( fData[version].HasTime() )
-            {
-				Program* program = (Program*)fResource;
-				
-				program->GetShaderResource()->SetUsesTime( true );
-				
-				ShaderResource::SetAddedUsesTime( true );
-            }
 		}
 	#endif
 

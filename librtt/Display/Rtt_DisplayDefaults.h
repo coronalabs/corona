@@ -119,8 +119,8 @@ class DisplayDefaults
         U32 GetAddedStencilClearValue() const { return fAddedStencilClear; }
         void SetAddedStencilClearValue( float newValue ) { fAddedStencilClear = newValue; }
 
-        const TimeTransform* GetTimeTransform() const;
-        void SetTimeTransform( const TimeTransform *transform );
+        TimeTransform GetTimeTransform( bool gpuSupportsHighPrecisionShaders ) const;
+        void SetTimeTransform( const TimeTransform& transform );
 
     private:
         Color fClearColor;
@@ -154,7 +154,7 @@ class DisplayDefaults
         float fAddedDepthClear;
         U32 fSceneStencilClear;
         U32 fAddedStencilClear;
-        TimeTransform *fTimeTransform;
+        U8 fExtraSpace[32]; // Avoid some up-front dependencies
 };
 
 // ----------------------------------------------------------------------------
