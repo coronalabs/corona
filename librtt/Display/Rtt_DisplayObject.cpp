@@ -245,9 +245,12 @@ DisplayObject::DisplayObject()
     fProperties( kIsVisible | kIsHitTestMasked ),
     fAlpha( 0xFF ),
     fAlphaCumulative( fAlpha ),
-    fObjectDesc("DisplayObject"),
+    fObjectDesc("DisplayObject")
+#if 0
+    ,
     fWhereDefined(NULL),
     fWhereChanged(NULL)
+#endif
 {
 }
 
@@ -282,9 +285,10 @@ DisplayObject::~DisplayObject()
         // This disconnects DisplayObject from the LuaProxy.
         ReleaseProxy();
     }
-
+#if 0
     free((void *)fWhereDefined);
     free((void *)fWhereChanged);
+#endif
 }
 
 void
@@ -650,23 +654,7 @@ DisplayObject::InitProxy( lua_State *L )
             LuaProxy( L, * const_cast< DisplayObject* >( this ), ProxyVTable(), kProxyClassName ) );
     }
 
-    // This is called for all display objects so take the opportunity to record where definition occurred
-    // (this is a noop on non-debug builds because lua_where returns an empty string)
-    luaL_where(L, 1);
-    const char *where = lua_tostring( L, -1 );
-
-    if (where[0] != 0)
-    {
-        if (fWhereDefined != NULL)
-        {
-            free((void *) fWhereDefined);
-        }
-
-        // If this fails, the pointer will be NULL and that's handled gracefully
-        fWhereDefined = strdup(where);
-    }
-
-    lua_pop(L, 1);
+	fLuaProxy->UpdateDefinedDebugInfo( L );
 }
 
 LuaProxy*

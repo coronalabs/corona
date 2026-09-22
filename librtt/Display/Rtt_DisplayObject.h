@@ -470,8 +470,10 @@ class DisplayObject : public MDrawable, public MLuaProxyable
         mutable DisplayObjectExtensions *fExtensions;
         const void *fFocusId;
         const char *fObjectDesc;
+	#if 0
         const char *fWhereDefined;
         const char *fWhereChanged;
+	#endif
 
     private:
         BitmapMask *fMask;

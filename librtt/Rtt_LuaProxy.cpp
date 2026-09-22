@@ -13,6 +13,7 @@
 #include "Rtt_LuaProxyVTable.h"
 #include "Rtt_LuaAux.h"
 #include "Rtt_MLuaProxyable.h"
+#include "Rtt_LuaContext.h"
 
 #include <string.h>
 
@@ -293,6 +294,11 @@ const luaL_Reg LuaProxy::kMetatable[] =
 
 static const char kProxyFieldKey[] = "_proxy";
 static const char kClassFieldKey[] = "_class";
+
+static const char kDefinedFieldKey[] = "_definedWhere";
+static const char kChangedFieldKey[] = "_changedWhere";
+static const char kLineDefinedFieldKey[] = "_lineDefinedWhere";
+static const char kLineChangedFieldKey[] = "_lineChangedWhere";
 
 
 bool LuaProxy::IsProxy(lua_State *L, int index)
@@ -731,6 +737,25 @@ LuaProxy::RestoreTable( lua_State *L )
 		// push t on top of stack
 		PushTable( L );
 
+
+// note: do these while proxy is still valid
+// TODO: if (usingDebugInfo)
+		// t[definedWhere_] = nil
+		lua_pushnil( L );
+		lua_setfield( L, -2, kDefinedFieldKey );
+
+		// t[changedWhere_] = nil
+		lua_pushnil( L );
+		lua_setfield( L, -2, kChangedFieldKey );
+
+		// t[linesDefinedWhere_] = nil
+		lua_pushnil( L );
+		lua_setfield( L, -2, kLineDefinedFieldKey );
+
+		// t[linesChangedWhere_] = nil
+		lua_pushnil( L );
+		lua_setfield( L, -2, kLineChangedFieldKey );
+
 		// t[proxy_] = nil
 		lua_pushnil( L );
 		lua_setfield( L, -2, kProxyFieldKey );
@@ -777,6 +802,118 @@ LuaProxy::ReleaseTableRef( lua_State *L )
 {
 	luaL_unref( L, LUA_REGISTRYINDEX, TableRef() );
 	fTableRef = LUA_NOREF;
+}
+
+static void
+FindDebugInfo( lua_State *L, int tableRef, const char *strKey, const char *lineKey )
+{
+	lua_getref( L, tableRef ); // ..., tref
+	
+	// adapted from luaL_where():
+	lua_Debug ar;
+	if ( lua_getstack( L, 1, &ar ) && lua_getinfo( L, "Sl", &ar ) && ar.currentline > 0 )
+	{
+		lua_pushstring( L, ar.source ); // ..., tref, source
+		
+		Rtt_ASSERT( lua_tostring( L, -1 ) == ar.source );
+		
+		lua_setfield( L, -2, strKey ); // ..., tref = { ..., [strKey] = source }
+		lua_pushinteger( L, ar.currentline ); // ..., tref, current_line
+		lua_setfield( L, -2, lineKey ); // ..., tref = { ..., strKey, [lineKey] = current_line }
+	}
+
+	lua_pop( L, 1 ); // ...
+}
+
+void
+LuaProxy::UpdateDefinedDebugInfo( lua_State *L )
+{
+	FindDebugInfo( L, fTableRef, kDefinedFieldKey, kLineDefinedFieldKey );
+}
+
+void
+LuaProxy::UpdateChangedDebugInfo( lua_State *L )
+{
+	FindDebugInfo( L, fTableRef, kChangedFieldKey, kLineChangedFieldKey );
+}
+
+static void
+GetShortSource( lua_State *L, char buffer[], const char * str)
+{
+	// adapted from luaO_chunkid():
+	size_t len = strcspn( str, "\n\r" );  /* stop at first newline */
+	size_t bufflen = LUA_IDSIZE - sizeof( " [string \"...\"] " );
+	if ( len > bufflen )
+	{
+		len = bufflen;
+	}
+	strcpy( buffer, "[string \"" );
+	if ( str[len] != '\0' ) /* must truncate? */
+	{  
+		strncat( buffer, str, len );
+		strcat( buffer, "..." );
+	}
+	else
+	{
+		strcat( buffer, str );
+	}
+	strcat( buffer, "\"]" );
+}
+
+static void
+PushCombinedDebugInfoString( lua_State *L, const char *str, int line )
+{
+	// cf. CL fix in luaL_where():
+	lua_pushfstring( L, "%s:%d: ", str, line );
+}
+
+static void
+GetDebugInfoString( lua_State *L, int tableRef, const char *strKey, const char *lineKey )
+{
+	lua_getref( L, tableRef ); // ..., tref
+	lua_getfield( L, -1, strKey ); // ..., tref, str?
+	
+	if ( lua_isstring( L, -1 ) )
+	{
+		lua_getfield( L, -2, lineKey ); // ..., tref, str, line?
+		
+		const char *str = lua_tostring( L, -2 );
+		int line = (int)lua_tointeger( L, -1 );
+
+		// cf. CL fix in luaL_where():
+		if ( '@' == *str )
+		{
+			PushCombinedDebugInfoString( L, str + 1, line ); // ..., tref, str, line?, combined
+		}
+		else // short source?
+		{
+			char buffer[LUA_IDSIZE];
+			
+			GetShortSource( L, buffer, str );
+			PushCombinedDebugInfoString( L, buffer, line ); // ..., tref, str, line?, combined
+
+		}
+		
+		lua_replace( L, -4 ); // ..., combined, str, line?
+		lua_pop( L, 2 ); // ..., combined
+	}
+	else
+	{
+		lua_pop( L, 1 ); // ...
+		lua_pushliteral( L, "" ); // ..., ""
+	}
+}
+
+void
+LuaProxy::GetDefinedDebugInfo( lua_State *L ) const
+{
+	GetDebugInfoString( L, fTableRef, kDefinedFieldKey, kLineDefinedFieldKey ); // ..., _defined
+}
+
+void
+LuaProxy::GetChangedDebugInfo( lua_State *L ) const
+{
+	GetDebugInfoString( L, fTableRef, kChangedFieldKey, kLineChangedFieldKey ); // ..., _lastChange
 }
 
 bool

@@ -1114,17 +1114,22 @@ LuaDisplayObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& obj
     else if ( result == 0 && strcmp( key, "_defined" ) == 0 )
     {
         const DisplayObject& o = static_cast< const DisplayObject& >( object );
-
+	#if 0
         lua_pushstring( L, o.fWhereDefined );
+	#else
+        o.fLuaProxy->GetDefinedDebugInfo( L );
+	#endif
 
         result = 1;
     }
     else if ( result == 0 && strcmp( key, "_lastChange" ) == 0 )
     {
         const DisplayObject& o = static_cast< const DisplayObject& >( object );
-
+	#if 0
         lua_pushstring( L, o.fWhereChanged );
-
+	#else
+        o.fLuaProxy->GetChangedDebugInfo( L );
+	#endif
         result = 1;
     }
 
@@ -1340,21 +1345,7 @@ LuaDisplayObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& object
     // (this is a noop on non-debug builds because lua_where returns an empty string)
     if (result)
     {
-        luaL_where(L, 1);
-        const char *where = lua_tostring( L, -1 );
-
-        if (where[0] != 0)
-        {
-            if (o.fWhereChanged != NULL)
-            {
-                free((void *) o.fWhereChanged);
-            }
-
-            // If this fails, the pointer will be NULL and that's handled gracefully
-            o.fWhereChanged = strdup(where);
-        }
-
-        lua_pop(L, 1);
+        o.fLuaProxy->UpdateChangedDebugInfo( L );
     }
 
     return result;
