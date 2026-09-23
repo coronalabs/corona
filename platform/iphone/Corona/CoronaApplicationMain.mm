@@ -20,5 +20,5 @@ FOUNDATION_EXPORT int CoronaApplicationMain( int argc, char *argv[], Class coron
 {
 	CoronaSetDelegateClass( coronaDelegateClass );
 
-	return UIApplicationMain( argc, argv, nil, nil );
+	return UIApplicationMain( argc, argv, nil, @"AppDelegate" ); // scene-based apps (iOS 27 SDK) get no delegate from a main nib
 }

@@ -251,17 +251,18 @@ IPhonePlatform::GetTopStatusBarHeightPixels() const
 {
     int result = Super::GetTopStatusBarHeightPixels();
     CGFloat scale_factor = [[UIScreen mainScreen] scale];
-    UIInterfaceOrientation currentOrienation = [UIApplication sharedApplication].statusBarOrientation;
-    if ( UIInterfaceOrientationPortrait == currentOrienation ||
-        UIDeviceOrientationPortraitUpsideDown == currentOrienation)
+    // UIApplication's status bar frame is empty in scene-based apps, so ask the window scene when there is one.
+    // Since iOS 8 the frame is reported in the current orientation, so its height is the bar's height.
+    CGRect statusBarFrame = [UIApplication sharedApplication].statusBarFrame;
+    if ( @available( iOS 13.0, * ) )
     {
-        result = [UIApplication sharedApplication].statusBarFrame.size.height * scale_factor;
+        UIStatusBarManager *statusBarManager = GetView().window.windowScene.statusBarManager;
+        if ( statusBarManager )
+        {
+            statusBarFrame = statusBarManager.statusBarFrame;
+        }
     }
-    else
-    {
-        result = [UIApplication sharedApplication].statusBarFrame.size.width * scale_factor;
-    }
-    
+    result = statusBarFrame.size.height * scale_factor;
     return result;
 }
     

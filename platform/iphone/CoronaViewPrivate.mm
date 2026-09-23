@@ -1574,7 +1574,7 @@ PrintTouches( NSSet *touches, const char *header )
 	BOOL result = NO;
 
 #ifdef Rtt_ORIENTATION
-	UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+	UIInterfaceOrientation orientation = Rtt::IPhoneOrientation::CurrentInterfaceOrientation( self );
 	if (orientation == UIDeviceOrientationPortrait || orientation == UIDeviceOrientationPortraitUpsideDown)
 	{
 		result = YES;

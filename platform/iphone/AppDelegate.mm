@@ -427,6 +427,12 @@ IsEnterprise()
 @interface AppDelegate ()
 
 @property (nonatomic, retain) NSDictionary *launchOptions;
+@property (nonatomic, retain) NSDictionary *pendingLaunchOptions; // scene-based launch: held until the window scene connects
+@property (nonatomic, assign) BOOL didLaunch;
+
++ (BOOL)usesSceneLifecycle;
+- (BOOL)launchWithApplication:(UIApplication *)application options:(NSDictionary *)launchOptions;
+- (void)loadWindowFromNib;
 
 - (void)initSelf;
 - (void)deallocSelf;
@@ -434,6 +440,19 @@ IsEnterprise()
 
 @end
 
+
+// File's Owner stand-in used by -[AppDelegate loadWindowFromNib]
+@interface CoronaMainNibOwner : NSObject
+@end
+
+@implementation CoronaMainNibOwner
+
+- (void)setValue:(id)value forUndefinedKey:(NSString *)key
+{
+	// the nib's outlets to its owner (e.g. "delegate") are not needed, only its window is
+}
+
+@end
 
 @implementation AppDelegate
 
@@ -623,7 +642,7 @@ SetLaunchArgs( UIApplication *application, NSDictionary *launchOptions, Rtt::Run
 	bool isEnterprise = IsEnterprise();
 	runtime->SetProperty( Runtime::kIsEnterpriseFeature, isEnterprise );
 
-	UIInterfaceOrientation interfaceOrientation = viewController.interfaceOrientation;
+	UIInterfaceOrientation interfaceOrientation = IPhoneOrientation::CurrentInterfaceOrientation( view );
 
     // The UIStatusBarStyleLightContent enum doesn't exist in pre 7
 #if __IPHONE_OS_VERSION_MIN_REQUIRED >= 70000
@@ -743,6 +762,13 @@ SetLaunchArgs( UIApplication *application, NSDictionary *launchOptions, Rtt::Run
 // EW: Watch out. There is a class method called initialize.
 - (void)initializeWithApplication:(UIApplication*)application options:(NSDictionary*)launchOptions
 {
+	// UIKit no longer loads the main nib for scene-based apps, so load the window from it here when needed
+	// (scene-based launches already did this in CoronaSceneDelegate and attached the window to the scene)
+	if ( ! window )
+	{
+		[self loadWindowFromNib];
+	}
+
 	// Override point for customization after application launch.
 	self.viewController = [[[AppViewController alloc] initWithNibName:nil bundle:nil] autorelease];
 	self.viewController.wantsFullScreenLayout = YES;
@@ -972,11 +998,61 @@ SetLaunchArgs( UIApplication *application, NSDictionary *launchOptions, Rtt::Run
 	return result;
 }
 
++ (BOOL)usesSceneLifecycle
+{
+	if ( @available( iOS 13.0, * ) )
+	{
+		// UIKit switches to the scene-based life cycle when Info.plist carries a scene manifest
+		return nil != [[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIApplicationSceneManifest"];
+	}
+	return NO;
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
+{
+	if ( [AppDelegate usesSceneLifecycle] )
+	{
+		// UIKit connects the window scene right after this returns. The window is created and the runtime started
+		// from CoronaSceneDelegate at that point, so the window belongs to the scene and the connection options
+		// (e.g. the URL the app was launched with) end up in the launch options handed to main.lua.
+		self.pendingLaunchOptions = launchOptions;
+		return YES;
+	}
+
+	return [self launchWithApplication:application options:launchOptions];
+}
+
+// Loads MainWindow.nib (MainWindow-iPad.nib on iPad) and keeps its window. The nib was made for UIKit to load
+// at launch with the application as File's Owner (it wires the application's delegate outlet), which no longer
+// happens in scene-based apps. It is loaded here with a stand-in owner that ignores those outlets, so the nib
+// itself stays as it is and only its window is used.
+- (void)loadWindowFromNib
+{
+	NSBundle *bundle = [NSBundle mainBundle];
+	NSString *nibName = @"MainWindow";
+	if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && [bundle pathForResource:@"MainWindow-iPad" ofType:@"nib"] )
+	{
+		nibName = @"MainWindow-iPad";
+	}
+
+	CoronaMainNibOwner *owner = [[[CoronaMainNibOwner alloc] init] autorelease];
+	for ( id object in [bundle loadNibNamed:nibName owner:owner options:nil] )
+	{
+		if ( [object isKindOfClass:[UIWindow class]] )
+		{
+			self.window = object;
+			window.frame = [[UIScreen mainScreen] bounds];
+			break;
+		}
+	}
+	Rtt_ASSERT( window );
+}
+
+- (BOOL)launchWithApplication:(UIApplication *)application options:(NSDictionary *)launchOptions
 {
 	using namespace Rtt;
 
-	// Rtt_TRACE( ("initial accel update interval(%g)\n", [UIAccelerometer sharedAccelerometer].updateInterval ) );
+	self.didLaunch = YES;
 
 	// NOTE: Default status bar style is set in Info.plist
 	[self initializeWithApplication:application options:launchOptions];
@@ -1208,22 +1284,23 @@ SetLaunchArgs( UIApplication *application, NSDictionary *launchOptions, Rtt::Run
 	}
 }
 
-// UIAccelerometerDelegate
+// Accelerometer (CoreMotion samples forwarded by Rtt::IPhoneDevice)
 // ----------------------------------------------------------------------------
 
-- (void)accelerometer:(UIAccelerometer*)accelerometer didAccelerate:(UIAcceleration*)acceleration
+- (void)accelerometerDidUpdate:(CMAccelerometerData *)data
 {
 	using namespace Rtt;
 
-	const UIAccelerationValue kFilteringFactor = 0.1;
+	const double kFilteringFactor = 0.1;
 
-	UIAccelerationValue currentAccelX = acceleration.x;
-	UIAccelerationValue currentAccelY = acceleration.y;
-	UIAccelerationValue currentAccelZ = acceleration.z;
+	CMAcceleration acceleration = data.acceleration;
+	double currentAccelX = acceleration.x;
+	double currentAccelY = acceleration.y;
+	double currentAccelZ = acceleration.z;
 
-	UIAccelerationValue x = fGravityAccel[0];
-	UIAccelerationValue y = fGravityAccel[1];
-	UIAccelerationValue z = fGravityAccel[2];
+	double x = fGravityAccel[0];
+	double y = fGravityAccel[1];
+	double z = fGravityAccel[2];
 
 	double rawAccel[3];
 	rawAccel[0] = currentAccelX;
@@ -1250,8 +1327,8 @@ SetLaunchArgs( UIApplication *application, NSDictionary *launchOptions, Rtt::Run
 	// Compute the magnitude of the current acceleration 
 	// and if above a given threshold, it's a shake
 	bool isShake = false;
-	const UIAccelerationValue kShakeAccelSq = 4.0;
-	UIAccelerationValue accelSq = x*x + y*y + z*z;
+	const double kShakeAccelSq = 4.0;
+	double accelSq = x*x + y*y + z*z;
 	if ( accelSq >= kShakeAccelSq )
 	{
 		const CFTimeInterval kMinShakeInterval = 0.5;
@@ -1267,13 +1344,13 @@ SetLaunchArgs( UIApplication *application, NSDictionary *launchOptions, Rtt::Run
 	// throw away first value since we don't have a delta
 	if ( 0.0 == lastAccelerometerTimeStamp )
 	{
-		lastAccelerometerTimeStamp = acceleration.timestamp;
+		lastAccelerometerTimeStamp = data.timestamp;
 	}
 	else
 	{
-		AccelerometerEvent e( fGravityAccel, fInstantAccel, rawAccel, isShake, acceleration.timestamp-lastAccelerometerTimeStamp );
+		AccelerometerEvent e( fGravityAccel, fInstantAccel, rawAccel, isShake, data.timestamp-lastAccelerometerTimeStamp );
 		view.runtime->DispatchEvent( e );
-		lastAccelerometerTimeStamp = acceleration.timestamp;
+		lastAccelerometerTimeStamp = data.timestamp;
 	}
 }
 
@@ -1334,6 +1411,7 @@ SetLaunchArgs( UIApplication *application, NSDictionary *launchOptions, Rtt::Run
 
 - (void)deallocSelf
 {
+	self.pendingLaunchOptions = nil;
 	[view terminate];
 	Rtt_ASSERT( NULL == [view runtime] );
 
@@ -1444,5 +1522,176 @@ SetLaunchArgs( UIApplication *application, NSDictionary *launchOptions, Rtt::Run
 	}
 }
 */
+
+@end
+
+
+// CoronaSceneDelegate
+// ----------------------------------------------------------------------------
+
+// Folds the scene connection options into the launch options, the way the pre-scene life cycle delivered them
+static NSDictionary *
+LaunchOptionsWithConnectionOptions( NSDictionary *launchOptions, UISceneConnectionOptions *connectionOptions ) API_AVAILABLE(ios(13.0))
+{
+	NSMutableDictionary *result = ( launchOptions ? [[launchOptions mutableCopy] autorelease] : [NSMutableDictionary dictionary] );
+
+	UIOpenURLContext *urlContext = [connectionOptions.URLContexts anyObject];
+	if ( urlContext && nil == [result objectForKey:UIApplicationLaunchOptionsURLKey] )
+	{
+		[result setObject:urlContext.URL forKey:UIApplicationLaunchOptionsURLKey];
+		if ( urlContext.options.sourceApplication )
+		{
+			[result setObject:urlContext.options.sourceApplication forKey:UIApplicationLaunchOptionsSourceApplicationKey];
+		}
+	}
+
+	return result;
+}
+
+@implementation CoronaSceneDelegate
+
+- (AppDelegate *)appDelegate
+{
+	id delegate = [UIApplication sharedApplication].delegate;
+	return ( [delegate isKindOfClass:[AppDelegate class]] ? (AppDelegate *)delegate : nil );
+}
+
+- (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions
+{
+	AppDelegate *appDelegate = [self appDelegate];
+	if ( ! appDelegate || ! [scene isKindOfClass:[UIWindowScene class]] )
+	{
+		NSLog( @"CoronaSceneDelegate: the application delegate is not a Corona AppDelegate, the scene is left unattached" );
+		return;
+	}
+
+	UIWindowScene *windowScene = (UIWindowScene *)scene;
+	UIApplication *application = [UIApplication sharedApplication];
+
+	if ( ! appDelegate.window )
+	{
+		[appDelegate loadWindowFromNib];
+	}
+	appDelegate.window.windowScene = windowScene;
+	appDelegate.window.frame = windowScene.coordinateSpace.bounds;
+
+	if ( ! appDelegate.didLaunch )
+	{
+		NSDictionary *launchOptions = LaunchOptionsWithConnectionOptions( appDelegate.pendingLaunchOptions, connectionOptions );
+		appDelegate.pendingLaunchOptions = nil;
+
+		[appDelegate launchWithApplication:application options:launchOptions];
+
+		// Handoff/universal links and quick actions that launched the app arrive with the connection instead of
+		// through the application delegate, so hand them to the same code paths a running app would use.
+		for ( NSUserActivity *activity in connectionOptions.userActivities )
+		{
+			[self scene:scene continueUserActivity:activity];
+		}
+		if ( connectionOptions.shortcutItem )
+		{
+			[self windowScene:windowScene performActionForShortcutItem:connectionOptions.shortcutItem completionHandler:^( BOOL succeeded ) {}];
+		}
+	}
+	else
+	{
+		[appDelegate.window makeKeyAndVisible];
+	}
+}
+
+// UIKit does not call the application-level versions of these when the app uses scenes, so forward them.
+// The AppDelegate methods take care of the runtime and of the CoronaDelegate plugins, as before.
+
+- (void)sceneDidBecomeActive:(UIScene *)scene
+{
+	[[self appDelegate] applicationDidBecomeActive:[UIApplication sharedApplication]];
+}
+
+- (void)sceneWillResignActive:(UIScene *)scene
+{
+	[[self appDelegate] applicationWillResignActive:[UIApplication sharedApplication]];
+}
+
+- (void)sceneWillEnterForeground:(UIScene *)scene
+{
+	[[self appDelegate] applicationWillEnterForeground:[UIApplication sharedApplication]];
+}
+
+- (void)sceneDidEnterBackground:(UIScene *)scene
+{
+	[[self appDelegate] applicationDidEnterBackground:[UIApplication sharedApplication]];
+}
+
+- (void)scene:(UIScene *)scene openURLContexts:(NSSet<UIOpenURLContext *> *)URLContexts
+{
+	AppDelegate *appDelegate = [self appDelegate];
+	UIApplication *application = [UIApplication sharedApplication];
+
+	for ( UIOpenURLContext *context in URLContexts )
+	{
+		// Same precedence UIKit applies to application delegates: application:openURL:options: (which plugins can
+		// provide through the CoronaDelegate forwarding) wins over the legacy variant that dispatches the Lua event.
+		if ( [appDelegate respondsToSelector:@selector(application:openURL:options:)] )
+		{
+			NSMutableDictionary *options = [NSMutableDictionary dictionary];
+			if ( context.options.sourceApplication )
+			{
+				[options setObject:context.options.sourceApplication forKey:UIApplicationOpenURLOptionsSourceApplicationKey];
+			}
+			if ( context.options.annotation )
+			{
+				[options setObject:context.options.annotation forKey:UIApplicationOpenURLOptionsAnnotationKey];
+			}
+			[options setObject:[NSNumber numberWithBool:context.options.openInPlace] forKey:UIApplicationOpenURLOptionsOpenInPlaceKey];
+
+			[appDelegate application:application openURL:context.URL options:options];
+		}
+		else
+		{
+			[appDelegate application:application openURL:context.URL sourceApplication:context.options.sourceApplication annotation:context.options.annotation];
+		}
+	}
+}
+
+- (void)scene:(UIScene *)scene continueUserActivity:(NSUserActivity *)userActivity
+{
+	AppDelegate *appDelegate = [self appDelegate];
+	if ( [appDelegate respondsToSelector:@selector(application:continueUserActivity:restorationHandler:)] )
+	{
+		[appDelegate application:[UIApplication sharedApplication] continueUserActivity:userActivity restorationHandler:^( NSArray< id< UIUserActivityRestoring > > *restorableObjects ) {}];
+	}
+}
+
+- (void)scene:(UIScene *)scene willContinueUserActivityWithType:(NSString *)userActivityType
+{
+	AppDelegate *appDelegate = [self appDelegate];
+	if ( [appDelegate respondsToSelector:@selector(application:willContinueUserActivityWithType:)] )
+	{
+		[appDelegate application:[UIApplication sharedApplication] willContinueUserActivityWithType:userActivityType];
+	}
+}
+
+- (void)scene:(UIScene *)scene didFailToContinueUserActivityWithType:(NSString *)userActivityType error:(NSError *)error
+{
+	AppDelegate *appDelegate = [self appDelegate];
+	if ( [appDelegate respondsToSelector:@selector(application:didFailToContinueUserActivityWithType:error:)] )
+	{
+		[appDelegate application:[UIApplication sharedApplication] didFailToContinueUserActivityWithType:userActivityType error:error];
+	}
+}
+
+- (void)windowScene:(UIWindowScene *)windowScene performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem completionHandler:(void (^)(BOOL succeeded))completionHandler
+{
+	AppDelegate *appDelegate = [self appDelegate];
+	if ( [appDelegate respondsToSelector:@selector(application:performActionForShortcutItem:completionHandler:)] )
+	{
+		[appDelegate application:[UIApplication sharedApplication] performActionForShortcutItem:shortcutItem completionHandler:completionHandler];
+	}
+	else
+	{
+		completionHandler( NO );
+	}
+}
+
 
 @end

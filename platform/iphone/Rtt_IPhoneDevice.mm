@@ -10,6 +10,7 @@
 #include "Core/Rtt_Build.h"
 
 #include "Rtt_IPhoneDevice.h"
+#include "Rtt_IPhoneOrientation.h"
 
 #include "Rtt_LuaContext.h"
 #include "Rtt_MPlatform.h"
@@ -24,7 +25,6 @@
 
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSString.h>
-#import <UIKit/UIAccelerometer.h>
 #import <UIKit/UIApplication.h>
 #import <UIKit/UIDevice.h>
 #import <AudioToolbox/AudioServices.h>
@@ -429,7 +429,20 @@ IPhoneDevice::BeginNotifications( EventType type ) const
 		case MPlatformDevice::kAccelerometerEvent:
 		{
 			// TODO: Remove dependency on AppDelegate. Move to CoronaSystemResourceManager.
-			[UIAccelerometer sharedAccelerometer].delegate = (id<UIAccelerometerDelegate>)[UIApplication sharedApplication].delegate;
+			// UIAccelerometer was removed from the iOS 27 SDK, so samples come from CoreMotion and are
+			// forwarded to the AppDelegate, which keeps doing the filtering and shake detection.
+			AppDelegate *appdelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+			CMMotionManager *motion = resourceManager.motionManager;
+			if ( motion.accelerometerAvailable && [appdelegate respondsToSelector:@selector(accelerometerDidUpdate:)] )
+			{
+				[motion startAccelerometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^( CMAccelerometerData *data, NSError *error )
+				{
+					if ( data )
+					{
+						[appdelegate accelerometerDidUpdate:data];
+					}
+				}];
+			}
 			break;
 		}
 		case MPlatformDevice::kGyroscopeEvent:
@@ -476,11 +489,14 @@ IPhoneDevice::EndNotifications( EventType type ) const
 		}
 		case MPlatformDevice::kAccelerometerEvent:
 		{
-			[UIAccelerometer sharedAccelerometer].delegate = nil;
+			[resourceManager.motionManager stopAccelerometerUpdates];
 
 			// TODO: Remove dependency on AppDelegate. Move to CoronaSystemResourceManager.
 			AppDelegate* appdelegate = (AppDelegate*)[UIApplication sharedApplication].delegate;
-			appdelegate.lastAccelerometerTimeStamp = 0.0;
+			if ( [appdelegate respondsToSelector:@selector(setLastAccelerometerTimeStamp:)] )
+			{
+				appdelegate.lastAccelerometerTimeStamp = 0.0;
+			}
 			break;
 		}
 		case MPlatformDevice::kGyroscopeEvent:
@@ -571,7 +587,7 @@ IPhoneDevice::GetOrientation() const
 		// return values in the CoronaViewSupportedInterfaceOrientations array of the Info.plist
 		// so we only use this at launch time.
 
-		UIInterfaceOrientation orientation = fView.viewController.interfaceOrientation;
+		UIInterfaceOrientation orientation = IPhoneOrientation::CurrentInterfaceOrientation( fView );
 		result = IPhoneDevice::ToOrientationTypeFromUIInterfaceOrientation( orientation );
 	}
 
@@ -595,7 +611,7 @@ IPhoneDevice::SetAccelerometerInterval( U32 frequency ) const
 {
 	Rtt_WARN_SIM( frequency >= 10 && frequency <= 100, ( "WARNING: Accelerometer frequency on iPhone must be in the range [10,100] Hz" ) );
 	NSTimeInterval interval = 1.0 / frequency;
-	[UIAccelerometer sharedAccelerometer].updateInterval = interval;
+	[CoronaSystemResourceManager sharedInstance].motionManager.accelerometerUpdateInterval = interval;
 }
 
 void

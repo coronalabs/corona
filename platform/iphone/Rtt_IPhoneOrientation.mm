@@ -10,6 +10,7 @@
 #include "Rtt_IPhoneOrientation.h"
 
 #import <Foundation/NSString.h>
+#import <UIKit/UIKit.h>
 
 // ----------------------------------------------------------------------------
 
@@ -131,6 +132,34 @@ IPhoneOrientation::ConvertOrientation( UIInterfaceOrientation o )
 	}
 
 	return result;
+}
+
+UIInterfaceOrientation
+IPhoneOrientation::CurrentInterfaceOrientation( UIView *view )
+{
+	if ( @available( iOS 13.0, * ) )
+	{
+		UIWindowScene *windowScene = view.window.windowScene;
+		if ( ! windowScene )
+		{
+			// Not in a window yet (e.g. while the runtime starts): use the app's window scene
+			for ( UIScene *scene in [UIApplication sharedApplication].connectedScenes )
+			{
+				if ( [scene isKindOfClass:[UIWindowScene class]] )
+				{
+					windowScene = (UIWindowScene *)scene;
+					break;
+				}
+			}
+		}
+
+		if ( windowScene && UIInterfaceOrientationUnknown != windowScene.interfaceOrientation )
+		{
+			return windowScene.interfaceOrientation;
+		}
+	}
+
+	return [UIApplication sharedApplication].statusBarOrientation;
 }
 
 // ----------------------------------------------------------------------------

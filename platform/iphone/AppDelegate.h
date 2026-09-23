@@ -30,6 +30,7 @@ namespace Rtt
 // ----------------------------------------------------------------------------
 
 @class AddressAnnotationWithCallout;
+@class CMAccelerometerData;
 @class CoronaView;
 @class UIViewController;
 @protocol CoronaDelegate;
@@ -69,7 +70,6 @@ namespace Rtt
 @interface AppDelegate : NSObject<
 							CoronaRuntime,
 							UIApplicationDelegate,
-							UIAccelerometerDelegate,
 							MKMapViewDelegate,
 							CoronaViewLaunchDelegate >
 {
@@ -78,8 +78,8 @@ namespace Rtt
 	AppViewController *viewController;
 	id<CoronaDelegate> fCoronaDelegate;
 	int fSuspendCount;
-	UIAccelerationValue fGravityAccel[3];
-	UIAccelerationValue fInstantAccel[3];
+	double fGravityAccel[3];
+	double fInstantAccel[3];
 	CFTimeInterval fPreviousShakeTime;
 	BOOL fIsAppStarted;
 	BOOL appEnteredBackground;
@@ -94,11 +94,24 @@ namespace Rtt
 
 @property (nonatomic, assign) NSTimeInterval lastAccelerometerTimeStamp; // Needed a public variable to initialize the variable from the caller to 0 when the accelerometer starts.
 
+// Called by Rtt::IPhoneDevice with CoreMotion samples (UIAccelerometer was removed from the iOS 27 SDK)
+- (void)accelerometerDidUpdate:(CMAccelerometerData *)data;
+
 - (Rtt::Runtime *)runtime;
 
 - (id<CoronaDelegate>)coronaDelegate;
 
 - (void)didLoadMain:(id<CoronaRuntime>)runtime;
 
+@end
+
+// ----------------------------------------------------------------------------
+
+// Scene-based life cycle (mandatory for apps built with the iOS 27 SDK). Named by UIApplicationSceneManifest in
+// Info.plist: it attaches the app's window to the window scene, starts the runtime on the first connection and
+// forwards the scene callbacks to the application-level AppDelegate methods, so CoronaDelegate plugins keep
+// receiving the same callbacks as before.
+API_AVAILABLE(ios(13.0))
+@interface CoronaSceneDelegate : UIResponder< UIWindowSceneDelegate >
 @end
 

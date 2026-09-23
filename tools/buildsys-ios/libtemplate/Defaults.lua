@@ -32,6 +32,8 @@ local tableDuplicate = BuilderUtils.tableDuplicate
 -- Lowest version of iOS that Corona supports
 local MIN_VERSION_DEFAULT = "8.0"
 local MIN_VERSION_NEW = "11.0"
+-- Xcode 27 (iOS 27 SDK) refuses to build for anything below iOS 15.0, and its templates are built with that floor
+local MIN_VERSION_XCODE27 = "15.0"
 
 -- ============================================================================
 -- Defaults.tools
@@ -89,7 +91,10 @@ function M:setSdkType( sdkType, minVersion )
 	sdkVersion = tonumber(string.match(sdkVersion, '%d+%.?%d*'))
 	assert( sdkVersion, "ERROR: Cannot convert iPhone SDK Version:", sdkVersion )
 
-	if sdkVersion >= 16.4 and tonumber(minVersion) < tonumber(MIN_VERSION_NEW) then
+	if sdkVersion >= 27 and tonumber(minVersion) < tonumber(MIN_VERSION_XCODE27) then
+		minVersion = MIN_VERSION_XCODE27
+		print("Forcing minVersion to " .. MIN_VERSION_XCODE27)
+	elseif sdkVersion >= 16.4 and tonumber(minVersion) < tonumber(MIN_VERSION_NEW) then
 		minVersion = MIN_VERSION_NEW
 		print("Forcing minVersion to 11.0")
 	end

@@ -12,6 +12,8 @@
 
 #import <UIKit/UIApplication.h>
 
+@class UIView;
+
 #include "Rtt_DeviceOrientation.h"
 
 // ----------------------------------------------------------------------------
@@ -29,6 +31,11 @@ class IPhoneOrientation
 		static UIInterfaceOrientationMask OrientationMaskForString( NSString *value );
 		static DeviceOrientation::Type ConvertOrientation( NSString *value );
 		static DeviceOrientation::Type ConvertOrientation( UIInterfaceOrientation o );
+
+		// Interface orientation of the window scene hosting the view. UIApplication's statusBarOrientation
+		// (and a view controller's interfaceOrientation) answer Unknown in scene-based apps, which the
+		// iOS 27 SDK requires; those remain the fallback for older systems.
+		static UIInterfaceOrientation CurrentInterfaceOrientation( UIView *view );
 };
 
 // ----------------------------------------------------------------------------
