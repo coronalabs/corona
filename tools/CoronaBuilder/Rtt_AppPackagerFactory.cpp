@@ -32,6 +32,10 @@
 #if defined(CORONABUILDER_LINUX)
 #include "Rtt_LinuxAppPackager.h"
 #endif
+#if defined(Rtt_LINUX_ENV)
+#include "Rtt_LinuxUtils.h"
+#include <string>
+#endif
 
 #ifdef Rtt_WIN_ENV
 #include "Rtt_JavaHost.h"
@@ -394,6 +398,16 @@ AppPackagerFactory::GetResourceDirectory() const
 	return GetResourceDirectoryOSX();
 #elif defined(Rtt_WIN_ENV)
 	return GetResourceDirectoryWin();
+#elif defined(Rtt_LINUX_ENV)
+	// Resources live beside the executable in the Linux layout.
+	static std::string resourceDir;
+	if (resourceDir.empty())
+	{
+		resourceDir = std::string(GetStartupPath(NULL)) + "/Resources";
+	}
+	return resourceDir.c_str();
+#else
+	return NULL;
 #endif
 }
 

@@ -24,7 +24,7 @@ typedef std::map<std::string, std::string>	StringMap;
 typedef std::vector<unsigned char>			ByteVector;
 typedef std::string							UTF8String;
 
-void paramValidationFailure(lua_State *luaState, char *message, ...);
+void paramValidationFailure(lua_State *luaState, const char *message, ...);
 bool isudatatype(lua_State *L, int idx, const char *name);
 UTF8String pathForTemporaryFileWithPrefix(const char *prefix, UTF8String pathDir);
 
@@ -153,6 +153,7 @@ public:
 	void setDebugValue(char *debugValue, char *debugKey);
 	void setURL(const UTF8String& url) { fRequestURL = url; }
 	void setStatus(int status) { fStatus = status; }
+	void setRequestID(unsigned int requestID) { fRequestID = requestID; }
 
 	bool isError();
 	StringMap getResponseHeaders();
@@ -177,7 +178,7 @@ private:
 	long long		fBytesTransferred;
 	StringMap		fDebugValues;
 
-	int fRequestID;
+	unsigned int fRequestID;
 };
 
 // ----------------------------------------------------------------------------
