@@ -85,6 +85,7 @@ GroupObject::ReleaseChildrenLuaReferences( lua_State *L )
 GroupObject::GroupObject( Rtt_Allocator* pAllocator, StageObject* canvas )
 :    Super(),
     fStage( canvas ),
+    fOwner( NULL ),
     fChildren( pAllocator )
 {
     SetObjectDesc("GroupObject"); // for introspection
