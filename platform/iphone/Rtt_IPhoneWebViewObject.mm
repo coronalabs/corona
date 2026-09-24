@@ -41,9 +41,75 @@
 
 #import "CoronaLuaObjC+NSObject.h"
 
+#define JS(...)  [[NSString alloc] initWithCString:#__VA_ARGS__ encoding:NSUTF8StringEncoding]
+
 // ----------------------------------------------------------------------------
 
 static CGFloat kAnimationDuration = 0.3;
+
+NSString * const kCoronaEventPrefix = @"JS_";
+NSString * const kCorona4JS = @"corona";
+NSString * const kNativeBridgeCode = JS(
+	window.NativeBridge = {
+		callNative: function(method, args) {
+			return new Promise((resolve, reject) => {
+				var eventName = "JS_" + method;
+				window.addEventListener(eventName, function(e) {
+					resolve(e.detail);
+				}, { once: true });
+				window.webkit.messageHandlers.corona.postMessage({
+					type: eventName,
+					data: JSON.stringify(args),
+					noResult: false
+				});
+			});
+		},
+		sendToLua: function(event, data) {
+			var eventName = "JS_" + event;
+			window.webkit.messageHandlers.corona.postMessage({
+				type: eventName,
+				data: JSON.stringify(data),
+				noResult: true
+			});
+		},
+		on: function(event, callback, options) {
+			var eventName = "JS_" + event;
+			window.addEventListener(eventName, function(e) {
+				callback(e.detail)
+			}, options);
+		}
+	};
+	window.originalConsole = window.console;
+	window.console = {
+		log: function() {
+			var args = Array.prototype.slice.call(arguments);
+			window.webkit.messageHandlers.console.postMessage({
+				type: 'log',
+				message: args.map(function(arg) { return JSON.stringify(arg); }).join(', ')
+			});
+		},
+		warn: function() {
+			var args = Array.prototype.slice.call(arguments);
+			window.webkit.messageHandlers.console.postMessage({
+				type: 'warn',
+				message: args.map(function(arg) { return JSON.stringify(arg); }).join(', ')
+			});
+		},
+		error: function() {
+			var args = Array.prototype.slice.call(arguments);
+			window.webkit.messageHandlers.console.postMessage({
+				type: 'error',
+				message: args.map(function(arg) { return JSON.stringify(arg); }).join(', ')
+			});
+		}
+	};
+);
+NSString * const kOnLoadedJSCode = JS(
+	if (window.onNativeBridgeReady != undefined) {
+		window.onNativeBridgeReady();
+		delete window.onNativeBridgeReady;
+	}
+);
 
 //static void
 //RectToCGRect( const Rtt::Rect& bounds, CGRect * outRect )
@@ -68,7 +134,7 @@ static CGFloat kAnimationDuration = 0.3;
 
 // ----------------------------------------------------------------------------
 
-@interface Rtt_iOSWebViewContainer : UIView< WKNavigationDelegate >
+@interface Rtt_iOSWebViewContainer : UIView< WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler >
 {
 	Rtt::IPhoneWebViewObject *fOwner;
 	WKWebViewConfiguration *fWebViewConfiguration;
@@ -112,19 +178,20 @@ static CGFloat kAnimationDuration = 0.3;
 -(WKWebView*)webView
 {
 	if(fWebView == nil) {
-        // Propagate the w,h, but do not propagate the origin, as the parent already accounts for it.
-        CGRect rect = [super frame];
+		// Propagate the w,h, but do not propagate the origin, as the parent already accounts for it.
+		CGRect rect = [super frame];
 		CGRect webViewRect = rect;
 		webViewRect.origin = CGPointZero;
 		fWebView = [[WKWebView alloc] initWithFrame:webViewRect configuration:fWebViewConfiguration];
 		[fWebViewConfiguration release];
 		fWebViewConfiguration = nil;
 		fWebView.navigationDelegate = self;
+		fWebView.UIDelegate = self;
 //		fWebView.scalesPageToFit = YES;
-        
+
 		fActivityView = [[UIView alloc] initWithFrame:webViewRect];
 		fActivityView.backgroundColor = [UIColor grayColor];
-		
+
 		UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
 		[fActivityView addSubview:indicator];
 		[indicator release];
@@ -138,7 +205,7 @@ static CGFloat kAnimationDuration = 0.3;
 		AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
 		UIViewController *viewController = delegate.viewController;
 		initialOrientation = viewController.interfaceOrientation;
-		
+
 		[self addSubview:fWebView];
 		[self addSubview:fActivityView];
 
@@ -154,6 +221,15 @@ static CGFloat kAnimationDuration = 0.3;
 	if ( self )
 	{
 		fWebViewConfiguration = [[WKWebViewConfiguration alloc] init];
+		WKUserContentController *userContentController = [[WKUserContentController alloc] init];
+		WKUserScript *consoleScript = [[WKUserScript alloc] initWithSource:kNativeBridgeCode
+															injectionTime:WKUserScriptInjectionTimeAtDocumentStart
+															forMainFrameOnly:YES];
+		[userContentController addUserScript:consoleScript];
+		[userContentController addScriptMessageHandler:self name:kCorona4JS];
+		[userContentController addScriptMessageHandler:self name:@"console"];
+		fWebViewConfiguration.userContentController = userContentController;
+
 		fOwner = nil;
 		fLoadingURL = nil;
 		fWebView = nil;
@@ -161,8 +237,8 @@ static CGFloat kAnimationDuration = 0.3;
 		isOpen = false;
 		keyboardShown = NO;
 		isLoading = NO;
-		        
-        [self addObservers];
+
+		[self addObservers];
 	}
 
 	return self;
@@ -185,7 +261,7 @@ static CGFloat kAnimationDuration = 0.3;
 -(void) setFrame:(CGRect)frame
 {
 	[super setFrame:frame];
-	
+
 	frame.origin = CGPointZero;
 	[fWebView setFrame:frame];
 	[fActivityView setFrame:frame];
@@ -224,15 +300,15 @@ static CGFloat kAnimationDuration = 0.3;
 	{
 		[self.webView stopLoading];
 	}
-	
+
 	fLoadingURL = nil;
-	
+
 	if(htmlString)
 	{
 		isLoading = true;
 		[self.webView loadHTMLString:htmlString baseURL:baseUrl];
 	}
-	
+
 }
 - (void)loadRequest:(NSURLRequest*)request baseURL:(NSURL*)baseUrl
 {
@@ -241,39 +317,39 @@ static CGFloat kAnimationDuration = 0.3;
 		[self.webView stopLoading];
 	}
 
-    
-    bool loadImmediately = false;
-    
-    if (fLoadingURL)
-    {
-        if (request)
-        {
-            if (request.URL)
-            {
-                NSString *urlString1 = [fLoadingURL absoluteString];
-                NSString *urlString2 = [request.URL absoluteString];
-                
-                //If the url requests are the same, then load like normal since this
-                //generates a callback and will create a dispatch event (i.e. page reload)
-                if( [urlString1 caseInsensitiveCompare:urlString2] != NSOrderedSame )
-                {
-                    //If the requests are the same up to the hash tag then do an immediate load
-                    //since we never get a callback for this load and therefore never removed
-                    //the grey activity window
-                    NSString *subString1 = [[urlString1 componentsSeparatedByString:@"#"] objectAtIndex:0];
-                    NSString *subString2 = [[urlString2 componentsSeparatedByString:@"#"] objectAtIndex:0];
-                    
-                    //Only the hash fragments differ
-                    if( [subString1 caseInsensitiveCompare:subString2] == NSOrderedSame )
-                    {
-                        loadImmediately = true;
-                    }
-                }
-            }
-        }
-    }
 
-    
+	bool loadImmediately = false;
+
+	if (fLoadingURL)
+	{
+		if (request)
+		{
+			if (request.URL)
+			{
+				NSString *urlString1 = [fLoadingURL absoluteString];
+				NSString *urlString2 = [request.URL absoluteString];
+
+				//If the url requests are the same, then load like normal since this
+				//generates a callback and will create a dispatch event (i.e. page reload)
+				if( [urlString1 caseInsensitiveCompare:urlString2] != NSOrderedSame )
+				{
+					//If the requests are the same up to the hash tag then do an immediate load
+					//since we never get a callback for this load and therefore never removed
+					//the grey activity window
+					NSString *subString1 = [[urlString1 componentsSeparatedByString:@"#"] objectAtIndex:0];
+					NSString *subString2 = [[urlString2 componentsSeparatedByString:@"#"] objectAtIndex:0];
+
+					//Only the hash fragments differ
+					if( [subString1 caseInsensitiveCompare:subString2] == NSOrderedSame )
+					{
+						loadImmediately = true;
+					}
+				}
+			}
+		}
+	}
+
+
 	[fLoadingURL release];
 	fLoadingURL = [request.URL retain];
 	if([fLoadingURL isFileURL] && baseUrl && [self.webView respondsToSelector:@selector(loadFileURL:allowingReadAccessToURL:)]) {
@@ -282,23 +358,23 @@ static CGFloat kAnimationDuration = 0.3;
 		[self.webView loadRequest:request];
 	}
 
-    if (false == loadImmediately)
-    {
-        if ( ! isLoading )
-        {
-            fActivityView.alpha = 0.0;
-            [UIView beginAnimations:nil context:nil];
-            [UIView setAnimationDuration:kAnimationDuration];
-            [UIView setAnimationDelegate:self];
-            [UIView setAnimationDidStopSelector:@selector(didAppear:finished:context:)];
-            fActivityView.alpha = 1.0;
-            [UIView commitAnimations];
-            
-            [self addObservers];
-        }
-        isLoading = YES;
-    }
-	
+	if (false == loadImmediately)
+	{
+		if ( ! isLoading )
+		{
+			fActivityView.alpha = 0.0;
+			[UIView beginAnimations:nil context:nil];
+			[UIView setAnimationDuration:kAnimationDuration];
+			[UIView setAnimationDelegate:self];
+			[UIView setAnimationDidStopSelector:@selector(didAppear:finished:context:)];
+			fActivityView.alpha = 1.0;
+			[UIView commitAnimations];
+
+			[self addObservers];
+		}
+		isLoading = YES;
+	}
+
 }
 
 - (void)stopLoading
@@ -393,18 +469,18 @@ static CGFloat kAnimationDuration = 0.3;
 	if ( [self.webView isFirstResponder] )
 	{
 		NSDictionary* info = [aNotification userInfo];
-	 
+
 		// Get the size of the keyboard.
 		NSValue* aValue = [info objectForKey:UIKeyboardBoundsUserInfoKey];
 		CGSize keyboardSize = [aValue CGRectValue].size;
-	 
+
 		WKWebView *view = self.webView;
 
 		// Reset the height of the scroll view to its original value
 		CGRect viewFrame = [view frame];
 		viewFrame.size.height += keyboardSize.height;
 		view.frame = viewFrame;
-	 
+
 		keyboardShown = NO;
 	}
 }
@@ -449,21 +525,29 @@ static EventTypeForNavigationType( WKNavigationType t )
 	NSURL *url = navigationAction.request.URL;
 
 	const char *urlString = [[url absoluteString] UTF8String];
-	
+
 	Rtt::UrlRequestEvent::Type navType = EventTypeForNavigationType( navigationAction.navigationType );
-	
+
 	UrlRequestEvent e( urlString, navType );
-	
+
 	fOwner->DispatchEventWithTarget( e );
-	
+
 	if (navType == UrlRequestEvent::kLink ||
 		navType == UrlRequestEvent::kHistory ||
 		navType == UrlRequestEvent::kReload )
 	{
 		isLoading = true;
 	}
-	
+
 	decisionHandler(WKNavigationActionPolicyAllow); // Always load
+}
+
+- (WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures
+{
+	if (!navigationAction.targetFrame.isMainFrame) {
+		[webView loadRequest:navigationAction.request];
+	}
+	return nil;
 }
 
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation
@@ -481,6 +565,8 @@ static EventTypeForNavigationType( WKNavigationType t )
 		isLoading = NO;
 
 		[self hideActivityViewIndicator];
+
+		[fWebView evaluateJavaScript:kOnLoadedJSCode completionHandler:nil];
 
 		NSURL *url = webView.URL;
 		const char *urlString = [[url absoluteString] UTF8String];
@@ -509,7 +595,7 @@ static EventTypeForNavigationType( WKNavigationType t )
 {
 	UIActivityIndicatorView *indicator = [[fActivityView subviews] objectAtIndex:0];
 	[indicator stopAnimating];
-	
+
 	self.webView.hidden = NO;
 	self.webView.alpha = 1.0;
 	fActivityView.alpha = 1.0;
@@ -519,6 +605,137 @@ static EventTypeForNavigationType( WKNavigationType t )
 	[UIView setAnimationDidStopSelector:@selector(didAppear:finished:context:)];
 	fActivityView.alpha = 0.0;
 	[UIView commitAnimations];
+}
+
+// Implement WKScriptMessageHandler protocol
+- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message
+{
+	if ([message.name isEqualToString:kCorona4JS])
+	{
+		NSDictionary *messageBody = message.body;
+
+		using namespace Rtt;
+
+		const char* type = [messageBody[@"type"] UTF8String];
+		const char* data = [messageBody[@"data"] UTF8String];
+		bool noResult =  [messageBody[@"noResult"] boolValue];
+
+		CommonEvent e(type, data);
+
+		lua_State *L = fOwner->GetL();
+		int status = fOwner->DisplayObject::DispatchEventWithTarget( L, e, 1 );
+		if ( status == 0 && (! noResult ) )
+		{
+			int retValueIndex = lua_gettop( L );
+			const char* jsonContent = "{}";
+			if ( 0 == LuaContext::JsonEncode( L, retValueIndex ) )
+			{
+				jsonContent = lua_tostring( L, -1 );
+			}
+
+			NSString *jsCode = [NSString stringWithFormat:@"window.dispatchEvent(new CustomEvent('%s', { detail: %s }));", type, jsonContent];
+			[fWebView evaluateJavaScript:jsCode completionHandler:^(id _Nullable response, NSError * _Nullable error){
+				if ( error != nil ) {
+					NSLog(@"WKUserContentController error: %s, %@", type, error);
+				}
+			}];
+			lua_pop( L, 1 );
+		}
+		lua_pop( L, 1 );
+	}
+	else if ([message.name isEqualToString:@"console"])
+	{
+		NSDictionary *logData = message.body;
+		NSString *type = logData[@"type"];
+		NSString *logMessage = logData[@"message"];
+
+		if ([type isEqualToString:@"error"]) {
+			NSLog(@"[WebView_ERROR] %@", logMessage);
+		} else if ([type isEqualToString:@"warn"]) {
+			NSLog(@"[WebView_WARNING] %@", logMessage);
+		} else if ([type isEqualToString:@"info"]) {
+			NSLog(@"[WebView_INFO] %@", logMessage);
+		} else if ([type isEqualToString:@"debug"]) {
+			NSLog(@"[WebView_DEBUG] %@", logMessage);
+		} else {
+			NSLog(@"[WebView_LOG] %@", logMessage);
+		}
+	}
+}
+
+// Handle JavaScript alert()
+- (void)webView:(WKWebView *)webView runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(void))completionHandler
+{
+	UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+																 message:message
+														  preferredStyle:UIAlertControllerStyleAlert];
+
+	UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+													  style:UIAlertActionStyleDefault
+													handler:^(UIAlertAction *action) {
+		completionHandler();
+	}];
+	[alert addAction:okAction];
+
+	id<CoronaRuntime> runtime = (id<CoronaRuntime>)Rtt::Lua::GetContext( fOwner->GetL() );
+	[runtime.appViewController presentViewController:alert animated:YES completion:nil];
+}
+
+// Handle JavaScript confirm()
+- (void)webView:(WKWebView *)webView runJavaScriptConfirmPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(BOOL))completionHandler
+{
+	UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+													message:message
+													preferredStyle:UIAlertControllerStyleAlert];
+
+	UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+													  style:UIAlertActionStyleDefault
+													handler:^(UIAlertAction *action) {
+		completionHandler(YES);
+	}];
+
+	UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil)
+														 style:UIAlertActionStyleCancel
+													   handler:^(UIAlertAction *action) {
+		completionHandler(NO);
+	}];
+
+	[alert addAction:cancelAction];
+	[alert addAction:okAction];
+
+	id<CoronaRuntime> runtime = (id<CoronaRuntime>)Rtt::Lua::GetContext( fOwner->GetL() );
+	[runtime.appViewController presentViewController:alert animated:YES completion:nil];
+}
+
+// Handle JavaScript prompt()
+- (void)webView:(WKWebView *)webView runJavaScriptTextInputPanelWithPrompt:(NSString *)prompt defaultText:(NSString *)defaultText initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(NSString *))completionHandler
+{
+	UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+																 message:prompt
+														  preferredStyle:UIAlertControllerStyleAlert];
+
+	[alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+		textField.text = defaultText;
+	}];
+
+	UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+													  style:UIAlertActionStyleDefault
+													handler:^(UIAlertAction *action) {
+		NSString *input = alert.textFields.firstObject.text;
+		completionHandler(input);
+	}];
+
+	UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil)
+														 style:UIAlertActionStyleCancel
+													   handler:^(UIAlertAction *action) {
+		completionHandler(nil);
+	}];
+
+	[alert addAction:cancelAction];
+	[alert addAction:okAction];
+
+	id<CoronaRuntime> runtime = (id<CoronaRuntime>)Rtt::Lua::GetContext( fOwner->GetL() );
+	[runtime.appViewController presentViewController:alert animated:YES completion:nil];
 }
 
 @end
@@ -803,6 +1020,86 @@ IPhoneWebViewObject::SetBackgroundColor( lua_State *L )
 */
 
 int
+IPhoneWebViewObject::InjectJS( lua_State *L )
+{
+	const LuaProxyVTable& table = PlatformDisplayObject::GetWebViewObjectProxyVTable();
+	IPhoneWebViewObject *o = (IPhoneWebViewObject *)luaL_todisplayobject( L, 1, table );
+	if ( o )
+	{
+		Rtt_iOSWebViewContainer *container = (Rtt_iOSWebViewContainer*)o->GetView();
+		const char *jsContent = lua_tostring( L, 2 );
+		NSString *jsCode = [NSString stringWithUTF8String:jsContent];
+		// Rtt_Log( "InjectJS: %s ", [jsCode UTF8String] );
+
+		[container.webView evaluateJavaScript:jsCode completionHandler:^(id _Nullable response, NSError * _Nullable error){
+			if ( error != nil ) {
+				NSLog(@"InjectJS error: %@", error);
+			}
+		}];
+	}
+
+	return 0;
+}
+
+int
+IPhoneWebViewObject::RegisterCallback( lua_State *L )
+{
+	const LuaProxyVTable& table = PlatformDisplayObject::GetWebViewObjectProxyVTable();
+	IPhoneWebViewObject *o = (IPhoneWebViewObject *)luaL_todisplayobject( L, 1, table );
+	if ( o )
+	{
+		const char *eventName = lua_tostring( L, 2 );
+		NSString *jsEventName = [NSString stringWithFormat:@"%@%s", kCoronaEventPrefix, eventName];
+		o->AddEventListener( L, 3, [jsEventName UTF8String] );
+	}
+
+	return 0;
+}
+
+int
+IPhoneWebViewObject::On( lua_State *L )
+{
+	const LuaProxyVTable& table = PlatformDisplayObject::GetWebViewObjectProxyVTable();
+	IPhoneWebViewObject *o = (IPhoneWebViewObject *)luaL_todisplayobject( L, 1, table );
+	if ( o )
+	{
+		const char *eventName = lua_tostring( L, 2 );
+		NSString *jsEventName = [NSString stringWithFormat:@"%@%s", kCoronaEventPrefix, eventName];
+		o->AddEventListener( L, 3, [jsEventName UTF8String] );
+	}
+
+	return 0;
+}
+
+int
+IPhoneWebViewObject::Send( lua_State *L )
+{
+	const LuaProxyVTable& table = PlatformDisplayObject::GetWebViewObjectProxyVTable();
+	IPhoneWebViewObject *o = (IPhoneWebViewObject *)luaL_todisplayobject( L, 1, table );
+	if ( o )
+	{
+		const char* eventName = lua_tostring( L, 2 );
+
+		Rtt_iOSWebViewContainer *container = (Rtt_iOSWebViewContainer*)o->GetView();
+		const char* jsonContent = "{}";
+		if ( 0 == LuaContext::JsonEncode( L, 3 ) )
+		{
+			jsonContent = lua_tostring( L, -1 );
+		}
+
+		NSString *jsCode = [NSString stringWithFormat:@"window.dispatchEvent(new CustomEvent('%@%s', { detail: %s }));", kCoronaEventPrefix, eventName, jsonContent];
+		[container.webView evaluateJavaScript:jsCode completionHandler:^(id _Nullable response, NSError * _Nullable error){
+			if ( error != nil ) {
+				NSLog(@"Send '%s' error: %@", eventName, error);
+			}
+		}];
+		lua_pop( L, 1 );
+	}
+
+	return 0;
+}
+
+int
 IPhoneWebViewObject::ValueForKey( lua_State *L, const char key[] ) const
 {
 	Rtt_ASSERT( key );
@@ -817,6 +1114,22 @@ IPhoneWebViewObject::ValueForKey( lua_State *L, const char key[] ) const
 	if ( strcmp( "request", key ) == 0 )
 	{
 		lua_pushcfunction( L, Request );
+	}
+	else if ( strcmp( "injectJS", key ) == 0 )
+	{
+		lua_pushcfunction( L, InjectJS );
+	}
+	else if ( strcmp( "registerCallback", key ) == 0 )
+	{
+		lua_pushcfunction( L, RegisterCallback );
+	}
+	else if ( strcmp( "on", key ) == 0 )
+	{
+		lua_pushcfunction( L, On );
+	}
+	else if ( strcmp( "send", key ) == 0 )
+	{
+		lua_pushcfunction( L, Send );
 	}
 	else if ( strcmp( "stop", key ) == 0 )
 	{

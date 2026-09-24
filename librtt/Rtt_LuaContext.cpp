@@ -1192,6 +1192,40 @@ LuaContext::IsBinaryLua( const char* filename )
 	return result;
 }
 
+int
+LuaContext::JsonEncode( lua_State *L, int index )
+{
+	bool success = false;
+
+	lua_getglobal( L, "require" );
+	lua_pushstring( L, "json" );
+	if ( DoCall( L, 1, 1 ) == 0 )
+	{
+		lua_getfield( L, -1, "encode" );
+		lua_remove(L, -2);
+		lua_pushvalue( L, index );
+		success = ( DoCall( L, 1, 1 ) == 0 );
+	}
+	return success ? 0 : -1;
+}
+
+int
+LuaContext::JsonDecode( lua_State *L, const char* json )
+{
+	bool success = false;
+
+	lua_getglobal( L, "require" );
+	lua_pushstring( L, "json" );
+	if ( DoCall( L, 1, 1 ) == 0 )
+	{
+		lua_getfield( L, -1, "decode" );
+		lua_remove(L, -2);
+		lua_pushstring(L, json);
+		success = ( DoCall( L, 1, 1 ) == 0 );
+	}
+	return success ? 0 : -1;
+}
+
 // ----------------------------------------------------------------------------
 
 LuaContext::LuaContext( ::lua_State* L )
