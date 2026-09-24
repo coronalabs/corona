@@ -614,7 +614,7 @@ SpriteObject::SpriteObject(
 			fTimeScaleIncrement(0),
 			fProperties(0)
 {
-	SetObjectDesc( "SpriteObject" );     // for introspection
+	SetObjectDesc( kSpriteObjectDesc/*"SpriteObject"*/ );     // for introspection
 }
 
 SpriteObject::~SpriteObject()

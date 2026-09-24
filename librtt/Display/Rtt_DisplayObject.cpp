@@ -245,7 +245,8 @@ DisplayObject::DisplayObject()
     fProperties( kIsVisible | kIsHitTestMasked ),
     fAlpha( 0xFF ),
     fAlphaCumulative( fAlpha ),
-    fObjectDesc("DisplayObject")
+    fObjectDesc( kDisplayObjectDesc/*"DisplayObject"*/ ),
+    fHasFocusID( false )
 #if 0
     ,
     fWhereDefined(NULL),
@@ -1850,6 +1851,35 @@ DisplayObject::RemoveExtensions()
     }
 }
 #endif
+    
+const char *
+DisplayObject::GetObjectDesc() const
+{
+	#define DESC( NAME ) k##NAME##Desc: return #NAME
+
+	switch ( fObjectDesc )
+	{
+	case DESC( DisplayObject );
+	case DESC( CompositeObject );
+	case DESC( ContainerObject );
+	case DESC( EmitterObject );
+	case DESC( EmbossedTextObject );
+	case DESC( GroupObject );
+	case DESC( ImageObject );
+	case DESC( LineObject );
+	case DESC( ParticleSystemObject );
+	case DESC( ShapeObject );
+	case DESC( SnapshotObject );
+	case DESC( SpriteObject );
+	case DESC( StageObject );
+	case DESC( TextObject );
+	default:
+		Rtt_ASSERT_NOT_REACHED();
+		return NULL;
+	}
+	
+	#undef DESC
+}
     
 void
 DisplayObject::AddedToParent( lua_State * L, GroupObject * parent )

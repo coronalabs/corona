@@ -450,8 +450,28 @@ class DisplayObject : public MDrawable, public MLuaProxyable
 #endif
 
     public:
-        void SetObjectDesc( const char *objectDesc ) { fObjectDesc = objectDesc; }
-        const char *GetObjectDesc() const { return fObjectDesc; }
+		typedef enum _ObjectDesc : U8
+		{
+			kDisplayObjectDesc,
+			kCompositeObjectDesc,
+			kContainerObjectDesc,
+			kEmitterObjectDesc,
+			kEmbossedTextObjectDesc,
+			kGroupObjectDesc,
+			kImageObjectDesc,
+			kLineObjectDesc,
+			kParticleSystemObjectDesc,
+			kShapeObjectDesc,
+			kSnapshotObjectDesc,
+			kSpriteObjectDesc,
+			kStageObjectDesc,
+			kTextObjectDesc,
+			kNumObjectDescTypes
+		}
+		ObjectDesc;
+    
+        void SetObjectDesc( /*const char **/ ObjectDesc objectDesc ) { fObjectDesc = objectDesc; }
+        const char *GetObjectDesc() const;// { return fObjectDesc; }
 
     private:
         GroupObject* fParent;
@@ -469,8 +489,8 @@ class DisplayObject : public MDrawable, public MLuaProxyable
         mutable LuaProxy* fLuaProxy;
         mutable DisplayObjectExtensions *fExtensions;
         const void *fFocusId;
-        const char *fObjectDesc;
 	#if 0
+        const char *fObjectDesc;
         const char *fWhereDefined;
         const char *fWhereChanged;
 	#endif
@@ -487,7 +507,15 @@ class DisplayObject : public MDrawable, public MLuaProxyable
         U8 fAlpha;
         U8 fAlphaCumulative;
         ListenerSet fListenerSet;
+	#if 0
         U8 fUnused; // Alignment
+	#else
+		U8 fObjectDesc : 4;
+		U8 fHasFocusID : 1;
+		U8 fUnused : 3;
+	#endif
+	
+		Rtt_STATIC_ASSERT( kNumObjectDescTypes <= ( 1 << 4 ) );
 
         friend class DisplayObjectDrawGuard;
         friend class GroupObject; // Access to CullOffscreen

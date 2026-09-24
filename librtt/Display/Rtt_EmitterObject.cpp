@@ -641,7 +641,7 @@ EmitterObject::EmitterObject()
 , fData()
 , fShader( NULL )
 {
-    SetObjectDesc("EmitterObject"); // for introspection
+    SetObjectDesc(kEmitterObjectDesc/*"EmitterObject"*/); // for introspection
 }
 
 EmitterObject::~EmitterObject()

@@ -189,7 +189,7 @@ TextObject::TextObject( Display& display, const char text[], PlatformFont *font,
 	GetCollection().push_back(this);
 #endif
 
-    SetObjectDesc( "TextObject" );
+    SetObjectDesc( kTextObjectDesc/*"TextObject"*/ );
 }
 
 TextObject::~TextObject()

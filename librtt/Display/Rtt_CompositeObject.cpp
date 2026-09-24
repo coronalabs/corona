@@ -42,7 +42,7 @@ CompositeObject::CompositeObject( Rtt_Allocator* pAllocator )
 		Geometry( pAllocator, Geometry::kTriangleStrip, kVerticesPerQuad, 0, false ) );
 	fData.fGeometry = geometry;
 
-    SetObjectDesc( "CompositeObject" );
+    SetObjectDesc( kCompositeObjectDesc/*"CompositeObject"*/ );
 
 //	Rtt::Geometry::Vertex* data = geometry->GetVertexData();
 }

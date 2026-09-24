@@ -34,7 +34,7 @@ StageObject::StageObject( Rtt_Allocator* pAllocator, Scene& owner )
 	fFocusObjects( pAllocator ),
 	fSnapshotBounds( NULL )
 {
-    SetObjectDesc("StageObject"); // for introspection
+    SetObjectDesc(kStageObjectDesc/*"StageObject"*/); // for introspection
 }
 
 StageObject::~StageObject()
