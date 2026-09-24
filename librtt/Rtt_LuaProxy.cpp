@@ -900,7 +900,7 @@ GetDebugInfoString( lua_State *L, int tableRef, const char *strKey, const char *
 	else
 	{
 		lua_pop( L, 1 ); // ...
-		lua_pushliteral( L, "" ); // ..., ""
+		lua_pushnil( L ); // ..., nil
 	}
 }
 
