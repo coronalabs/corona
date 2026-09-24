@@ -69,7 +69,7 @@ BitmapMask::GetSelfBounds( Rect& rect ) const
 	rect.Initialize( halfW, halfH );
 
 	// Mask's self bounds are relative to center of display object
-	fTransform.GetMatrix( NULL ).Apply( rect );
+	fTransform.GetMatrix( Transform::kV2, NULL ).Apply( rect );
 }
 
 void

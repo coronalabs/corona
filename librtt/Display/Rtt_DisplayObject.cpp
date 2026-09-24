@@ -1237,7 +1237,7 @@ void
 DisplayObject::CalculateMaskMatrix( Matrix& dstToMask, const Matrix& srcToDst, const BitmapMask& mask )
 {
     Matrix srcToBitmap = srcToDst;
-    srcToBitmap.Concat( mask.GetTransform().GetMatrix( NULL ) ); // Mask's transform gets applied first
+    srcToBitmap.Concat( mask.GetTransform().GetMatrix( Transform::kV2, NULL ) ); // Mask's transform gets applied first
 
     Matrix dstToBitmap;
     Matrix::Invert( srcToBitmap, dstToBitmap );
@@ -1655,7 +1655,7 @@ void
 DisplayObject::SetV1Compatibility( bool newValue )
 {
     SetProperty( kIsV1Compatibility, newValue );
-    fTransform.SetV1Compatibility( newValue );
+//    fTransform.SetV1Compatibility( newValue );
 }
 
 void
@@ -1811,7 +1811,9 @@ DisplayObject::GetMatrix() const
 	Vertex2 deltas;
 	bool correct = GetTrimmedFrameOffsetForAnchor( deltas.x, deltas.y );
 
-	return fTransform.GetMatrix( shouldOffset ? & offset : NULL, correct ? &deltas : NULL );
+	Transform::Compatibility v1Compat = IsV1Compatibility() ? Transform::kV1 : Transform::kV2;
+
+	return fTransform.GetMatrix( v1Compat, shouldOffset ? & offset : NULL, correct ? &deltas : NULL );
 }
 
 void

@@ -1650,7 +1650,7 @@ TestMask( Rtt_Allocator *allocator, DisplayObject& child, const Matrix& srcToDst
 
 	// Map dstX, dstY to src (mask's, not child's) coordinates
   	Matrix maskToDstSpace( srcToDstSpace );
-  	maskToDstSpace.Concat( mask->GetTransform().GetMatrix( NULL ) );
+  	maskToDstSpace.Concat( mask->GetTransform().GetMatrix( Transform::kV2, NULL ) );
   	Matrix inverse;
   	Matrix::Invert( maskToDstSpace, inverse );
 
