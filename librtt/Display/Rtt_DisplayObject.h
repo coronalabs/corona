@@ -424,9 +424,11 @@ class DisplayObject : public MDrawable, public MLuaProxyable
         bool IsUsedByHitTest() const { return (fProperties & kIsUsedByHitTest) != 0; }
         void SetUsedByHitTest( bool newValue ) { SetProperty( kIsUsedByHitTest, newValue ); }
 
-    public:
+    public:/*
         void SetFocusId( const void *newValue ) { fFocusId = newValue; }
-        const void* GetFocusId() const { return fFocusId; }
+        const void* GetFocusId() const { return fFocusId; }*/
+        void SetHasFocusId( bool newValue ) { fHasFocusID = newValue; }
+        bool GetHasFocusId() const { return !! fHasFocusID; }
 
     protected:
         // Use the PropertyMask constants
@@ -441,6 +443,10 @@ class DisplayObject : public MDrawable, public MLuaProxyable
             const ListenerSet p = fListenerSet;
             fListenerSet = ( value ? p | mask : p & ~mask );
         }
+
+	protected:
+		void Set3Bits( U8 newValue ) { fUnused = newValue; }
+		U8 Get3Bits() const { return fUnused; }
 
 #ifdef Rtt_PHYSICS
     public:

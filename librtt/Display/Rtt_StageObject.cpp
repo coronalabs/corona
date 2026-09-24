@@ -108,33 +108,35 @@ StageObject::SetFocus( DisplayObject *newValue, const void *focusId )
 	bool shouldRemove = ( ! newValue && focusId );
 
 	// See if newValue is already in array
-	const LightPtrArray< DisplayObject >& focusObjects = fFocusObjects;
+	const /*LightPtrArray< DisplayObject >*/Array<ObjectAndId>& focusObjects = fFocusObjects;
 	for ( int i = 0, iMax = fFocusObjects.Length(); i < iMax && ! found; i++ )
 	{
-		DisplayObject *o = focusObjects[i]; Rtt_ASSERT( o );
+		DisplayObject *o = focusObjects[i].fObject; Rtt_ASSERT( o );
+		const void* id = fFocusObjects[i].fId;
 		if ( o == newValue )
 		{
 			// In this case, newValue was non-NULL, so search by display object.
 			if ( focusId )
 			{
 				// A non-NULL focusId means update since an older value is already in the array
-				newValue->SetFocusId( focusId );
+				fFocusObjects[i].fId = focusId;//newValue->SetFocusId( focusId );
+				o->SetHasFocusId( true );
 			}
 			else
 			{
 				// A NULL focusId means remove since NULL indicates no per-object focus
 				fFocusObjects.Remove( i, 1, false );
-				o->SetFocusId( NULL );
+				o->SetHasFocusId( false );//o->SetFocusId( NULL );
 			}
 
 			found = true;
 		}
-		else if ( shouldRemove && o->GetFocusId() == focusId )
+		else if ( shouldRemove && id/*o->GetFocusId()*/ == focusId )
 		{
 			// In this case, newValue was NULL, but we passed a non-NULL focusId
 			// which means we search by focusId and remove it from the array
 			fFocusObjects.Remove( i, 1, false );
-			o->SetFocusId( NULL );
+			o->SetHasFocusId( false );//o->SetFocusId( NULL );
 			found = true;
 		}
 	}
@@ -142,8 +144,15 @@ StageObject::SetFocus( DisplayObject *newValue, const void *focusId )
 	// Not in array, so add newValue/focusId pair provided both are non-NULL.
 	if ( ! found && newValue && focusId )
 	{
-		fFocusObjects.Append( newValue );
-		newValue->SetFocusId( focusId );
+		ObjectAndId pair;
+	
+		pair.fObject = newValue;
+		pair.fId = focusId;
+		
+		fFocusObjects.Append( pair );
+	
+	//	fFocusObjects.Append( newValue );
+		newValue->SetHasFocusId( true ); // newValue->SetFocusId( focusId );
 	}
 }
 
@@ -154,19 +163,24 @@ StageObject::GetFocus( const void *focusId )
 
 	if ( focusId )
 	{
-		LightPtrArray< DisplayObject >& focusObjects = fFocusObjects;
-		for ( int i = 0, iMax = fFocusObjects.Length(); i < iMax; i++ )
+		/*LightPtrArray< DisplayObject >*/Array<ObjectAndId>& focusObjects = fFocusObjects;
+	//	for ( int i = 0, iMax = fFocusObjects.Length(); i < iMax; i++ ) // ERROR: bug in Remove(), since we keep walking
+		for ( int i = fFocusObjects.Length() - 1; i >= 0; i-- )
 		{
-			DisplayObject *item = focusObjects[i];
-			const void * const itemId = item->GetFocusId();
+		//	DisplayObject *item = focusObjects[i].fObject;
+			const void * const itemId = fFocusObjects[i].fId;//item->GetFocusId();
 			if ( ! itemId )
 			{
+				Rtt_ASSERT( fFocusObjects[i].fObject );
+				Rtt_ASSERT( !fFocusObjects[i].fObject->GetHasFocusId() );
+				
 				// Object id was set to NULL for deferred removal, so remove it
 				focusObjects.Remove( i, 1, false );
+
 			}
 			else if ( itemId == focusId )
 			{
-				result = item;
+				result = focusObjects[i].fObject;//item;
 			}
 		}
 	}

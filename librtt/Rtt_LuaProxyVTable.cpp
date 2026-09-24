@@ -3954,7 +3954,7 @@ LuaDisplayObjectProxyVTable::PushAndRemove( lua_State *L, GroupObject* parent, S
 
                 // Always the per-object focus
                 stage->SetFocus( child, NULL );
-                child->SetFocusId( NULL ); // Defer removal from the focus object array
+                child->SetHasFocusId( false )/*SetFocusId( NULL )*/; // Defer removal from the focus object array
 
                 child->RemovedFromParent( L, parent );
 
@@ -4463,7 +4463,7 @@ LuaTextObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& object, c
         break;
     case 1:
         {
-            o.SetSize( luaL_toreal( L, valueIndex ) );
+            o.SetSize( LuaContext::GetRuntime( L )->GetDisplay(), luaL_toreal( L, valueIndex ) );
         }
         break;
     default:
@@ -4650,7 +4650,7 @@ LuaEmbossedTextObjectProxyVTable::OnSetSize( lua_State *L )
         Runtime& runtime = * LuaContext::GetRuntime( L );
         const Display& display = runtime.GetDisplay();
         Real fontSize = Rtt_RealDiv( luaL_toreal( L, 2 ), display.GetSx() );
-        textObjectPointer->SetSize( fontSize );
+        textObjectPointer->SetSize( display, fontSize );
     }
     return 0;
 }

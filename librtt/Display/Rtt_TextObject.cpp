@@ -77,13 +77,13 @@ TextObject::Unload( DisplayObject& parent )
 }
 
 void
-TextObject::Reload( DisplayObject& parent )
+TextObject::Reload( Display& display, DisplayObject& parent )
 {
 	// NOTE: Assumes no subclasses of TextObject exist
 	if ( & parent.ProxyVTable() == & LuaTextObjectProxyVTable::Constant() )
 	{
 		TextObject& t = (TextObject&)parent;
-		t.Initialize();
+		t.Initialize( display );
 	}
 
 	// Tail recursion
@@ -92,7 +92,7 @@ TextObject::Reload( DisplayObject& parent )
 	{
 		for ( S32 i = 0, iMax = group->NumChildren(); i < iMax; i++ )
 		{
-			Reload( group->ChildAt( i ) );
+			Reload( display, group->ChildAt( i ) );
 		}
 	}
 }
@@ -156,21 +156,31 @@ TextObject::UpdateAllBelongingTo(Display& display)
 
 #endif
 
+static Display* sDisplay; // HACK!
+
 // w,h are in content coordinates
 // font's size is in pixel coordinates
 TextObject::TextObject( Display& display, const char text[], PlatformFont *font, Real w, Real h, const char alignment[] )
 :	Super( RectPath::NewRect( display.GetRuntime().GetAllocator(), w, h ) ),
-	fDisplay( display ),
-	fText( display.GetRuntime().GetAllocator() ),
+/*	fDisplay( display ),
+	fText( display.GetRuntime().GetAllocator() ),*/
+	fText( 0 ),
 	fOriginalFont( font ),
 	fScaledFont( NULL ),
 	fWidth( w ),
 	fHeight( h ),
-	fAlignment( display.GetRuntime().GetAllocator() ),
+//	fAlignment( display.GetRuntime().GetAllocator() ),
 	fGeometry( NULL ),
 	fBaselineOffset( Rtt_REAL_0 ),
 	fMaskUniform( Rtt_NEW( display.GetAllocator(), Uniform( display.GetAllocator(), Uniform::kMat3 ) ) )
 {
+static bool bb;
+if (!bb)
+{
+	bb=true;
+	Rtt_TRACE_SIM(( "Size of display object = %u", (U32)sizeof(DisplayObject) ));
+	Rtt_TRACE_SIM(( "Size of text object = %u", (U32)sizeof(TextObject) ));
+}
 	if ( ! fOriginalFont )
 	{
 		const MPlatform& platform = display.GetRuntime().Platform();
@@ -182,7 +192,7 @@ TextObject::TextObject( Display& display, const char text[], PlatformFont *font,
 	SetAlignment(alignment);
 
 	Invalidate( kMaskFlag );
-	Initialize();
+	Initialize( display );
 	SetHitTestMasked(false);
 
 #ifdef Rtt_WIN_PHONE_ENV
@@ -190,6 +200,8 @@ TextObject::TextObject( Display& display, const char text[], PlatformFont *font,
 #endif
 
     SetObjectDesc( kTextObjectDesc/*"TextObject"*/ );
+    
+sDisplay = &display; // HACK!!
 }
 
 TextObject::~TextObject()
@@ -212,20 +224,22 @@ TextObject::~TextObject()
 		}
 	}
 #endif
+
+	SetText( NULL );
 }
 
 bool
-TextObject::Initialize()
+TextObject::Initialize( Display& display )
 {
 	Rtt_ASSERT( fOriginalFont );
 
 	// Fetch the content scales.
-	Real sx = fDisplay.GetSxUpright();
-	Real sy = fDisplay.GetSyUpright();
+	Real sx = /*fD*/display.GetSxUpright();
+	Real sy = /*fD*/display.GetSyUpright();
 	bool shouldScale = ! Rtt_RealIsOne( sx ) || ! Rtt_RealIsOne( sy );
 
 	// If the rendering system has been scaled, then use a font with a scaled font size.
-	UpdateScaledFont();
+	UpdateScaledFont( display );
 	PlatformFont *font = fScaledFont ? fScaledFont : fOriginalFont;
 
 	// For text boxes (multiline), use pixel dimensions
@@ -244,16 +258,21 @@ TextObject::Initialize()
 	//       when this text object is initially created or else its center reference point will
 	//       be at the same position as the top-left reference point, which might not be expected.
 	const char *text = " ";
+	const char *curText = GetText();/*
 	if (fText.IsEmpty() == false)
 	{
 		text = fText.GetString();
+	}*/
+	if ( *curText )
+	{
+		text = curText;
 	}
 
 	// TODO: We are handling two cases here. Can we separate more cleanly?
 	// We need to request an appropriate sized text bitmap (with proper pixel resolution)
 	// (1) Single-line: we already scaled the font size (fWidth/fHeight should be 0)
 	// (2) Multi-line: fWidth/fHeight define the box and needs to be scaled
-	BitmapPaint *paint = BitmapPaint::NewBitmap( fDisplay.GetRuntime(), text, *font, pixelW, pixelH, fAlignment.GetString(), fBaselineOffset );
+	BitmapPaint *paint = BitmapPaint::NewBitmap( /*fD*/display.GetRuntime(), text, *font, pixelW, pixelH, /*fAlignment.GetString()*/GetAlignment(), fBaselineOffset );
 	PlatformBitmap *bitmap = paint->GetBitmap(); Rtt_ASSERT( bitmap );
 
 	Real contentW = Rtt_IntToReal( bitmap->Width() );
@@ -276,7 +295,7 @@ TextObject::Initialize()
 
 	BitmapMask *mask =
 		Rtt_NEW( fDisplay.GetRuntime().GetAllocator(), BitmapMask( paint, contentW, contentH ) );
-	SetMask( fDisplay.GetRuntime().GetAllocator(), mask );
+	SetMask( /*fD*/display.GetRuntime().GetAllocator(), mask );
 	SetSelfBounds( contentW, contentH );
 
 	return ( NULL != mask );
@@ -286,12 +305,12 @@ TextObject::Initialize()
 /// Should be called every time the rendering system's scale factor has changed.
 /// Member variable "fScaledFont" will be set to NULL if the scale factor is 1.0.
 void
-TextObject::UpdateScaledFont()
+TextObject::UpdateScaledFont( Display& display )
 {
 	// Fetch the content scaling factor from the rendering system.
 	// Note: There is a bug in the Corona Simulator where the scales are wrongly swapped when rotating
 	//       to an orientation that the app does not support. The below code works-around this issue.
-	Real scale = fDisplay.GetSxUpright();
+	Real scale = /*fD*/display.GetSxUpright();
 
 	// Scale the font's point size.
 	Real fontSizeEpsilon = Rtt_FloatToReal( 0.1f );
@@ -313,7 +332,7 @@ TextObject::UpdateScaledFont()
 		if (!fScaledFont)
 		{
 			Reset();
-			fScaledFont = fOriginalFont->CloneUsing(fDisplay.GetRuntime().GetAllocator());
+			fScaledFont = fOriginalFont->CloneUsing(/*fD*/display.GetRuntime().GetAllocator());
 			if (fScaledFont)
 			{
 				fScaledFont->SetSize(scaledFontSize);
@@ -348,10 +367,10 @@ TextObject::UpdateTransform( const Matrix& parentToDstSpace )
 	
 	// First, attempt to scale the font, if necessary.
 	// If the font does not need to be scaled, then this function will flag this object to be re-initialized.
-	UpdateScaledFont();
+	UpdateScaledFont( *sDisplay ); // HACK!!
 	
 	// Update the text object.
-	if ( IsInitialized() || Rtt_VERIFY( Initialize() ) )
+	if ( IsInitialized() || Rtt_VERIFY( Initialize( *sDisplay ) ) ) // HACK!
 	{
 		// Update this object's transformation matrix.
 		result = Super::UpdateTransform( parentToDstSpace );
@@ -365,7 +384,7 @@ TextObject::GetSelfBounds( Rect& rect ) const
 {
 	if ( ! IsInitialized() )
 	{
-		const_cast< TextObject* >( this )->Initialize();
+		const_cast< TextObject* >( this )->Initialize( *sDisplay ); // HACK!!
 	}
 
 	if ( Rtt_VERIFY( IsInitialized() ) )
@@ -488,9 +507,16 @@ TextObject::SetColor( Paint* newValue )
 }
 */
 
+bool
+TextObject::HasShortString() const
+{
+	return ( 0 == fText ) || ( Get3Bits() & kIsShortString );
+}
+
 void
 TextObject::SetText( const char* newValue )
 {
+/*
 	const char kEmptyString[] = "";
 	if ( ! newValue )
 	{
@@ -501,18 +527,69 @@ TextObject::SetText( const char* newValue )
 	{
 		fText.Set( newValue );
 		Reset();
+	}*/
+	if ( !newValue )
+	{
+		newValue = "";
+	}
+	
+	const char *text = GetText();
+	if ( strcmp( newValue, text ) != 0 )
+	{
+		if ( !HasShortString() )
+		{
+			Rtt_FREE( reinterpret_cast<void*>( fText ) );
+		}
+		
+		fText = 0;
+		
+		size_t len = 0;
+		for ( ; newValue[len] && len < sizeof(uintptr_t); len++ ) /* empty */ ;
+		
+		bool isShortString = len < sizeof(uintptr_t);
+		if ( isShortString )
+		{
+			strncpy( reinterpret_cast<char*>( &fText ), newValue, len );
+		}
+		else
+		{
+			fText = reinterpret_cast<uintptr_t>( strdup( newValue ) );
+		}
+		
+		U8 scratchBits = Get3Bits();
+		if ( isShortString )
+		{
+			Set3Bits( scratchBits | kIsShortString );
+		}
+		else
+		{
+			Set3Bits( scratchBits & ~kIsShortString );
+		}
+	}
+}
+
+const char*
+TextObject::GetText() const
+{
+	if ( HasShortString() )
+	{
+		return reinterpret_cast<const char*>( &fText );
+	}
+	else
+	{
+		return reinterpret_cast<const char*>( fText );
 	}
 }
 
 void
-TextObject::SetSize( Real newValue )
+TextObject::SetSize( const Display& display, Real newValue )
 {
 	if ( fOriginalFont )
 	{
 		// If the given font size is invalid, then use the system's default font size.
 		if ( newValue < Rtt_REAL_1 )
 		{
-			newValue = fDisplay.GetRuntime().Platform().GetStandardFontSize() * fDisplay.GetSxUpright();
+			newValue = /*fD*/display.GetRuntime().Platform().GetStandardFontSize() * /*fD*/display.GetSxUpright();
 		}
 
 		// Update the font and text bitmap, but only if the font size has changed.
@@ -541,18 +618,59 @@ TextObject::SetFont( PlatformFont *newValue )
 		Reset();
 	}
 }
+
 void
 TextObject::SetAlignment( const char* newValue )
 {
 	if ( newValue )
 	{
+		PackedInfo scratchBits = (PackedInfo)Get3Bits();
+		PackedInfo align = kLeftAligned;
+		
+		if ( Rtt_StringCompare( newValue, "center" ) == 0 )
+		{
+			align = kCenterAligned;
+		}
+		else if ( Rtt_StringCompare( newValue, "right" ) == 0 )
+		{
+			align = kRightAligned;
+		}
+		else if ( Rtt_StringCompare( newValue, "left" ) != 0 )
+		{
+			Rtt_LogException( "Warning: invalid alignment: '%s'", newValue );
+			return;
+		}
+	/*	
 		if ( 0 != Rtt_StringCompare( fAlignment.GetString(), newValue ) )
 		{
-			fAlignment.Set( newValue );
+			fAlignment.Set( newValue );*/
+		if ( align != ( scratchBits & kAlignMask ) )
+		{
+			Set3Bits( ( scratchBits & ~kAlignMask ) | align );
+		
 			Reset();
 		}
 	}
 }
+
+const char*
+TextObject::GetAlignment() const
+{
+	switch ( Get3Bits() & kAlignMask )
+	{
+	case kLeftAligned:
+		return "left";
+	case kCenterAligned:
+		return "center";
+	case kRightAligned:
+		return "right";
+	default:
+		Rtt_ASSERT_NOT_REACHED();
+		
+		return NULL;
+	}
+}
+
 // ----------------------------------------------------------------------------
 
 } // namespace Rtt

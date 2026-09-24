@@ -236,7 +236,7 @@ DisplayObject::DisplayObject()
     fStageBounds(),
     fLuaProxy( NULL ),
     fExtensions( NULL ),
-    fFocusId( NULL ),
+//    fFocusId( NULL ),
     fMask( NULL ),
     fMaskUniform( NULL ),
     fAnchorX( Rtt_REAL_0 ),
@@ -246,7 +246,8 @@ DisplayObject::DisplayObject()
     fAlpha( 0xFF ),
     fAlphaCumulative( fAlpha ),
     fObjectDesc( kDisplayObjectDesc/*"DisplayObject"*/ ),
-    fHasFocusID( false )
+    fHasFocusID( false ),
+    fUnused( 0 ) // TODO: decide on policy
 #if 0
     ,
     fWhereDefined(NULL),
