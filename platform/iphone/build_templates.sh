@@ -13,6 +13,12 @@ checkError() {
 : "${TEMPLATE_TARGET:=template}"
 TEMPLATE_TARGET_SUFFIX="${TEMPLATE_TARGET#template}"
 
+# Templates are re-signed by the Corona Simulator / CoronaBuilder with the
+# developer's own identity and provisioning profile when an app is built, so
+# the template itself must not depend on a signing identity or profile being
+# available on the build machine (or in CI).
+XCODE_NO_SIGNING=(CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=)
+
 # Passed in arguments
 # $1 SDK_VERSION
 if [ -z "$1" ]
@@ -107,8 +113,8 @@ build_target() {
 	rm -vrf "$path/template/$DST_ROOT/$VERSION/$CONFIGURATION/${PRODUCT_DST_REAL}" 
 	rm -vrf "$path/template-dSYM/$DST_ROOT/$VERSION/$CONFIGURATION/${PRODUCT_DST_REAL}.dSYM" 
 
-	echo "Running: xcodebuild -project '$path'/ratatouille.xcodeproj -target '$TARGET' -configuration Release -sdk '$SDK'" SYMROOT="$path/build"
-	xcodebuild -project "$path"/ratatouille.xcodeproj -target "$TARGET" -configuration Release -sdk "$SDK" SYMROOT="$path/build" 2>&1 | tee -a "$FULL_LOG_FILE" | egrep -v "$XCODE_LOG_FILTERS"
+	echo "Running: xcodebuild -project '$path'/ratatouille.xcodeproj -target '$TARGET' -configuration Release -sdk '$SDK'" SYMROOT="$path/build" "${XCODE_NO_SIGNING[@]}"
+	xcodebuild -project "$path"/ratatouille.xcodeproj -target "$TARGET" -configuration Release -sdk "$SDK" SYMROOT="$path/build" "${XCODE_NO_SIGNING[@]}" 2>&1 | tee -a "$FULL_LOG_FILE" | egrep -v "$XCODE_LOG_FILTERS"
     checkError
 
 	SUFFIX=$SDK_BASE
