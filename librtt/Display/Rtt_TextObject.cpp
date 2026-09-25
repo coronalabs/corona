@@ -156,31 +156,19 @@ TextObject::UpdateAllBelongingTo(Display& display)
 
 #endif
 
-static Display* sDisplay; // HACK!
-
 // w,h are in content coordinates
 // font's size is in pixel coordinates
 TextObject::TextObject( Display& display, const char text[], PlatformFont *font, Real w, Real h, const char alignment[] )
 :	Super( RectPath::NewRect( display.GetRuntime().GetAllocator(), w, h ) ),
-/*	fDisplay( display ),
-	fText( display.GetRuntime().GetAllocator() ),*/
 	fText( 0 ),
 	fOriginalFont( font ),
 	fScaledFont( NULL ),
 	fWidth( w ),
 	fHeight( h ),
-//	fAlignment( display.GetRuntime().GetAllocator() ),
 	fGeometry( NULL ),
 	fBaselineOffset( Rtt_REAL_0 ),
 	fMaskUniform( Rtt_NEW( display.GetAllocator(), Uniform( display.GetAllocator(), Uniform::kMat3 ) ) )
 {
-static bool bb;
-if (!bb)
-{
-	bb=true;
-	Rtt_TRACE_SIM(( "Size of display object = %u", (U32)sizeof(DisplayObject) ));
-	Rtt_TRACE_SIM(( "Size of text object = %u", (U32)sizeof(TextObject) ));
-}
 	if ( ! fOriginalFont )
 	{
 		const MPlatform& platform = display.GetRuntime().Platform();
@@ -194,14 +182,17 @@ if (!bb)
 	Invalidate( kMaskFlag );
 	Initialize( display );
 	SetHitTestMasked(false);
+	
+	if ( display.IsOddLaunch() )
+	{
+		SetScratchNybble( GetScratchNybble() | kIsOddLaunch );
+	}
 
 #ifdef Rtt_WIN_PHONE_ENV
 	GetCollection().push_back(this);
 #endif
 
-    SetObjectDesc( kTextObjectDesc/*"TextObject"*/ );
-    
-sDisplay = &display; // HACK!!
+    SetObjectDesc( kTextObjectDesc );
 }
 
 TextObject::~TextObject()
@@ -234,8 +225,8 @@ TextObject::Initialize( Display& display )
 	Rtt_ASSERT( fOriginalFont );
 
 	// Fetch the content scales.
-	Real sx = /*fD*/display.GetSxUpright();
-	Real sy = /*fD*/display.GetSyUpright();
+	Real sx = display.GetSxUpright();
+	Real sy = display.GetSyUpright();
 	bool shouldScale = ! Rtt_RealIsOne( sx ) || ! Rtt_RealIsOne( sy );
 
 	// If the rendering system has been scaled, then use a font with a scaled font size.
@@ -257,22 +248,14 @@ TextObject::Initialize( Display& display )
 	//       a bitmap at about the same height as a bitmap with text. This is especially needed
 	//       when this text object is initially created or else its center reference point will
 	//       be at the same position as the top-left reference point, which might not be expected.
-	const char *text = " ";
-	const char *curText = GetText();/*
-	if (fText.IsEmpty() == false)
-	{
-		text = fText.GetString();
-	}*/
-	if ( *curText )
-	{
-		text = curText;
-	}
+	const char *curText = GetText();
+	const char *text = *curText ? curText : " ";
 
 	// TODO: We are handling two cases here. Can we separate more cleanly?
 	// We need to request an appropriate sized text bitmap (with proper pixel resolution)
 	// (1) Single-line: we already scaled the font size (fWidth/fHeight should be 0)
 	// (2) Multi-line: fWidth/fHeight define the box and needs to be scaled
-	BitmapPaint *paint = BitmapPaint::NewBitmap( /*fD*/display.GetRuntime(), text, *font, pixelW, pixelH, /*fAlignment.GetString()*/GetAlignment(), fBaselineOffset );
+	BitmapPaint *paint = BitmapPaint::NewBitmap( display.GetRuntime(), text, *font, pixelW, pixelH, GetAlignment(), fBaselineOffset );
 	PlatformBitmap *bitmap = paint->GetBitmap(); Rtt_ASSERT( bitmap );
 
 	Real contentW = Rtt_IntToReal( bitmap->Width() );
@@ -295,7 +278,7 @@ TextObject::Initialize( Display& display )
 
 	BitmapMask *mask =
 		Rtt_NEW( fDisplay.GetRuntime().GetAllocator(), BitmapMask( paint, contentW, contentH ) );
-	SetMask( /*fD*/display.GetRuntime().GetAllocator(), mask );
+	SetMask( display.GetRuntime().GetAllocator(), mask );
 	SetSelfBounds( contentW, contentH );
 
 	return ( NULL != mask );
@@ -310,7 +293,7 @@ TextObject::UpdateScaledFont( Display& display )
 	// Fetch the content scaling factor from the rendering system.
 	// Note: There is a bug in the Corona Simulator where the scales are wrongly swapped when rotating
 	//       to an orientation that the app does not support. The below code works-around this issue.
-	Real scale = /*fD*/display.GetSxUpright();
+	Real scale = display.GetSxUpright();
 
 	// Scale the font's point size.
 	Real fontSizeEpsilon = Rtt_FloatToReal( 0.1f );
@@ -332,7 +315,7 @@ TextObject::UpdateScaledFont( Display& display )
 		if (!fScaledFont)
 		{
 			Reset();
-			fScaledFont = fOriginalFont->CloneUsing(/*fD*/display.GetRuntime().GetAllocator());
+			fScaledFont = fOriginalFont->CloneUsing(display.GetRuntime().GetAllocator());
 			if (fScaledFont)
 			{
 				fScaledFont->SetSize(scaledFontSize);
@@ -364,13 +347,14 @@ TextObject::UpdateTransform( const Matrix& parentToDstSpace )
 	SUMMED_TIMING( tut, "Text: UpdateTransform" );
 
 	bool result = false;
-	
+	Display *display = Display::GetDisplay( GetScratchNybble() & kIsOddLaunch );
+
 	// First, attempt to scale the font, if necessary.
 	// If the font does not need to be scaled, then this function will flag this object to be re-initialized.
-	UpdateScaledFont( *sDisplay ); // HACK!!
+	UpdateScaledFont( *display ); // HACK!!
 	
 	// Update the text object.
-	if ( IsInitialized() || Rtt_VERIFY( Initialize( *sDisplay ) ) ) // HACK!
+	if ( IsInitialized() || Rtt_VERIFY( Initialize( *display ) ) ) // HACK!
 	{
 		// Update this object's transformation matrix.
 		result = Super::UpdateTransform( parentToDstSpace );
@@ -384,7 +368,9 @@ TextObject::GetSelfBounds( Rect& rect ) const
 {
 	if ( ! IsInitialized() )
 	{
-		const_cast< TextObject* >( this )->Initialize( *sDisplay ); // HACK!!
+		Display *display = Display::GetDisplay( GetScratchNybble() & kIsOddLaunch );
+		
+		const_cast< TextObject* >( this )->Initialize( *display );
 	}
 
 	if ( Rtt_VERIFY( IsInitialized() ) )
@@ -510,24 +496,12 @@ TextObject::SetColor( Paint* newValue )
 bool
 TextObject::HasShortString() const
 {
-	return ( 0 == fText ) || ( Get3Bits() & kIsShortString );
+	return ( 0 == fText ) || ( GetScratchNybble() & kIsShortString );
 }
 
 void
 TextObject::SetText( const char* newValue )
 {
-/*
-	const char kEmptyString[] = "";
-	if ( ! newValue )
-	{
-		newValue = kEmptyString;
-	}
-
-	if ( 0 != Rtt_StringCompare( fText.GetString(), newValue ) ) 
-	{
-		fText.Set( newValue );
-		Reset();
-	}*/
 	if ( !newValue )
 	{
 		newValue = "";
@@ -556,14 +530,14 @@ TextObject::SetText( const char* newValue )
 			fText = reinterpret_cast<uintptr_t>( strdup( newValue ) );
 		}
 		
-		U8 scratchBits = Get3Bits();
+		U8 scratchBits = GetScratchNybble();
 		if ( isShortString )
 		{
-			Set3Bits( scratchBits | kIsShortString );
+			SetScratchNybble( scratchBits | kIsShortString );
 		}
 		else
 		{
-			Set3Bits( scratchBits & ~kIsShortString );
+			SetScratchNybble( scratchBits & ~kIsShortString );
 		}
 	}
 }
@@ -589,7 +563,7 @@ TextObject::SetSize( const Display& display, Real newValue )
 		// If the given font size is invalid, then use the system's default font size.
 		if ( newValue < Rtt_REAL_1 )
 		{
-			newValue = /*fD*/display.GetRuntime().Platform().GetStandardFontSize() * /*fD*/display.GetSxUpright();
+			newValue = display.GetRuntime().Platform().GetStandardFontSize() * /*fD*/display.GetSxUpright();
 		}
 
 		// Update the font and text bitmap, but only if the font size has changed.
@@ -624,7 +598,7 @@ TextObject::SetAlignment( const char* newValue )
 {
 	if ( newValue )
 	{
-		PackedInfo scratchBits = (PackedInfo)Get3Bits();
+		PackedInfo scratchBits = (PackedInfo)GetScratchNybble();
 		PackedInfo align = kLeftAligned;
 		
 		if ( Rtt_StringCompare( newValue, "center" ) == 0 )
@@ -640,14 +614,10 @@ TextObject::SetAlignment( const char* newValue )
 			Rtt_LogException( "Warning: invalid alignment: '%s'", newValue );
 			return;
 		}
-	/*	
-		if ( 0 != Rtt_StringCompare( fAlignment.GetString(), newValue ) )
-		{
-			fAlignment.Set( newValue );*/
+
 		if ( align != ( scratchBits & kAlignMask ) )
 		{
-			Set3Bits( ( scratchBits & ~kAlignMask ) | align );
-		
+			SetScratchNybble( ( scratchBits & ~kAlignMask ) | align );
 			Reset();
 		}
 	}
@@ -656,7 +626,7 @@ TextObject::SetAlignment( const char* newValue )
 const char*
 TextObject::GetAlignment() const
 {
-	switch ( Get3Bits() & kAlignMask )
+	switch ( GetScratchNybble() & kAlignMask )
 	{
 	case kLeftAligned:
 		return "left";

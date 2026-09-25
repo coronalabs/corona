@@ -46,7 +46,10 @@ class TextObject : public RectObject
 			kAlignMask = 0b11,
 
 			/* third bit */
-			kIsShortString = 0b100
+			kIsShortString = 0b100,
+			
+			/* fourth bit */
+			kIsOddLaunch = 0b1000
 		}
 		PackedInfo;
 
@@ -114,7 +117,7 @@ class TextObject : public RectObject
 
 		bool HasShortString() const;
 		void SetText( const char* newValue );
-		const char* GetText() const;// { return fText.GetString(); }
+		const char* GetText() const;
 
 		Real GetBaselineOffset() const { return fBaselineOffset; }
 		void SetSize( const Display& display, Real newValue );
@@ -125,19 +128,15 @@ class TextObject : public RectObject
 //		const PlatformFont* GetFont() const { return fFont; }
 
 		void SetAlignment( const char* newValue );
-		const char* GetAlignment() const;// { return fAlignment.GetString(); };
+		const char* GetAlignment() const;
 
 	private:
 		uintptr_t fText;
-	
-	//	Display& fDisplay;
-	//	String fText;
 		PlatformFont* fOriginalFont;
 		PlatformFont* fScaledFont;
 		Real fWidth;
 		Real fHeight;
-		Real fBaselineOffset;	
-	//	String fAlignment;
+		Real fBaselineOffset;
 		mutable Geometry *fGeometry;
 		mutable Uniform *fMaskUniform;
 };

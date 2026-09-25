@@ -236,7 +236,6 @@ DisplayObject::DisplayObject()
     fStageBounds(),
     fLuaProxy( NULL ),
     fExtensions( NULL ),
-//    fFocusId( NULL ),
     fMask( NULL ),
     fMaskUniform( NULL ),
     fAnchorX( Rtt_REAL_0 ),
@@ -245,8 +244,7 @@ DisplayObject::DisplayObject()
     fProperties( kIsVisible | kIsHitTestMasked ),
     fAlpha( 0xFF ),
     fAlphaCumulative( fAlpha ),
-    fObjectDesc( kDisplayObjectDesc/*"DisplayObject"*/ ),
-    fHasFocusID( false ),
+    fObjectDesc( kDisplayObjectDesc ),
     fUnused( 0 ) // TODO: decide on policy
 #if 0
     ,

@@ -120,6 +120,7 @@ class DisplayObject : public MDrawable, public MLuaProxyable
             kIsRestricted = 0x800,
             kSkipsCull = 0x1000,
             kSkipsHitTest = 0x2000,
+            kHasFocusID = 0x4000
 
             // NOTE: Current maximum of 16 PropertyMasks!!!
         };
@@ -427,8 +428,8 @@ class DisplayObject : public MDrawable, public MLuaProxyable
     public:/*
         void SetFocusId( const void *newValue ) { fFocusId = newValue; }
         const void* GetFocusId() const { return fFocusId; }*/
-        void SetHasFocusId( bool newValue ) { fHasFocusID = newValue; }
-        bool GetHasFocusId() const { return !! fHasFocusID; }
+        void SetHasFocusId( bool newValue ) { SetProperty( kHasFocusID, newValue ); }
+        bool GetHasFocusId() const { return ( fProperties & kHasFocusID ) != 0; }
 
     protected:
         // Use the PropertyMask constants
@@ -445,8 +446,8 @@ class DisplayObject : public MDrawable, public MLuaProxyable
         }
 
 	protected:
-		void Set3Bits( U8 newValue ) { fUnused = newValue; }
-		U8 Get3Bits() const { return fUnused; }
+		void SetScratchNybble( U8 newValue ) { fUnused = newValue; }
+		U8 GetScratchNybble() const { return fUnused; }
 
 #ifdef Rtt_PHYSICS
     public:
@@ -476,8 +477,8 @@ class DisplayObject : public MDrawable, public MLuaProxyable
 		}
 		ObjectDesc;
     
-        void SetObjectDesc( /*const char **/ ObjectDesc objectDesc ) { fObjectDesc = objectDesc; }
-        const char *GetObjectDesc() const;// { return fObjectDesc; }
+        void SetObjectDesc( ObjectDesc objectDesc ) { fObjectDesc = objectDesc; }
+        const char *GetObjectDesc() const;
 
     private:
         GroupObject* fParent;
@@ -517,8 +518,7 @@ class DisplayObject : public MDrawable, public MLuaProxyable
         U8 fUnused; // Alignment
 	#else
 		U8 fObjectDesc : 4;
-		U8 fHasFocusID : 1;
-		U8 fUnused : 3;
+		U8 fUnused : 4;
 	#endif
 	
 		Rtt_STATIC_ASSERT( kNumObjectDescTypes <= ( 1 << 4 ) );

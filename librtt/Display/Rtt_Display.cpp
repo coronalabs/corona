@@ -219,6 +219,12 @@ Display::Display( Runtime& owner )
 	fAllowFeatureResult( false ), // When IsRestricted(), default to *not* allowing.
 	fShouldRestrictFeature( 0 )
 {
+    static bool sIsOddLaunch;
+    
+    fIsOddLaunch = sIsOddLaunch;
+    
+    sIsOddLaunch = !sIsOddLaunch;
+    sDisplay[ fIsOddLaunch ? 0 : 1 ] = this;
 }
 
 Display::~Display()
@@ -2115,6 +2121,14 @@ Display::GetRestrictedFeatureMask( Feature feature )
     U32 mask = 1 << (feature);
     return mask;
 }
+
+Display*
+Display::GetDisplay( bool isOdd )
+{
+    return sDisplay[ isOdd ? 0 : 1 ];
+}
+
+Display * Display::sDisplay[2];
 
 // ----------------------------------------------------------------------------
 
