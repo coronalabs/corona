@@ -389,6 +389,11 @@ class Display
     protected:
         static U32 GetRestrictedFeatureMask( Feature feature );
 
+	public:
+		bool IsOddLaunch() const { return fIsOddLaunch; }
+		
+		static Display* GetDisplay( bool isOdd );
+
     private:
         Runtime& fOwner;
         MDisplayDelegate *fDelegate;
@@ -416,9 +421,12 @@ class Display
 		bool fIsAntialiased;
 		bool fIsCollecting; // guards against nested calls to Collect()
 		bool fIsRestricted;
+		bool fIsOddLaunch;
 		mutable bool fAllowFeatureResult;
 //		U8 fScaleMode;
 		U32 fShouldRestrictFeature;
+		
+		static Display *sDisplay[2]; // ping-pong between odd and even launch
 };
 
 // ----------------------------------------------------------------------------

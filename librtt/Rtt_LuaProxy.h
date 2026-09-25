@@ -119,6 +119,13 @@ class LuaProxy
 		void ReleaseTableRef( lua_State *L );
 
 	public:
+		void UpdateDefinedDebugInfo( lua_State *L );
+		void UpdateChangedDebugInfo( lua_State *L );
+		
+		void GetDefinedDebugInfo( lua_State *L ) const;
+		void GetChangedDebugInfo( lua_State *L ) const;
+
+	public:
 		Rtt_INLINE void Invalidate() 
 		{ 
 			fObject = NULL; 

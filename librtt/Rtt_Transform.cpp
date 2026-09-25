@@ -21,7 +21,9 @@ namespace Rtt
 Transform::Transform()
 :	fMatrix()
 {
+#if 0
 	fBits.matrix = NULL;
+#endif
 	SetIdentity();
 }
 
@@ -35,15 +37,17 @@ Transform::SetIdentity()
 	fScaleX = Rtt_REAL_1;
 	fScaleY = Rtt_REAL_1;
 	fMatrix.SetIdentity();
-
+#if 0
 	SetUserMatrix( NULL );
+
 	SetValid(); // Set valid bit *after* setting user matrix
+#endif
 }
 
 bool
 Transform::IsIdentity() const
 {
-	return ( IsValid() && fMatrix.IsIdentity() );
+	return /*( IsValid() && */fMatrix.IsIdentity() /* )*/;
 }
 
 void
@@ -167,7 +171,7 @@ Transform::GetProperty( GeometricProperty p ) const
 
 	return result;
 }
-
+#if 0
 void
 Transform::SetUserMatrix( Matrix* newValue )
 {
@@ -193,12 +197,16 @@ Transform::SetV1Compatibility( bool newValue )
 		fBits.properties &= ~kIsV1Compatibility;
 	}
 }
-
+#endif
 
 void
 Transform::Invalidate()
 {
+#if 0
 	fBits.properties &= kInvalidateMask;
+#else
+	fMatrix.Invalidate();
+#endif
 }
 
 // GetMatrix() returns a matrix which flattens the ops supported by the
@@ -210,9 +218,9 @@ Transform::Invalidate()
 // * user transform 
 // * translation (of final positions)
 Matrix&
-Transform::GetMatrix( const Vertex2 *anchorOffset, const Vertex2 *deltas )
+Transform::GetMatrix( Compatibility v1Compat, const Vertex2 *anchorOffset, const Vertex2 *deltas )
 {
-	if ( ! IsValid() )
+	if ( ! fMatrix.IsValid() )
 	{
 		// Fetch dx, dy *before* we reset the matrix
 		Real dx = fX; // fMatrix.Tx();
@@ -233,14 +241,14 @@ Transform::GetMatrix( const Vertex2 *anchorOffset, const Vertex2 *deltas )
 
 		fMatrix.Scale( fScaleX, fScaleY );
 		fMatrix.Rotate( fRotation );
-
+#if 0
 		Matrix* userMatrix = GetUserMatrix();
 		if ( userMatrix )
 		{
 			fMatrix.Prepend( * userMatrix );
 		}
-
-		bool isV1 = IsV1Compatibility();
+#endif
+		bool isV1 = kV1 == v1Compat;//IsV1Compatibility();
 		if ( isV1 && anchorOffset )
 		{
 			dx -= anchorOffset->x; dy -= anchorOffset->y;
@@ -252,8 +260,9 @@ Transform::GetMatrix( const Vertex2 *anchorOffset, const Vertex2 *deltas )
 		}
 
 		fMatrix.Translate( dx, dy );
-
+#if 0
 		SetValid();
+#endif
 	}
 
 	return fMatrix;
@@ -270,13 +279,13 @@ Transform::CopyInverseMatrix( const Vertex2* refPt, Matrix& outMatrix ) const
 
 	if ( refPt ) { dx += refPt->x; dy += refPt->y; }
 	outMatrix.Translate( dx, dy );
-
+#if 0
 	Matrix* userMatrix = GetUserMatrix();
 	if ( userMatrix )
 	{
 		Rtt_ASSERT_NOT_IMPLEMENTED();
 	}
-
+#endif
 	outMatrix.Rotate( fRotation );
 	outMatrix.Scale( fScaleX, fScaleY );
 	if ( refPt ) { outMatrix.Translate( -refPt->x, -refPt->y ); }

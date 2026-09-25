@@ -48,7 +48,7 @@ ShapeObject::ShapeObject( ClosedPath* path )
 
 	fPath->SetObserver( this );
 
-    SetObjectDesc( "ShapeObject" );
+    SetObjectDesc( kShapeObjectDesc/* "ShapeObject"*/ );
 }
 
 ShapeObject::~ShapeObject()

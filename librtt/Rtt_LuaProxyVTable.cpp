@@ -1114,17 +1114,22 @@ LuaDisplayObjectProxyVTable::ValueForKey( lua_State *L, const MLuaProxyable& obj
     else if ( result == 0 && strcmp( key, "_defined" ) == 0 )
     {
         const DisplayObject& o = static_cast< const DisplayObject& >( object );
-
+	#if 0
         lua_pushstring( L, o.fWhereDefined );
+	#else
+        o.fLuaProxy->GetDefinedDebugInfo( L );
+	#endif
 
         result = 1;
     }
     else if ( result == 0 && strcmp( key, "_lastChange" ) == 0 )
     {
         const DisplayObject& o = static_cast< const DisplayObject& >( object );
-
+	#if 0
         lua_pushstring( L, o.fWhereChanged );
-
+	#else
+        o.fLuaProxy->GetChangedDebugInfo( L );
+	#endif
         result = 1;
     }
 
@@ -1340,21 +1345,7 @@ LuaDisplayObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& object
     // (this is a noop on non-debug builds because lua_where returns an empty string)
     if (result)
     {
-        luaL_where(L, 1);
-        const char *where = lua_tostring( L, -1 );
-
-        if (where[0] != 0)
-        {
-            if (o.fWhereChanged != NULL)
-            {
-                free((void *) o.fWhereChanged);
-            }
-
-            // If this fails, the pointer will be NULL and that's handled gracefully
-            o.fWhereChanged = strdup(where);
-        }
-
-        lua_pop(L, 1);
+        o.fLuaProxy->UpdateChangedDebugInfo( L );
     }
 
     return result;
@@ -3963,7 +3954,7 @@ LuaDisplayObjectProxyVTable::PushAndRemove( lua_State *L, GroupObject* parent, S
 
                 // Always the per-object focus
                 stage->SetFocus( child, NULL );
-                child->SetFocusId( NULL ); // Defer removal from the focus object array
+                child->SetHasFocusId( false )/*SetFocusId( NULL )*/; // Defer removal from the focus object array
 
                 child->RemovedFromParent( L, parent );
 
@@ -4472,7 +4463,7 @@ LuaTextObjectProxyVTable::SetValueForKey( lua_State *L, MLuaProxyable& object, c
         break;
     case 1:
         {
-            o.SetSize( luaL_toreal( L, valueIndex ) );
+            o.SetSize( LuaContext::GetRuntime( L )->GetDisplay(), luaL_toreal( L, valueIndex ) );
         }
         break;
     default:
@@ -4659,7 +4650,7 @@ LuaEmbossedTextObjectProxyVTable::OnSetSize( lua_State *L )
         Runtime& runtime = * LuaContext::GetRuntime( L );
         const Display& display = runtime.GetDisplay();
         Real fontSize = Rtt_RealDiv( luaL_toreal( L, 2 ), display.GetSx() );
-        textObjectPointer->SetSize( fontSize );
+        textObjectPointer->SetSize( display, fontSize );
     }
     return 0;
 }
