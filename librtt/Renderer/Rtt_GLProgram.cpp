@@ -350,16 +350,6 @@ enum {
 
 #undef LEN
 
-static void
-MakeSuffix( int index, char digits[] )
-{
-	int onesPos = ( index >= 10 );
-	int tensPos = 1 - onesPos;
-	
-	digits[tensPos] = ( '0' + ( index / 10 ) ) & -( onesPos );
-	digits[onesPos] = '0' + ( index % 10 );
-}
-
 static int
 WriteMacro( const char* name, char extensionAttribStrs[], int wpos )
 {
