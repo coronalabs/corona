@@ -48,9 +48,11 @@ export PATH="$JAVA_HOME/bin:$PATH"
 
 cd ~/corona/platform/android
 # clean
-./gradlew clean
 rm -rf sdk/.cxx sdk/build app/build
-# build and copy Corona.aar
+rm -rf ~/corona/build/Resources/Native/Corona/android/lib/gradle/Corona.aar
+rm -rf ~/corona/build/Resources/Native/Corona/android/resource/android-template.zip
+./gradlew clean
+# build and copy Corona.aar and android-template.zip
 ./gradlew installAppTemplateAndAARToSim \
   -PcoronaResourcesDir=~/corona/build/Resources \
   -PcoronaNativeOutputDir=~/corona/build/Resources/Native/Corona
@@ -59,11 +61,6 @@ rm -rf sdk/.cxx sdk/build app/build
   -PcoronaResourcesDir=~/corona/build/Resources \
   -PcoronaNativeOutputDir=~/corona/build/Resources/Native/Corona
 ```
-
-Files will be installed in the following places:
-~/corona/build/Resources/Native/Corona/android/lib/gradle/Corona.aar
-~/corona/build/Resources/Native/Corona/android/resource/android-template.zip
-
 
 ## Run app via simulator
 
