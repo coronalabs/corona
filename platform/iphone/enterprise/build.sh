@@ -94,6 +94,12 @@ fi
 
 SYMROOT="$(cd "$PLATFORM_DIR/iphone" && pwd)/build"
 
+# Nothing built here needs a signing identity: static libraries, CoronaResources.bundle
+# (copied into the app, whose signature covers it) and MetalANGLE (re-signed by the app
+# that embeds it). CoronaResources is pinned to the Corona Labs team, so without this the
+# build fails wherever that identity is missing (e.g. CI).
+XCODE_NO_SIGNING=(CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=)
+
 # libplayer
 # xcodebuild SYMROOT="$SYMROOT" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target libplayer clean 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
 
@@ -108,10 +114,10 @@ fi
 
 # Classic
 
-xcodebuild SYMROOT="$SYMROOT" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET} -configuration $CONFIG -sdk iphoneos 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
+xcodebuild SYMROOT="$SYMROOT" "${XCODE_NO_SIGNING[@]}" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET} -configuration $CONFIG -sdk iphoneos 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
 
 # Simulator (includes arm64 for M1 simulator support)
-xcodebuild SYMROOT="$SYMROOT" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET} -configuration $CONFIG -sdk iphonesimulator 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
+xcodebuild SYMROOT="$SYMROOT" "${XCODE_NO_SIGNING[@]}" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET} -configuration $CONFIG -sdk iphonesimulator 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
 
 # create xcframework (supports both arm64 device and arm64 simulator)
 rm -rf "$DST_LIB_DIR"/libplayer.xcframework
@@ -125,10 +131,10 @@ cp -v "$SYMROOT"/$CONFIG-iphoneos/${XCODE_TARGET}.a "$DST_LIB_DIR"/libplayer.a
 
 # Angle
 
-xcodebuild SYMROOT="$SYMROOT" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET}-angle -configuration $CONFIG -sdk iphoneos 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
+xcodebuild SYMROOT="$SYMROOT" "${XCODE_NO_SIGNING[@]}" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET}-angle -configuration $CONFIG -sdk iphoneos 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
 
 # Simulator (includes arm64 for M1 simulator support)
-xcodebuild SYMROOT="$SYMROOT" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET}-angle -configuration $CONFIG -sdk iphonesimulator 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
+xcodebuild SYMROOT="$SYMROOT" "${XCODE_NO_SIGNING[@]}" -project "$PLATFORM_DIR"/iphone/ratatouille.xcodeproj -target ${XCODE_TARGET}-angle -configuration $CONFIG -sdk iphonesimulator 2>&1 | tee -a "$FULL_LOG_FILE" | grep -E -v "$XCODE_LOG_FILTERS"
 
 # create xcframework (supports both arm64 device and arm64 simulator)
 rm -rf "$DST_LIB_DIR"/libplayer-angle.xcframework

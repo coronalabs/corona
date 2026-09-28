@@ -112,7 +112,12 @@ then
 	# CoronaCards.framework
 	# NOTE: No need to do clean, since we already did a clean build in the above xcodebuild 
 	# invocations. This xcodebuild will finish nearly instantaneously.
-	xcodebuild SYMROOT="$path/build" OTHER_CFLAGS="-fembed-bitcode" -project "${path}"/ratatouille.xcodeproj -target CoronaCards.framework -configuration Release 2>&1 | tee -a "$FULL_LOG_FILE" | egrep -v "$XCODE_LOG_FILTERS"
+	# Apps embedding the framework re-sign it (CodeSignOnCopy), so it is built unsigned too.
+	# The target runs universal-framework.sh, whose nested xcodebuilds don't see command-line
+	# build settings but do inherit XCODE_XCCONFIG_FILE.
+	NO_SIGNING_XCCONFIG="${BUILD_DIR}/no-code-signing.xcconfig"
+	printf '%s\n' "${XCODE_NO_SIGNING[@]}" > "$NO_SIGNING_XCCONFIG"
+	XCODE_XCCONFIG_FILE="$NO_SIGNING_XCCONFIG" xcodebuild SYMROOT="$path/build" OTHER_CFLAGS="-fembed-bitcode" -project "${path}"/ratatouille.xcodeproj -target CoronaCards.framework -configuration Release 2>&1 | tee -a "$FULL_LOG_FILE" | egrep -v "$XCODE_LOG_FILTERS"
 	checkError
 fi
 
