@@ -116,6 +116,7 @@ struct FrameResources {
 	BufferDescriptor * fUserData;
 	TexturesDescriptor * fTextures;
 	VkCommandPool fCommands;
+	VkCommandBuffer fCommandBuffer;
 	VkSemaphore fImageAvailable;
 	VkSemaphore fRenderFinished;
 	VkFence fFence;

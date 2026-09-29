@@ -348,6 +348,7 @@ FrameResources::FrameResources()
 	fUserData( NULL ),
 	fTextures( NULL ),
 	fCommands( VK_NULL_HANDLE ),
+	fCommandBuffer( VK_NULL_HANDLE ),
 	fImageAvailable( VK_NULL_HANDLE ),
 	fRenderFinished( VK_NULL_HANDLE ),
 	fFence( VK_NULL_HANDLE )
@@ -390,6 +391,7 @@ FrameResources::CleanUpCommandPool( VkDevice device, const VkAllocationCallbacks
 	vkDestroyCommandPool( device, fCommands, allocator );
 
 	fCommands = VK_NULL_HANDLE;
+	fCommandBuffer = VK_NULL_HANDLE;
 }
 
 static void
@@ -1262,7 +1264,7 @@ VulkanRenderer::InitializePipelineState()
 void
 VulkanRenderer::RestartWorkingPipeline()
 {
-    new (&fPipelineCreateInfo) PipelineCreateInfo;
+	fPipelineCreateInfo = PipelineCreateInfo();
 }
 
 VulkanRenderer::PipelineCreateInfo::PipelineCreateInfo()
