@@ -633,17 +633,17 @@ GLProgram::UpdateShaderSource( Program* program, Program::Version version, Versi
 
 // A given constant is looked up by low byte and compared against the sorted list.
 // Since pairs are always adjacent, we can check both at once. In fact, we can pack
-// two 3-bit high-byte offsets (as described above), with a dummy in the majority
-// no-pair cases, and do SWAR operations.
+// two 3-bit high byte offsets (as described above)and do SWAR operations, using a
+// dummy in the majority no-pair cases.
 
 // There are also few enough such 6-bit sequences that they can also be boiled down
 // to 3-bit IDs, which then pack well into 17 16-bit integers. The leading integer,
 // and several of the trailing ones, all consist of the same ID (in the choice used,
-// 0), so some unsigned indexing shenanigans allows further reduction to 12 integers.
+// 0), so some unsigned indexing shenanigans allow further reduction to 12 integers.
 
 // Exhaustive trials, with ClassifySampler() run over constants 0-0xFFFF, confirm
-// that only image and sampler types turn up. Currently the classifier is only used
-// to ignore atomic counters and numeric types when enumerating linked uniforms.
+// that only image and sampler types turn up. Currently the classifier's use case
+// is to cull atomic counters and numeric types when enumerating linked uniforms.
 
 Rtt_STATIC_ASSERT( Texture::kNumFamilies <= ( 1 << 2 ) );
 Rtt_STATIC_ASSERT( Texture::kNumTargets <= ( 1 << 3 ) );
@@ -790,7 +790,7 @@ ClassifySampler( GLenum type )
 	// and these can use delta from 0x8B as an index into a LUT byte as
 	// validity check. Similar interval-based work gives a flat offset.
 	U8 delta = (U8)( ( type >> 8 ) - 0x8B );
-	U8 valid = ( delta <= 6 ) & ( 0x65 /* 01100101b */ >> ( delta & 7 ) );
+	U8 valid = ( delta <= 6 ) & ( 0b01100101 >> ( delta & 7 ) );
 	U8 low = (U8)( type & -valid );
 
 	const int Base1 = 1;
@@ -803,12 +803,17 @@ ClassifySampler( GLenum type )
 				GET_OFFSET_IN_RANGE( 0xC0, 0xC5, Base3, low ) |
 				GET_OFFSET_IN_RANGE( 0xC9, 0xEA, Base4, low );
 
-	// Each uint16_t holds 5 3-bit IDs (0-6), representing some common
-	// patterns. There are 81 unique low bytes plus offset 0 to consider,
-	// so implicitly this comprises ceil(82 / 5) = 17 uint16_t values.
+	// Each U16 holds 5 3-bit IDs (0-6), representing common patterns.
+	// There are 81 unique low bytes plus offset 0 to consider, thus
+	// implicitly this comprises ceil(82 / 5) = 17 uint16_t values.
+	
 	// As it happens, the first four IDs are 0, and the sentinel can be
 	// as well; several trailing IDs are as well. The form shown here
 	// uses some indexing adjustments to lop off the dead weight.
+	
+	// (This choice of IDs is a convention, nothing intrinsic. The 0s
+	// were already in their handy positions via the sort order, but
+	// had that not been so, some relabeling could have done the job.)
 	const U16 kPatternIDs[] = {
 		0x2489, 0x2492, 0x2492, 0x2492, 0x36DA, 0x26DB,
 		0x2492, 0x4912, 0x4924, 0x5B24, 0x5B6D, 0x0B6D
@@ -817,23 +822,26 @@ ClassifySampler( GLenum type )
 	U8 ids_index = (U8)( offset / 5 - 1 ), shift = ( offset % 5 ) * 3;
 	U64 id = ids_index <= 11 ? ( kPatternIDs[ids_index] >> shift ) & 7 : 0;
 
-	// Find the ID's pattern, which consists of two 3-bit high byte
-	// deltas, indicating what may validly pair with the low byte.
-	// (Most cases only support one pairing, with the second delta
-	// being the sentinel, 7.)
+	// Find the ID's pattern, consisting of two 3-bit high byte deltas,
+	// i.e. x - 0x8B as described above. These indicate what high bytes
+	// may validly pair with the low byte.
+	
+	// Many low bytes only match one high byte. These are represented
+	// with a sentinel delta, 7 (high byte 0x92, not valid).
 	U8 pair = ( 0x3FCBAA3DD7EULL >> ( id * 6 ) ) & 63;
 
-	// Check both at once with a SWAR operation.
+	// Check both high byte deltas at once with a SWAR operation.
 	U8 diff = pair ^ SPLAT(delta);
-    U8 hits = (diff - SPLAT(0x1)) & ~diff & SPLAT(0x4) & -valid;
+    U8 hits = ( diff - SPLAT(0x1) ) & ~diff & SPLAT(0x4) & -valid;
 
-	// There is a stretch of the flat offset space, < 64 in length,
-	// where the low bytes with two entries occur, so this can be
-	// captured in a mask. Account for these pairs in the final
-	// offset, and also invalidate the result on a bad low byte.
+	// Within the flat offset space, all two-entry low bytes occur
+	// in a stretch < 64 in length. Their indices are thus readily
+	// captured in a mask, allowing for easy offset adjustment.
 	U64 mask = ( 1ULL << Min( Max( offset - 5, 0 ), 63 ) ) - 1;
 
 	offset += Rtt_Pop64( 0x7FF00001FE00003ULL & mask );
+	
+	// Invalidate the result in the event of a bad low byte.
 	offset &= -( hits > 0 );
 
 	// Supply the offset, which might be the second in a pair.
@@ -1254,6 +1262,154 @@ CompareUniformNames( const std::string& existing, const char* name, ptrdiff_t de
 	}
 }
 
+struct UniformTypeDetails {
+	enum { kUint, kInt, kFloat, kCounter };
+	enum { kInvalid, kNormal, kSmall, kLarge };
+
+	U8 kind : 2;
+	U8 form : 2;
+	U8 dim1_minus_1 : 2;
+	U8 dim2_minus_1 : 2;
+};
+
+#define BASIC( TYPE ) UniformTypeDetails::k##TYPE, UniformTypeDetails::kNormal
+#define BOOL_T UniformTypeDetails::kInt, UniformTypeDetails::kSmall
+#define DOUBLE_T UniformTypeDetails::kFloat, UniformTypeDetails::kLarge
+#define FP16_T UniformTypeDetails::kFloat, UniformTypeDetails::kSmall
+#define INT64_T UniformTypeDetails::kInt, UniformTypeDetails::kLarge
+#define UINT64_T UniformTypeDetails::kUint, UniformTypeDetails::kLarge
+#define PRIMITIVE 0, 0
+#define VEC( N ) ( N - 1 ), 0
+#define MAT( N ) ( N - 1 ), ( N - 1 )
+#define MAT_RECT( M, N ) ( M - 1 ), ( N - 1 )
+
+static const UniformTypeDetails kUniformTypeDetails[]  = {
+	{ /* SENTINEL */ },
+	{ BASIC(Int), PRIMITIVE }, /* GL_INT */
+	{ BASIC(Uint), PRIMITIVE }, /* GL_UNSIGNED_INT */
+	{ BASIC(Float), PRIMITIVE }, /* GL_FLOAT */
+	{ DOUBLE_T, PRIMITIVE }, /* GL_DOUBLE */
+	{ INT64_T, PRIMITIVE }, /* GL_INT64_ARB */
+	{ UINT64_T, PRIMITIVE }, /* GL_UNSIGNED_INT64_ARB */
+	{ BASIC(Float), VEC(2) }, /* GL_FLOAT_VEC2 */
+	{ BASIC(Float), VEC(3) }, /* GL_FLOAT_VEC3 */
+	{ BASIC(Float), VEC(4) }, /* GL_FLOAT_VEC4 */
+	{ BASIC(Int), VEC(2) }, /* GL_INT_VEC2 */
+	{ BASIC(Int), VEC(3) }, /* GL_INT_VEC3 */
+	{ BASIC(Int), VEC(4) }, /* GL_INT_VEC4 */
+	{ BOOL_T, PRIMITIVE }, /* GL_BOOL */
+	{ BOOL_T, VEC(2) }, /* GL_BOOL_VEC2 */
+	{ BOOL_T, VEC(3) }, /* GL_BOOL_VEC3 */
+	{ BOOL_T, VEC(4) }, /* GL_BOOL_VEC4 */
+	{ BASIC(Float), MAT_RECT(2, 3) }, /* GL_FLOAT_MAT2x3 */
+	{ BASIC(Float), MAT_RECT(2, 4) }, /* GL_FLOAT_MAT2x4 */
+	{ BASIC(Float), MAT_RECT(3, 2) }, /* GL_FLOAT_MAT3x2 */
+	{ BASIC(Float), MAT_RECT(3, 4) }, /* GL_FLOAT_MAT3x4 */
+	{ BASIC(Float), MAT_RECT(4, 2) }, /* GL_FLOAT_MAT4x2 */
+	{ BASIC(Float), MAT_RECT(4, 3) }, /* GL_FLOAT_MAT4x3 */
+	{ BASIC(Uint), VEC(2) }, /* GL_UNSIGNED_INT_VEC2 */
+	{ BASIC(Uint), VEC(3) }, /* GL_UNSIGNED_INT_VEC3 */
+	{ BASIC(Uint), VEC(4) }, /* GL_UNSIGNED_INT_VEC4 */
+	{ DOUBLE_T, MAT(2) }, /* GL_DOUBLE_MAT2 */
+	{ DOUBLE_T, MAT(3) }, /* GL_DOUBLE_MAT3 */
+	{ DOUBLE_T, MAT(4) }, /* GL_DOUBLE_MAT4 */
+	{ DOUBLE_T, MAT_RECT(2, 3) }, /* GL_DOUBLE_MAT2x3 */
+	{ DOUBLE_T, MAT_RECT(2, 4) }, /* GL_DOUBLE_MAT2x4 */
+	{ DOUBLE_T, MAT_RECT(3, 2) }, /* GL_DOUBLE_MAT3x2 */
+	{ DOUBLE_T, MAT_RECT(3, 4) }, /* GL_DOUBLE_MAT3x4 */
+	{ DOUBLE_T, MAT_RECT(4, 2) }, /* GL_DOUBLE_MAT4x2 */
+	{ DOUBLE_T, MAT_RECT(4, 3) }, /* GL_DOUBLE_MAT4x3 */
+	{ UINT64_T, VEC(2) }, /* GL_UNSIGNED_INT64_VEC2 */
+	{ UINT64_T, VEC(3) }, /* GL_UNSIGNED_INT64_VEC3 */
+	{ UINT64_T, VEC(4) }, /* GL_UNSIGNED_INT64_VEC4 */
+	{ INT64_T, VEC(2) }, /* GL_INT64_VEC2_ARB */
+	{ INT64_T, VEC(3) }, /* GL_INT64_VEC3_ARB */
+	{ INT64_T, VEC(4) }, /* GL_INT64_VEC4_ARB */
+	{ FP16_T, PRIMITIVE }, /* GL_FLOAT16_NV */
+	{ FP16_T, VEC(2) }, /* GL_FLOAT16_VEC2_NV */
+	{ FP16_T, VEC(3) }, /* GL_FLOAT16_VEC3_NV */
+	{ FP16_T, VEC(4) }, /* GL_FLOAT16_VEC4_NV */
+	{ DOUBLE_T, VEC(2) }, /* GL_DOUBLE_VEC2 */
+	{ DOUBLE_T, VEC(3) }, /* GL_DOUBLE_VEC3 */
+	{ DOUBLE_T, VEC(4) }, /* GL_DOUBLE_VEC4 */
+	{ FP16_T, MAT(2) }, /* GL_FLOAT16_MAT2_AMD */
+	{ FP16_T, MAT(3) }, /* GL_FLOAT16_MAT3_AMD */
+	{ FP16_T, MAT(4) }, /* GL_FLOAT16_MAT4_AMD */
+	{ FP16_T, MAT_RECT(2, 3) }, /* GL_FLOAT16_MAT2x3_AMD */
+	{ FP16_T, MAT_RECT(2, 4) }, /* GL_FLOAT16_MAT2x4_AMD */
+	{ FP16_T, MAT_RECT(3, 2) }, /* GL_FLOAT16_MAT3x2_AMD */
+	{ FP16_T, MAT_RECT(3, 4) }, /* GL_FLOAT16_MAT3x4_AMD */
+	{ FP16_T, MAT_RECT(4, 2) }, /* GL_FLOAT16_MAT4x2_AMD */
+	{ FP16_T, MAT_RECT(4, 3) }, /* GL_FLOAT16_MAT4x3_AMD */
+	{ BASIC(Counter), PRIMITIVE } /* GL_UNSIGNED_INT_ATOMIC_COUNTER */
+};
+
+#undef BASIC
+#undef BOOL_T
+#undef DOUBLE_T
+#undef FP16_T
+#undef INT64_T
+#undef UINT64_T
+#undef PRIMITIVE
+#undef VEC
+#undef MAT
+#undef MAT_RECT
+
+/*
+TODO, for possible expansion:
+	// If these turn up, the shader presumably linked and the driver supports them...
+	// so need to look up the symbol and add commands
+looks like signatures:
+	uniform?*v: (int, sizei, const T*);
+	uniformmatrix*: (int, sizei, boolean, const F*);
+*/
+
+static int
+ClassifyNonSampler( GLenum value )
+{
+	U16 high = value >> 8, nybble3 = ( value >> 4 ) & 0xF;
+
+	// The third nybble is a good distinguishing feature and lets the
+	// values be divvied up into few small sets. This can be pushed a
+	// bit further by coalescing a few consecutive pairs (a range of
+	// 32 rather than 16), in which case the lower value of the third
+	// nybble is still wanted. (The atomic counter's nybble is a false
+	// positive here and so is excepted from consideration.)
+	nybble3 -= ( 0xA040 /* bits 0x6, 0xD, 0xF */ >> nybble3 ) & ( high < 0x92 );
+	
+	// The "C" nybble occurs in two prefixes. However, the remaining
+	// third nybbles > C each correspond to a high byte larger than
+	// C's smaller one. Therefore those nybbles, and C's larger one,
+	// can be incremented in value to avoid any ambiguity.
+	nybble3 += ( high >= 0x8F ) & ( nybble3 > 4 );
+	
+	// From the adjusted nybble, get the value's prefix and find an
+	// offset from that. If it falls within the 32-bit range, check
+	// if the spot is represented in the range's mask.
+	const U16 kPrefixes[] = { 0xFFF, 0x140, 0x8B5, 0x8DC, 0x8F4, 0x8FE, 0x91C, 0x92D };
+	
+	int index = ( 0xBF3000014001ULL >> ( nybble3 * 3 ) ) & 7;
+	U16 bit = value - ( kPrefixes[index] << 4 );
+	
+	index &= -( bit < 0x20 );
+	bit &= -( bit < 0x20 );
+	
+	U32 mask = 1U << bit;
+
+	const U32 kLows[] = {
+		0x0, 0xC470, 0x7E003FF, 0x1C0,
+		0x7FC0, 0x7F000EE0, 0x3FE0, 0x800
+	};
+	
+	// Invalidate the index if the spot is missing.
+	index &= -( ( kLows[index] & mask ) > 0 );
+
+	// Supply the offset.
+	int prefixSum = ( 0xE708DA5C7040ULL >> ( index * 6 ) ) & 63;
+	
+	return prefixSum + Rtt_Pop32( kLows[index] & ( mask - 1 ) );
+}
+
 GLint
 GLExtraUniforms::Find( const char * name, GLint & size, GLenum & type )
 {
@@ -1364,51 +1520,7 @@ GLExtraUniforms::Find( const char * name, GLint & size, GLenum & type )
         case GL_FLOAT_MAT3:
         case GL_FLOAT_MAT4:
             break;
-#if 0
-	// For possible expansion:
-	// If these turn up, the shader presumably linked and the driver supports them...
-	// so need to look up the symbol and add commands
-looks like signatures:
-	uniform?*v: (int, sizei, const T*);
-	uniformmatrix*: (int, sizei, boolean, const F*);
 
-	0x92DB GL_UNSIGNED_INT_ATOMIC_COUNTER	atomic_uint
-
-	#define GL_INT                            0x1404, int
-	#define GL_UNSIGNED_INT                   0x1405, unsigned int (or uint)
-	#define GL_FLOAT                          0x1406, float
-	#define GL_DOUBLE                         0x140A, double
-	#define GL_INT64_ARB                      0x140E int64_t
-	#define GL_UNSIGNED_INT64_ARB             0x140F uint64_t
-	
-	#define GL_FLOAT_VEC(2-4)             	  0x8B5(0-2)	
-	#define GL_INT_VEC(2-4)                   0x8B5(3-5), ivec(2-4)
-	#define GL_BOOL                           0x8B56 bool (int?)
-	#define GL_BOOL_VEC(2-4)                  0x8B5(7-9) bvec(2-4)
-
-	#define GL_FLOAT_MAT(*)                   0x8B6(5-A) mat(2x3, 2x4, 3x2, 3x4, 4x2, 4x3)
-	#define GL_UNSIGNED_INT_VEC(2-4)          0x8DC(6-8), uvec(2-4)
-	#define GL_DOUBLE_MAT(*)                  0x8F4(6-E) dmat(2, 3, 4, then per mat*)
-
-	#define GL_UNSIGNED_INT64_VEC(2-4)_ARB    0x8FE(5-7)
-	#define GL_INT64_VEC(2-4)_ARB             0x8FE(9-B)
-
-	#define GL_FLOAT16_NV                     0x8FF8 float16_t (NV_gpu_shader5)
-	#define GL_FLOAT16_VEC(2-4)_NV            0x8FF(9-B) f16vec(2-4) (possibly some variability in naming)
-	#define GL_DOUBLE_VEC(2-4)                0x8FF(C-E), dvec(2-4)	
-
-	#define GL_FLOAT16_MAT(*)_AMD             0x91C(5-D) f16mat(*) (follows dmat)
-
-	0x140(4-6, A, E), 0x8B5(0-9), 0x8B6(5-A), 0x8DC(6-8), 0x8F4(6-E), 0x8FE(5-7, 9-B), 0x8FF(8-E), 0x91C(5-D), 0x92DB
-		8 16-bit bitsets
-
-	third nybbles = 0, 4-6, C-F -> eight values (3-bit constant)
-	
-	high = 0x14, else in [8B, 92] -> [8B : 2, 8C : 0, 8D : 1, 8E : 0, 8F : 3, 90 : 0, 91 : 1, 92 : 1] (8 ranges)
-		could be a set of "third nybble index" u8s (1 << (third nybble) | ...)
-		third nybble = 0 for 0x14
-		pack into a u64 LUT and extract by offset; also popcount() into above-mentioned bitsets?
-#endif
         default:
             Rtt_LogException( "Location of uniform `%s` found, but type unsupported", name );
                 
