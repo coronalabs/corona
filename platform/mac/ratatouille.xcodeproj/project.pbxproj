@@ -740,6 +740,7 @@
 		C21D9DBD1BF67C300042C5A9 /* android_syslog.sh in Resources */ = {isa = PBXBuildFile; fileRef = C21D9DBC1BF67C300042C5A9 /* android_syslog.sh */; };
 		C21D9DC81BF6992D0042C5A9 /* ios_sendapp.sh in Resources */ = {isa = PBXBuildFile; fileRef = C21D9DC61BF6992D0042C5A9 /* ios_sendapp.sh */; };
 		C21D9DC91BF6992D0042C5A9 /* ios_syslog.sh in Resources */ = {isa = PBXBuildFile; fileRef = C21D9DC71BF6992D0042C5A9 /* ios_syslog.sh */; };
+		C21D9DCA1BF6992D0042C5A9 /* ios_devicectl.sh in Resources */ = {isa = PBXBuildFile; fileRef = C21D9DCB1BF6992D0042C5A9 /* ios_devicectl.sh */; };
 		C220A3B41BFBED7F00161EC8 /* xcodesim_syslog.sh in Resources */ = {isa = PBXBuildFile; fileRef = C220A3B31BFBED7F00161EC8 /* xcodesim_syslog.sh */; };
 		C222D2B51868E21300227A41 /* composer.lua in Sources */ = {isa = PBXBuildFile; fileRef = C222D2AC1868CD8800227A41 /* composer.lua */; };
 		C222F50E19DB22F6008ABD87 /* xcodesim_sendapp.sh in Resources */ = {isa = PBXBuildFile; fileRef = C249AAC919D368AB00BB0BDF /* xcodesim_sendapp.sh */; };
@@ -3274,6 +3275,7 @@
 		C21D9DBC1BF67C300042C5A9 /* android_syslog.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = android_syslog.sh; path = ../resources/android_syslog.sh; sourceTree = "<group>"; };
 		C21D9DC61BF6992D0042C5A9 /* ios_sendapp.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = ios_sendapp.sh; path = ../resources/ios_sendapp.sh; sourceTree = "<group>"; };
 		C21D9DC71BF6992D0042C5A9 /* ios_syslog.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = ios_syslog.sh; path = ../resources/ios_syslog.sh; sourceTree = "<group>"; };
+		C21D9DCB1BF6992D0042C5A9 /* ios_devicectl.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = ios_devicectl.sh; path = ../resources/ios_devicectl.sh; sourceTree = "<group>"; };
 		C220A3B31BFBED7F00161EC8 /* xcodesim_syslog.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = xcodesim_syslog.sh; path = ../resources/xcodesim_syslog.sh; sourceTree = "<group>"; };
 		C222D2AC1868CD8800227A41 /* composer.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = composer.lua; path = ../subrepos/composer/composer.lua; sourceTree = "<group>"; };
 		C229E2071B32221B00D87A7C /* librtt-simulator.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "librtt-simulator.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -4358,6 +4360,7 @@
 				C249AAC919D368AB00BB0BDF /* xcodesim_sendapp.sh */,
 				C21D9DC61BF6992D0042C5A9 /* ios_sendapp.sh */,
 				C21D9DC71BF6992D0042C5A9 /* ios_syslog.sh */,
+				C21D9DCB1BF6992D0042C5A9 /* ios_devicectl.sh */,
 				C21D9DBC1BF67C300042C5A9 /* android_syslog.sh */,
 				C231262E1B8FC1B20061A232 /* android_sendapp.sh */,
 				C2B170E11B702C2300349EC6 /* OSXApp.xcent */,
@@ -6587,6 +6590,7 @@
 				C23D8DC71954EDA300D6555E /* widget_theme_android_holo_light@4x.png in Resources */,
 				00B73D6712B720CA0057F594 /* debug.keystore in Resources */,
 				C21D9DC91BF6992D0042C5A9 /* ios_syslog.sh in Resources */,
+				C21D9DCA1BF6992D0042C5A9 /* ios_devicectl.sh in Resources */,
 				C200AAEA19626D86005828AA /* CoronaPListSupport.lua in Resources */,
 				00B73D6812B720CA0057F594 /* zipalign in Resources */,
 				A40A90701BD99B23001D2038 /* TVOSAppPackageSheet.xib in Resources */,
