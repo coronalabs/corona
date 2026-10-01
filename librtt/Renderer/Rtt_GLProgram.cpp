@@ -1369,23 +1369,24 @@ ClassifyNonSampler( GLenum value )
 {
 	U16 high = value >> 8, nybble3 = ( value >> 4 ) & 0xF;
 
-	// The third nybble is a good distinguishing feature and lets the
-	// values be divvied up into few small sets. This can be pushed a
-	// bit further by coalescing a few consecutive pairs (a range of
-	// 32 rather than 16), in which case the lower value of the third
-	// nybble is still wanted. (The atomic counter's nybble is a false
-	// positive here and so is excepted from consideration.)
+	// The third nybble is a good distinguishing feature to divvy
+	// values into a few small sets. This can be pushed further by
+	// coalescing some adjacent low nybble pairs (so 32 elements,
+	// rather than 16), although in these cases a correction must
+	// be done so the second half also sees the beginning of the
+	// augmented swath. (The atomic counter type's nybble is one
+	// of the values that would be checked, but is skipped.)
 	nybble3 -= ( 0xA040 /* bits 0x6, 0xD, 0xF */ >> nybble3 ) & ( high < 0x92 );
 	
-	// The "C" nybble occurs in two prefixes. However, the remaining
-	// third nybbles > C each correspond to a high byte larger than
-	// C's smaller one. Therefore those nybbles, and C's larger one,
+	// The `C` nybble occurs in two prefixes. The remaining third
+	// nybbles > C each correspond to a high byte larger than C's
+	// smaller one. Therefore those nybbles, and C's larger one,
 	// can be incremented in value to avoid any ambiguity.
 	nybble3 += ( high >= 0x8F ) & ( nybble3 > 4 );
 	
-	// From the adjusted nybble, get the value's prefix and find an
-	// offset from that. If it falls within the 32-bit range, check
-	// if the spot is represented in the range's mask.
+	// From the adjusted nybble, get the value's prefix and use
+	// it to find an offset. If it falls within the 32-bit range,
+	// check if the spot is represented in the range's mask.
 	const U16 kPrefixes[] = { 0xFFF, 0x140, 0x8B5, 0x8DC, 0x8F4, 0x8FE, 0x91C, 0x92D };
 	
 	int index = ( 0xBF3000014001ULL >> ( nybble3 * 3 ) ) & 7;
@@ -1394,20 +1395,22 @@ ClassifyNonSampler( GLenum value )
 	index &= -( bit < 0x20 );
 	bit &= -( bit < 0x20 );
 	
-	U32 mask = 1U << bit;
+	U32 prefixMask = 1U << bit;
 
 	const U32 kLows[] = {
-		0x0, 0xC470, 0x7E003FF, 0x1C0,
-		0x7FC0, 0x7F000EE0, 0x3FE0, 0x800
+		0x0 /* prefix sum = 0 */, 0xC470 /* + 6 */, 0x7E003FF /* + 16 */, 0x1C0 /* + 3 */,
+		0x7FC0 /* + 9 */, 0x7F000EE0 /* + 13 */, 0x3FE0 /* + 9 */, 0x800 /* + 1 */
 	};
 	
-	// Invalidate the index if the spot is missing.
-	index &= -( ( kLows[index] & mask ) > 0 );
+	// Invalidate the index if the spot is empty.
+	index &= -( ( kLows[index] & prefixMask ) > 0 );
 
-	// Supply the offset.
+	// Supply the offset. (The constant here packs together the
+	// 6-bit, popcount-based prefix sums from kLows; these are
+	// 1-based, however, since bad offsets map to 0.)
 	int prefixSum = ( 0xE708DA5C7040ULL >> ( index * 6 ) ) & 63;
 	
-	return prefixSum + Rtt_Pop32( kLows[index] & ( mask - 1 ) );
+	return prefixSum + Rtt_Pop32( kLows[index] & ( prefixMask - 1 ) );
 }
 
 GLint
