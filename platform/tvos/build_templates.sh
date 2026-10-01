@@ -78,15 +78,9 @@ mkdir -pv "${BUILD_DIR}/template-dSYM/${SDK_SIMULATOR}/${SDK_VERSION}"
 export SUPPRESS_APP_SIGN=1
 export SUPPRESS_GUI=1
 
-# Templates are re-signed by the Corona Simulator / CoronaBuilder with the
-# developer's own identity and provisioning profile when an app is built, so
-# the template itself must not depend on a signing identity or profile being
-# available on the build machine (or in CI).
-XCODE_NO_SIGNING=(CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=)
-
 # template device
 
-xcodebuild SYMROOT="$path/build" OTHER_CFLAGS="-fembed-bitcode" "${XCODE_NO_SIGNING[@]}" -project "${path}"/ratatouille.xcodeproj -target ${TEMPLATE_TARGET} -configuration Release -sdk ${SDK_DEVICE} 2>&1 | tee -a "$FULL_LOG_FILE" | egrep -v "$XCODE_LOG_FILTERS"
+xcodebuild SYMROOT="$path/build" OTHER_CFLAGS="-fembed-bitcode" -project "${path}"/ratatouille.xcodeproj -target ${TEMPLATE_TARGET} -configuration Release -sdk ${SDK_DEVICE} 2>&1 | tee -a "$FULL_LOG_FILE" | egrep -v "$XCODE_LOG_FILTERS"
 checkError
 
 mv -v "${BUILD_DIR}/Release-${SDK_DEVICE}/template.app" "${BUILD_DIR}/template/${SDK_DEVICE}/${SDK_VERSION}/template.app"
@@ -97,7 +91,7 @@ checkError
 
 # template simulator
 
-xcodebuild SYMROOT="$path/build" "${XCODE_NO_SIGNING[@]}" -project "${path}"/ratatouille.xcodeproj -target ${TEMPLATE_TARGET} -configuration Release -sdk ${SDK_SIMULATOR} 2>&1 | tee -a "$FULL_LOG_FILE" | egrep -v "$XCODE_LOG_FILTERS"
+xcodebuild SYMROOT="$path/build" -project "${path}"/ratatouille.xcodeproj -target ${TEMPLATE_TARGET} -configuration Release -sdk ${SDK_SIMULATOR} 2>&1 | tee -a "$FULL_LOG_FILE" | egrep -v "$XCODE_LOG_FILTERS"
 checkError
 
 mv -v "${BUILD_DIR}/Release-${SDK_SIMULATOR}/template.app" "${BUILD_DIR}/template/${SDK_SIMULATOR}/${SDK_VERSION}/template.app"
@@ -112,12 +106,7 @@ then
 	# CoronaCards.framework
 	# NOTE: No need to do clean, since we already did a clean build in the above xcodebuild 
 	# invocations. This xcodebuild will finish nearly instantaneously.
-	# Apps embedding the framework re-sign it (CodeSignOnCopy), so it is built unsigned too.
-	# The target runs universal-framework.sh, whose nested xcodebuilds don't see command-line
-	# build settings but do inherit XCODE_XCCONFIG_FILE.
-	NO_SIGNING_XCCONFIG="${BUILD_DIR}/no-code-signing.xcconfig"
-	printf '%s\n' "${XCODE_NO_SIGNING[@]}" > "$NO_SIGNING_XCCONFIG"
-	XCODE_XCCONFIG_FILE="$NO_SIGNING_XCCONFIG" xcodebuild SYMROOT="$path/build" OTHER_CFLAGS="-fembed-bitcode" -project "${path}"/ratatouille.xcodeproj -target CoronaCards.framework -configuration Release 2>&1 | tee -a "$FULL_LOG_FILE" | egrep -v "$XCODE_LOG_FILTERS"
+	xcodebuild SYMROOT="$path/build" OTHER_CFLAGS="-fembed-bitcode" -project "${path}"/ratatouille.xcodeproj -target CoronaCards.framework -configuration Release 2>&1 | tee -a "$FULL_LOG_FILE" | egrep -v "$XCODE_LOG_FILTERS"
 	checkError
 fi
 
