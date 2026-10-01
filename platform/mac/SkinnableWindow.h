@@ -38,6 +38,10 @@
 - (void)setOrientation:(Rtt::DeviceOrientation::Type)orientation;
 - (void)rotate:(BOOL)clockwise;
 
+// Replaces the device art and screen area, keeping the current orientation and zoom
+// (e.g. when a foldable device folds or unfolds).
+- (void)setSkinImage:(NSString*)path screenRect:(NSRect)screenRect;
+
 @end
 
 // ----------------------------------------------------------------------------

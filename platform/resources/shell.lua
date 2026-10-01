@@ -33,13 +33,29 @@ local isSimulatorExtension = params.isSimulatorExtension
 local appOrientation = nil
 local screenDressingMask = nil
 
-local statusBarNames = {
-	[display.DefaultStatusBar]=statusBarFiles.default,
-	[display.DarkStatusBar]=statusBarFiles.dark,
-	[display.TranslucentStatusBar]=statusBarFiles.translucent,
-	[display.LightTransparentStatusBar]=statusBarFiles.lightTransparent,
-	[display.DarkTransparentStatusBar]=statusBarFiles.darkTransparent,
-}
+local statusBarNames = {}
+local statusBarImageNames = {}
+
+local function setStatusBarNames()
+	statusBarNames = {
+		[display.DefaultStatusBar]=statusBarFiles.default,
+		[display.DarkStatusBar]=statusBarFiles.dark,
+		[display.TranslucentStatusBar]=statusBarFiles.translucent,
+		[display.LightTransparentStatusBar]=statusBarFiles.lightTransparent,
+		[display.DarkTransparentStatusBar]=statusBarFiles.darkTransparent,
+	}
+end
+setStatusBarNames()
+
+-- The status bar height the simulated device reports. A skin whose status bar art is taller
+-- than the bar itself gives the bar's height in pixels.
+local function statusBarContentHeight( img )
+	local height = img.height
+	if statusBarFiles.height and statusBarFiles.height < height then
+		height = statusBarFiles.height
+	end
+	return height*display.contentScaleY
+end
 
 if statusBarFiles and statusBarFiles.default and not isSimulatorExtension then
 	-- Status bar
@@ -47,48 +63,57 @@ if statusBarFiles and statusBarFiles.default and not isSimulatorExtension then
 	appOrientation = system.orientation
 	local isLandscape = ("landscapeLeft" == appOrientation) or ("landscapeRight" == appOrientation)
 
-	local x = display.screenOriginX
-	local y = display.screenOriginY
-    local sx = display.contentScaleX
-	local sy = display.contentScaleY
-	if isLandscape then
-		sx, sy = sy, sx
+	-- Loads the hidden portrait and landscape image of every status bar mode
+	local function loadStatusBars()
+		local x = display.screenOriginX
+		local y = display.screenOriginY
+		local sx = display.contentScaleX
+		local sy = display.contentScaleY
+		if isLandscape then
+			sx, sy = sy, sx
+		end
+
+		statusBarImageNames = {}
+		for _,v in pairs( statusBarNames ) do
+			local portraitFilename = v
+			local landscapeFilename = string.gsub( portraitFilename, "(.*)%.png", "%1.landscape.png" )
+			if not overlay[portraitFilename] then
+				local imgPortrait = display.newImage( overlay, portraitFilename, system.SkinResourceDirectory, x, y, true )
+				local imgLandscape = display.newImage( overlay, landscapeFilename, system.SkinResourceDirectory, x, y, true )
+
+				overlay[portraitFilename] = imgPortrait
+				overlay[landscapeFilename] = imgLandscape
+				table.insert( statusBarImageNames, portraitFilename )
+				table.insert( statusBarImageNames, landscapeFilename )
+
+				if imgPortrait ~= nil then
+					imgPortrait.xScale = sx
+					imgPortrait.yScale = sy
+
+					-- Move offscreen
+					imgPortrait.y = imgPortrait.y - (imgPortrait.height * 2)
+					imgPortrait.isVisible = false
+				else
+					print("Warning: Could not load status bar image '"..portraitFilename.."'")
+				end
+
+				if imgLandscape ~= nil then
+					imgLandscape.xScale = sy
+					imgLandscape.yScale = sx
+
+					-- Move offscreen
+					imgLandscape.y = imgLandscape.y - (imgLandscape.height * 2)
+					imgLandscape.isVisible = false
+				else
+					print("Warning: Could not load status bar image '"..landscapeFilename.."'")
+				end
+			end
+		end
+
+		-- add unique string value after creating status bar image objects
+		statusBarNames[display.HiddenStatusBar] = "none"
 	end
-
-	for _,v in pairs( statusBarNames ) do
-		local portraitFilename = v
-		local landscapeFilename = string.gsub( portraitFilename, "(.*)%.png", "%1.landscape.png" )
-		local imgPortrait = display.newImage( overlay, portraitFilename, system.SkinResourceDirectory, x, y, true )
-		local imgLandscape = display.newImage( overlay, landscapeFilename, system.SkinResourceDirectory, x, y, true )
-
-		overlay[portraitFilename] = imgPortrait
-		overlay[landscapeFilename] = imgLandscape
-
-        if imgPortrait ~= nil then
-            imgPortrait.xScale = sx
-            imgPortrait.yScale = sy
-
-			-- Move offscreen
-			imgPortrait.y = imgPortrait.y - (imgPortrait.height * 2)
-            imgPortrait.isVisible = false
-        else
-            print("Warning: Could not load status bar image '"..portraitFilename.."'")
-        end
-
-        if imgLandscape ~= nil then
-            imgLandscape.xScale = sy
-            imgLandscape.yScale = sx
-
-            -- Move offscreen
-            imgLandscape.y = imgLandscape.y - (imgLandscape.height * 2)
-            imgLandscape.isVisible = false
-        else
-            print("Warning: Could not load status bar image '"..landscapeFilename.."'")
-        end
-	end
-
-	-- add unique string value after creating status bar image objects
-	statusBarNames[display.HiddenStatusBar] = "none"
+	loadStatusBars()
 
 	function overlay:showScreenDressing( )
 		local dressing = self["_screenDressing"]
@@ -176,6 +201,7 @@ if statusBarFiles and statusBarFiles.default and not isSimulatorExtension then
 		if not name then
 			print( "WARNING: invalid parameter passed to display.setStatusBarMode() (expected userdata, got "..type(mode)..")" )
 		else
+			self.currentMode = mode
 			local current = self.current
 			if current ~= name then
 				local hiddenKey = statusBarNames[display.HiddenStatusBar]
@@ -195,13 +221,48 @@ if statusBarFiles and statusBarFiles.default and not isSimulatorExtension then
 					--knows the actual status bar height based on the loaded image size and contentScaleY
 					--Note: statusBarHeight is deprecated and reverts to defaults
 
-					rawset(display,"topStatusBarContentHeight",dst.height*display.contentScaleY)
+					rawset(display,"topStatusBarContentHeight",statusBarContentHeight(dst))
 
 				end
 
 				self.current = name
 			end
 		end
+	end
+
+	-- A foldable device changes screens when it folds, and with it the status bars and screen dressing
+	function overlay:reloadStatusBars( files )
+		local changed = false
+		for _, key in ipairs( { "default", "dark", "translucent", "lightTransparent", "darkTransparent", "screenDressing", "height" } ) do
+			if files[key] ~= statusBarFiles[key] then
+				changed = true
+			end
+		end
+		if not changed or not files.default then
+			return
+		end
+
+		for _, name in ipairs( statusBarImageNames ) do
+			if self[name] then
+				self[name]:removeSelf()
+				self[name] = nil
+			end
+		end
+		if self._screenDressing then
+			self._screenDressing:removeSelf()
+			self._screenDressing = nil
+		end
+		screenDressingMask = nil
+
+		statusBarFiles = files
+		setStatusBarNames()
+		appOrientation = system.orientation
+		isLandscape = ("landscapeLeft" == appOrientation) or ("landscapeRight" == appOrientation)
+		loadStatusBars()
+
+		self.current = nil
+		self:setStatusBarMode( self.currentMode or display.TranslucentStatusBar )
+		self:showScreenDressing( )
 	end
 
 	overlay:setStatusBarMode(display.TranslucentStatusBar)
@@ -225,11 +286,18 @@ else
 	function overlay:showScreenDressing( )
 	end
 
+	function overlay:reloadStatusBars( files )
+	end
+
 	-- luacheck: pop
 end
 
 
 local function _on_resize( _ )
+	if params.getStatusBarFiles then
+		overlay:reloadStatusBars( params.getStatusBarFiles() )
+	end
+
 	appOrientation =  system.orientation
 	local fileName = overlay.current
 	local hiddenKey = statusBarNames[display.HiddenStatusBar]
