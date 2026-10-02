@@ -147,10 +147,6 @@ namespace Rtt
 
 	NSTask *consoleTask;
 	long fRelaunchCount;
-
-	// Relaunching keeps a foldable skin unfolded
-	BOOL fUnfolded;
-	int fUnfoldedSkin;
 }
 
 @property (nonatomic, readonly, getter=simulator) Rtt::MacSimulator *fSimulator;
@@ -220,7 +216,6 @@ namespace Rtt
 -(IBAction)rotateLeft:(id)sender;
 -(IBAction)rotateRight:(id)sender;
 -(IBAction)shake:(id)sender;
--(IBAction)toggleFold:(id)sender;
 -(IBAction)toggleSuspendResume:(id)sender;
 
 -(NSWindow*)currentWindow;

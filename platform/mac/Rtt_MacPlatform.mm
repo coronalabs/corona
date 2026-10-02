@@ -701,9 +701,6 @@ MacPlatform::GetPreference( Category category, Rtt::String * value ) const
 		case MPlatform::kScreenDressingFile:
 			result = [[properties valueForKey:@"screenDressingFile"] UTF8String];
 			break;
-		case MPlatform::kStatusBarHeight:
-			result = [[[properties valueForKey:@"statusBarHeight"] stringValue] UTF8String];
-			break;
 		case MPlatform::kSubscription:
 			result = [[properties valueForKey:@"subscription"] UTF8String];
 			break;
@@ -2120,27 +2117,15 @@ void MacPlatform::GetSafeAreaInsetsPixels(Rtt_Real &top, Rtt_Real &left, Rtt_Rea
 
 	if (DeviceOrientation::IsSideways(GetDevice().GetOrientation()))
 	{
-		bool isLandscapeLeft = (DeviceOrientation::kSidewaysLeft == GetDevice().GetOrientation());
-		if (isLandscapeLeft && [properties valueForKey:@"safeLandscapeLeftScreenInsetTop"] != nil)
-		{
-			top = [[properties valueForKey:@"safeLandscapeLeftScreenInsetTop"] floatValue];
-			left = [[properties valueForKey:@"safeLandscapeLeftScreenInsetLeft"] floatValue];
-			bottom = [[properties valueForKey:@"safeLandscapeLeftScreenInsetBottom"] floatValue];
-			right = [[properties valueForKey:@"safeLandscapeLeftScreenInsetRight"] floatValue];
-		}
-		else
-		{
-			top = [[properties valueForKey:@"safeLandscapeScreenInsetTop"] floatValue];
-			left = [[properties valueForKey:@"safeLandscapeScreenInsetLeft"] floatValue];
-			bottom = [[properties valueForKey:@"safeLandscapeScreenInsetBottom"] floatValue];
-			right = [[properties valueForKey:@"safeLandscapeScreenInsetRight"] floatValue];
+		top = [[properties valueForKey:@"safeLandscapeScreenInsetTop"] floatValue];
+		left = [[properties valueForKey:@"safeLandscapeScreenInsetLeft"] floatValue];
+		bottom = [[properties valueForKey:@"safeLandscapeScreenInsetBottom"] floatValue];
+		right = [[properties valueForKey:@"safeLandscapeScreenInsetRight"] floatValue];
 
-			// Skins give the landscape insets for landscapeRight. Turned the other way, left and right trade places,
-			// unless the skin gives landscapeLeft its own insets.
-			if (isLandscapeLeft)
-			{
-				Swap(left, right);
-			}
+		// Skins give the landscape insets for landscapeRight. Turned the other way, left and right trade places.
+		if (DeviceOrientation::kSidewaysLeft == GetDevice().GetOrientation())
+		{
+			Swap(left, right);
 		}
 
 		top += statusBarMult * [[properties valueForKey:@"safeLandscapeScreenInsetStatusBar"] floatValue];

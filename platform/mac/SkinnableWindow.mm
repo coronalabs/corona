@@ -188,32 +188,6 @@
     }
 }
 
-- (void)setSkinImage:(NSString*)path screenRect:(NSRect)screenRect
-{
-	using namespace Rtt;
-
-	DeviceOrientation::Type orientation = fCurrentSkinOrientation;
-
-	// Load the new art upright, then turn it back to the current orientation. The GL view stays
-	// attached (re-adding it would re-run prepareOpenGL); like a rotation, only its frame changes.
-	fScreenRect = screenRect;
-	[fSkinView setOrientation:DeviceOrientation::kUpright];
-	if ( ! [fSkinView setImageWithURL:[NSURL fileURLWithPath:path]] )
-	{
-		Rtt_TRACE_SIM(("Error: could not load skin image '%s'\n", [path UTF8String]));
-	}
-	[fSkinView setOrientation:orientation];
-
-	NSSize newSkinSize = [self updateSkinFrameSize];
-	[self updateGLViewFrameSize];
-	[self updateGLViewFrameOrigin];
-
-	// Keep the window's top left corner in place, like a zoom does (see setFrame:display:)
-	fScaleDidChange = YES;
-	NSRect frame = [self frameRectForContentRect:NSMakeRect([self frame].origin.x, [self frame].origin.y, newSkinSize.width, newSkinSize.height)];
-	[self setFrame:frame display:YES];
-}
-
 - (NSSize) nativeSize
 {
 	return [fSkinView nativeSize];

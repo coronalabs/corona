@@ -558,30 +558,6 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
 
 // ----------------------------------------------------------------------------
 
-// Target of Hardware > Unfold/Fold. It validates only its own item, which is enabled for
-// foldable skins and titled for the current state.
-@interface FoldMenuTarget : NSObject
-@end
-
-@implementation FoldMenuTarget
-
-- (void) toggleFold:(id)sender
-{
-	[(AppDelegate*)[NSApp delegate] toggleFold:sender];
-}
-
-- (BOOL) validateMenuItem:(NSMenuItem *)menuItem
-{
-	Rtt::MacSimulator *simulator = ((AppDelegate*)[NSApp delegate]).simulator;
-	BOOL foldable = ( simulator != NULL && simulator->IsFoldable() );
-	[menuItem setTitle:( foldable && simulator->IsUnfolded() ? @"Fold" : @"Unfold" )];
-	return foldable;
-}
-
-@end
-
-// ----------------------------------------------------------------------------
-
 @interface AppDelegate ()
 
 @property (nonatomic, readwrite, copy) NSString* fAppPath;
@@ -1060,7 +1036,6 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
 
 	
     [self loadExtensionMenu];
-    [self addFoldMenuItem];
 
     NSMenu *appMenu = [[NSApplication sharedApplication] mainMenu];
     NSMenuItem *windowMenuItem = [appMenu itemWithTitle:kWindowMenuItemName];
@@ -2777,9 +2752,6 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
         skinFile = Rtt::TargetDevice::LuaObjectFileFromSkin( Rtt::TargetDevice::kDefaultSkin );
     }
 
-	// A relaunch keeps a foldable device unfolded
-	fSimulator->SetUnfolded( fUnfolded && fUnfoldedSkin == fSkin );
-
 	// [1] Somewhere in Initialize (or its sub-calls), GLView's prepareOpenGL is invoked, and Runtime is instantiated
 	fSimulator->Initialize( skinFile, resourcePath );
 
@@ -2870,37 +2842,6 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
 
 		fAnalytics->Log("shake", NULL);
 	}
-}
-
--(IBAction)toggleFold:(id)sender
-{
-	if (fSimulator != NULL && fSimulator->IsFoldable())
-	{
-		fSimulator->ToggleFold();
-		fUnfolded = fSimulator->IsUnfolded();
-		fUnfoldedSkin = fSkin;
-
-		fAnalytics->Log("fold", "state", (fUnfolded ? "unfolded" : "folded"));
-	}
-}
-
-// Adds Hardware > Unfold (⇧⌘F) below Shake
-- (void) addFoldMenuItem
-{
-	static FoldMenuTarget *sFoldMenuTarget = nil;
-
-	NSMenu *hardwareMenu = [[[NSApp mainMenu] itemWithTitle:@"Hardware"] submenu];
-	NSInteger shakeIndex = [hardwareMenu indexOfItemWithTarget:nil andAction:@selector(shake:)];
-	if (hardwareMenu == nil || shakeIndex < 0 || sFoldMenuTarget != nil)
-	{
-		return;
-	}
-
-	sFoldMenuTarget = [[FoldMenuTarget alloc] init];
-	NSMenuItem *item = [[[NSMenuItem alloc] initWithTitle:@"Unfold" action:@selector(toggleFold:) keyEquivalent:@"f"] autorelease];
-	[item setKeyEquivalentModifierMask:(NSEventModifierFlagCommand | NSEventModifierFlagShift)];
-	[item setTarget:sFoldMenuTarget];
-	[hardwareMenu insertItem:item atIndex:shakeIndex + 1];
 }
 
 -(IBAction)back:(id)sender

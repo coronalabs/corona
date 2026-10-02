@@ -29,7 +29,6 @@
 namespace Rtt
 {
 
-class MacGUIPlatform;
 class MacViewCallback;
 
 // ----------------------------------------------------------------------------
@@ -53,7 +52,6 @@ class MacSimulator : public PlatformSimulator
 
 	public:
 		virtual void DidRotate( bool clockwise, DeviceOrientation::Type start, DeviceOrientation::Type end );
-		virtual bool DidChangeFold( bool unfolded );
 
 		// Optional callback for systems when the zoom/scale change finishes.
 		// On Mac, it is used to save the scale factor to user preferences so the next launch can be reopened at the same level.
@@ -90,14 +88,8 @@ class MacSimulator : public PlatformSimulator
 //		virtual void ReleasePlatformString( PlatformStringRef str ) const;
 
 	private:
-		// Properties that describe the simulated screen; a foldable device changes them when it folds
-		void SetScreenProperties( const Config& config );
-
-	private:
 //		NSAutoreleasePool* fPool;
 //		SkinnableWindow* fWindow;
-		NSString* fDeviceConfigFile;
-		MacGUIPlatform* fMacPlatform;
 		NSWindow* fWindow;
 		NSWindowController* fWindowController;
 		NSMutableDictionary* fProperties;

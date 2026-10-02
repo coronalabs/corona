@@ -154,7 +154,6 @@ class MPlatform
 				, kLightTransparentStatusBarFile = -104
 				, kDarkTransparentStatusBarFile = -105
 				, kScreenDressingFile = -106
-				, kStatusBarHeight = -107
 		}
 		Category;
 
