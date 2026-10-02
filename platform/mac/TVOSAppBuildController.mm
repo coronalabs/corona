@@ -1055,7 +1055,7 @@ static NSString *kValueNone = @"None";
 	{
 		[self logEvent:@"build-bungled" key:@"reason" value:@"failed-to-copy-to-device"];
 
-		NSString *errorMsg = @"*ideviceinstaller* encountered an error installing the app:\n\n";
+		NSString *errorMsg = @"There was a problem installing the app on the tvOS device:\n\n";
 
 		[self showError:@"App Installation Problem" message:[errorMsg stringByAppendingString:ideviceinstallerOutput] helpURL:nil parentWindow:[self window]];
 	}
@@ -1065,7 +1065,7 @@ static NSString *kValueNone = @"None";
 
 		[self startTailDeviceSyslog:[XcodeToolHelper pathForIOSDeviceSyslogUtility] appBundlePath:appBundlePath deviceID:@"Apple TVOS"];
 
-		NSString *message = [NSString stringWithFormat:@"*%@* is installed on the tvOS device and is ready to run\n\nThe device's syslog will appear in the Console until this message is closed (you'll need to *launch* the app on the device before anything appears in the syslog)", self.appName];
+		NSString *message = [NSString stringWithFormat:@"*%@* is installed on the tvOS device\n\nThe app's output will appear in the Console until this message is closed", self.appName];
 
 		[self showMessage:@"App Installation Complete" message:message helpURL:nil parentWindow:[self window]];
 

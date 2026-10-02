@@ -1687,6 +1687,9 @@ MacPlatform::RuntimeErrorNotification( const char *errorType, const char *messag
 																	  attributes:textAttributes]];
 				[accessory setEditable:NO];
 				[accessory setDrawsBackground:NO];
+				// NSAlert only makes room for the accessory's current frame, and the text view doesn't grow to
+				// fit its text until it is drawn (macOS 27), which spills the text over the message. Fit it now.
+				[accessory sizeToFit];
 
 				[alert setAccessoryView:accessory];
 			}

@@ -10,6 +10,7 @@
 #include "Core/Rtt_Build.h"
 
 #include "Rtt_IPhoneWebPopup.h"
+#include "Rtt_IPhoneOrientation.h"
 
 #include "Core/Rtt_String.h"
 #include "Rtt_LuaAux.h"
@@ -118,7 +119,7 @@ RectToCGRect( const Rtt::Rect& bounds, CGRect * outRect )
 		// TODO: Is this really necessary?  We do this in openWithRequest:
 		AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
 		UIViewController *viewController = delegate.viewController;
-		initialOrientation = viewController.interfaceOrientation;
+		initialOrientation = Rtt::IPhoneOrientation::CurrentInterfaceOrientation( viewController.view );
 	}
 
 	return self;
@@ -200,7 +201,7 @@ RectToCGRect( const Rtt::Rect& bounds, CGRect * outRect )
 		UIViewController *viewController = delegate.viewController;
 		[viewController.view addSubview:fWebView];
 		fWebView.hidden = YES;
-		initialOrientation = viewController.interfaceOrientation;
+		initialOrientation = Rtt::IPhoneOrientation::CurrentInterfaceOrientation( viewController.view );
 
 		CGRect stageBounds;
 		Rtt::Rect screenBounds;
@@ -430,7 +431,7 @@ RectToCGRect( const Rtt::Rect& bounds, CGRect * outRect )
 	UIInterfaceOrientation startingOrientation = initialOrientation;
 
 	AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-	UIInterfaceOrientation currentOrientation = delegate.viewController.interfaceOrientation;
+	UIInterfaceOrientation currentOrientation = Rtt::IPhoneOrientation::CurrentInterfaceOrientation( delegate.viewController.view );
 
 	bool isStartingLandscape = UIInterfaceOrientationIsLandscape( startingOrientation );
 	bool isCurrentLandscape = UIInterfaceOrientationIsLandscape( currentOrientation );
