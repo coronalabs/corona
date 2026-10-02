@@ -701,6 +701,9 @@ MacPlatform::GetPreference( Category category, Rtt::String * value ) const
 		case MPlatform::kScreenDressingFile:
 			result = [[properties valueForKey:@"screenDressingFile"] UTF8String];
 			break;
+		case MPlatform::kStatusBarHeight:
+			result = [[[properties valueForKey:@"statusBarHeight"] stringValue] UTF8String];
+			break;
 		case MPlatform::kSubscription:
 			result = [[properties valueForKey:@"subscription"] UTF8String];
 			break;
@@ -2120,10 +2123,21 @@ void MacPlatform::GetSafeAreaInsetsPixels(Rtt_Real &top, Rtt_Real &left, Rtt_Rea
 
 	if (DeviceOrientation::IsSideways(GetDevice().GetOrientation()))
 	{
-		top = [[properties valueForKey:@"safeLandscapeScreenInsetTop"] floatValue];
-		left = [[properties valueForKey:@"safeLandscapeScreenInsetLeft"] floatValue];
-		bottom = [[properties valueForKey:@"safeLandscapeScreenInsetBottom"] floatValue];
-		right = [[properties valueForKey:@"safeLandscapeScreenInsetRight"] floatValue];
+		bool isLandscapeLeft = (DeviceOrientation::kSidewaysLeft == GetDevice().GetOrientation());
+		if (isLandscapeLeft && [properties valueForKey:@"safeLandscapeLeftScreenInsetTop"] != nil)
+		{
+			top = [[properties valueForKey:@"safeLandscapeLeftScreenInsetTop"] floatValue];
+			left = [[properties valueForKey:@"safeLandscapeLeftScreenInsetLeft"] floatValue];
+			bottom = [[properties valueForKey:@"safeLandscapeLeftScreenInsetBottom"] floatValue];
+			right = [[properties valueForKey:@"safeLandscapeLeftScreenInsetRight"] floatValue];
+		}
+		else
+		{
+			top = [[properties valueForKey:@"safeLandscapeScreenInsetTop"] floatValue];
+			left = [[properties valueForKey:@"safeLandscapeScreenInsetLeft"] floatValue];
+			bottom = [[properties valueForKey:@"safeLandscapeScreenInsetBottom"] floatValue];
+			right = [[properties valueForKey:@"safeLandscapeScreenInsetRight"] floatValue];
+		}
 
 		top += statusBarMult * [[properties valueForKey:@"safeLandscapeScreenInsetStatusBar"] floatValue];
 	}

@@ -96,10 +96,16 @@ PlatformSimulator::Config::Config( Rtt_Allocator & allocator )
 	safeLandscapeScreenInsetLeft(0.0f),
 	safeLandscapeScreenInsetBottom(0.0f),
 	safeLandscapeScreenInsetRight(0.0f),
+	safeLandscapeLeftScreenInsetTop(-1.0f),
+	safeLandscapeLeftScreenInsetLeft(-1.0f),
+	safeLandscapeLeftScreenInsetBottom(-1.0f),
+	safeLandscapeLeftScreenInsetRight(-1.0f),
 	hasAccelerometer( false ),
 	hasGyroscope( false ),
 	windowTitleBarName( & allocator ),
 	defaultFontSize(0.0f),
+	statusBarHeight(0.0f),
+	isFoldable(false),
 	iosPointWidth(kDefaultConfigIntValue),
 	iosPointHeight(kDefaultConfigIntValue),
 	androidDisplayApproximateDpi(kDefaultConfigIntValue)
@@ -156,7 +162,9 @@ PlatformSimulator::PlatformSimulator( PlatformFinalizer finalizer )
 	fLastSupportedOrientation( DeviceOrientation::kUpright ),
 	fLastDeviceWidth( -1 ),
 	fLastDeviceHeight( -1 ),
-	fIsTransparent(false)
+	fIsTransparent(false),
+	fIsFoldable(false),
+	fIsUnfolded(false)
 {
 }
 
@@ -258,22 +266,37 @@ StringForKey( lua_State *L, const char key[], const char *defaultValue)
 #include "CoronaLua.h"
 
 void
-PlatformSimulator::LoadConfig(const char deviceConfigFile[], const MPlatform& platform, Config& rConfig)
+PlatformSimulator::LoadConfig(const char deviceConfigFile[], const MPlatform& platform, Config& rConfig, bool unfolded)
 {
-	PlatformSimulator::LoadConfig(deviceConfigFile, rConfig);
+	PlatformSimulator::LoadConfig(deviceConfigFile, rConfig, unfolded);
 }
 
 void
-PlatformSimulator::LoadConfig( const char deviceConfigFile[], Config& rConfig )
+PlatformSimulator::LoadConfig( const char deviceConfigFile[], Config& rConfig, bool unfolded )
 {
 	lua_State *L = luaL_newstate();
 	String errorMesg;
 
     rConfig.configLoaded = false;
-    
+
 	if ( 0 == Lua::DoFile( L, deviceConfigFile, 0, false, &errorMesg ))
 	{
 		lua_getglobal( L, "simulator" );
+
+		// A foldable skin describes its opened screen in an "unfolded" table. Its fields replace
+		// the folded ones, so everything below reads the unfolded values when requested.
+		lua_getfield( L, -1, "unfolded" );
+		rConfig.isFoldable = lua_istable( L, -1 );
+		if ( unfolded && rConfig.isFoldable )
+		{
+			for ( lua_pushnil( L ); lua_next( L, -2 ); lua_pop( L, 1 ) )
+			{
+				lua_pushvalue( L, -2 ); // key
+				lua_pushvalue( L, -2 ); // value
+				lua_settable( L, -6 ); // simulator[key] = value
+			}
+		}
+		lua_pop( L, 1 );
 
 		rConfig.platform = TargetDevice::PlatformForDeviceType( StringForKey( L, "device", NULL ) );
 		rConfig.supportsExitRequests = ( rConfig.platform != TargetDevice::kIPhonePlatform && rConfig.platform != TargetDevice::kTVOSPlatform );
@@ -420,6 +443,10 @@ PlatformSimulator::LoadConfig( const char deviceConfigFile[], Config& rConfig )
 		rConfig.safeLandscapeScreenInsetLeft = (float) NumberForKey( L, "safeLandscapeScreenInsetLeft", 0 );
 		rConfig.safeLandscapeScreenInsetBottom = (float) NumberForKey( L, "safeLandscapeScreenInsetBottom", 0 );
 		rConfig.safeLandscapeScreenInsetRight = (float) NumberForKey( L, "safeLandscapeScreenInsetRight", 0 );
+		rConfig.safeLandscapeLeftScreenInsetTop = (float) NumberForKey( L, "safeLandscapeLeftScreenInsetTop", -1 );
+		rConfig.safeLandscapeLeftScreenInsetLeft = (float) NumberForKey( L, "safeLandscapeLeftScreenInsetLeft", -1 );
+		rConfig.safeLandscapeLeftScreenInsetBottom = (float) NumberForKey( L, "safeLandscapeLeftScreenInsetBottom", -1 );
+		rConfig.safeLandscapeLeftScreenInsetRight = (float) NumberForKey( L, "safeLandscapeLeftScreenInsetRight", -1 );
 
 		rConfig.deviceImageFile.Set( StringForKey( L, "deviceImage", NULL ) );
 		rConfig.displayManufacturer.Set( StringForKey( L, "displayManufacturer", "unknown" ) );
@@ -435,6 +462,7 @@ PlatformSimulator::LoadConfig( const char deviceConfigFile[], Config& rConfig )
 		rConfig.isUprightOrientationPortrait = BoolForKey( L, "isUprightOrientationPortrait", (rConfig.screenHeight > rConfig.screenWidth) );
 		rConfig.windowTitleBarName.Set( StringForKey( L, "windowTitleBarName", "Custom Device" ) );
 		rConfig.defaultFontSize = (float) NumberForKey( L, "defaultFontSize", 0 );
+		rConfig.statusBarHeight = (float) NumberForKey( L, "statusBarHeight", 0 );
 
 		// iOS skin-specific
 		rConfig.iosPointWidth = (S32) IntForKey( L, "iosPointWidth", kDefaultConfigIntValue );
@@ -882,6 +910,28 @@ PlatformSimulator::Rotate( bool clockwise )
 
 	// On a real device, any orientation change would be accompanied by at least one accelerometer event
 	PlatformSimulator::Shake();
+}
+
+void
+PlatformSimulator::ToggleFold()
+{
+	if ( ! fIsFoldable || ! fPlayer )
+	{
+		return;
+	}
+
+	bool unfolded = ! fIsUnfolded;
+	if ( ! DidChangeFold( unfolded ) )
+	{
+		return;
+	}
+	fIsUnfolded = unfolded;
+
+	// Folding changes the size of the app's screen, so raise a resize event like a rotation does.
+	Rtt::Runtime& runtime = GetPlayer()->GetRuntime();
+	runtime.DispatchEvent( ResizeEvent() );
+	fLastDeviceWidth = runtime.GetDisplay().DeviceWidth();
+	fLastDeviceHeight = runtime.GetDisplay().DeviceHeight();
 }
 
 void

@@ -63,6 +63,9 @@ namespace Rtt
 @property (nonatomic, assign) BOOL allowOverlay;
 @property (nonatomic, assign) BOOL cursorHidden;
 @property (nonatomic, assign) NSPoint initialLocation;
+// Point size of the simulated screen for scale = "adaptive"; 0 keeps the size the surface was created with.
+@property (nonatomic, assign) NSInteger adaptiveWidth;
+@property (nonatomic, assign) NSInteger adaptiveHeight;
 
 + (NSOpenGLPixelFormat*) basicPixelFormat;
 
@@ -82,6 +85,8 @@ namespace Rtt
 
 - (CGFloat)deviceWidth;
 - (CGFloat)deviceHeight;
+// Changes the simulated screen's pixel size (upright), e.g. when a foldable device folds.
+- (void)setDeviceSize:(NSSize)size;
 
 
 //- (CGFloat)uprightWidth;
