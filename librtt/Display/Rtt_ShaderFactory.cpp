@@ -682,19 +682,23 @@ ShaderFactory::BindTimeTransform(lua_State *L, int index, const SharedPtr< Shade
 
     lua_getfield( L, index, "timeTransform" ); // ..., xform?
 
+	TimeTransform transform;
+
     if (lua_istable( L, -1 ))
     {
-        const char *func = TimeTransform::FindFunc( L, -1, "graphics.defineEffect()" );
+        TimeTransform::Method method = TimeTransform::FindMethod( L, -1, "graphics.defineEffect()" );
 
-        if (lua_isstring( L, -1 ))
+        if (TimeTransform::kNumMethodTypes != method )
         {
-            TimeTransform *transform = Rtt_NEW( fAllocator, TimeTransform );
- 
-            transform->SetFunc( L, -1, "graphics.defineEffect()", func );
-             
-            resource->SetTimeTransform( transform );
+            transform.SetMethod( L, -1, "graphics.defineEffect()", method );
         }
     }
+    else
+    {
+		transform = fOwner.GetDefaults().GetTimeTransform( fOwner.GetGpuSupportsHighPrecisionFragmentShaders() );
+    }
+
+	resource->SetTimeTransform( transform );
 
     lua_pop( L, 1 ); // ...
 }
@@ -762,11 +766,7 @@ ShaderFactory::InitializeBindings( lua_State *L, int shaderIndex, const SharedPt
     BindDetails( L, shaderIndex, resource );
     BindShellTransform( L, shaderIndex, resource );
     BindVertexExtension( L, shaderIndex, resource );
-
-    if (resource->UsesTime())
-    {
-        BindTimeTransform( L, shaderIndex, resource );
-    }
+	BindTimeTransform( L, shaderIndex, resource );
 
     bool has_vertex_data = BindVertexDataMap( L, shaderIndex, resource );
     if( has_vertex_data )
@@ -1018,11 +1018,6 @@ ShaderFactory::NewShaderBuiltin( ShaderTypes::Category category, const char *nam
 
                             if (resource.NotNull())
                             {
-                                lua_getfield( L, tableIndex, "isTimeDependent" );
-                                bool usesTime = lua_toboolean( L, -1 ) ? true : false;
-                                resource->SetUsesTime( usesTime );
-                                lua_pop( L, 1 );
-
 								Shader *prototype = NULL;
 								prototype = NewShaderPrototype( L, tableIndex, resource );
 								result = (ShaderComposite*)prototype->Clone( fAllocator );

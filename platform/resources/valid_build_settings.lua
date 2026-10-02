@@ -320,6 +320,11 @@ settings =
 		preferenceStorage = "",
 		singleInstance = true,
 	},
+
+	nxs = {
+		publishable = true,
+	},
+
 	web =
 	{
 		defaultMode = "",

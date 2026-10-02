@@ -51,7 +51,7 @@
 // 2010.9.26
 #define Rtt_STRING_BUILD_DATE Rtt_MACRO_TO_STRING( Rtt_BUILD_YEAR ) "." Rtt_MACRO_TO_STRING( Rtt_BUILD_MONTH ) "." Rtt_MACRO_TO_STRING( Rtt_BUILD_DAY ) 
 
-#define Rtt_STRING_COPYRIGHT	"Copyright (C) 2009-" Rtt_MACRO_TO_STRING( Rtt_BUILD_YEAR ) "  C o r o n a   L a b s   I n c ."
+#define Rtt_STRING_COPYRIGHT	"Copyright (C) 2009-" Rtt_MACRO_TO_STRING( Rtt_BUILD_YEAR ) "  Corona Labs Inc. and The Solar2D Community"
 
 #define Rtt_STRING_CREDITS		"Walter Luh | Perry Clarke, Alex Frangeti, Sean Head, Ajay McCaleb, Tom Newman, Josh Quick, Vlad Shcherban, Michael Wallar"
 

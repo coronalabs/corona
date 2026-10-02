@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <signal.h>
+#include <string.h>
 
 #if defined(DEBUG)
 #include <stdio.h>

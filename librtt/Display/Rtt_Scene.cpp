@@ -215,7 +215,7 @@ Scene::Render( Renderer& renderer, PlatformSurface& rTarget, ProfilingEntryRAII*
         Rtt::Real totalTime = Rtt_AbsoluteToMilliseconds( elapsedTime ) / kMillisecondsPerSecond;
         Rtt::Real deltaTime = Rtt_AbsoluteToMilliseconds( elapsedTime - fOwner.GetPreviousTime() ) / kMillisecondsPerSecond;
 
-        renderer.BeginFrame( totalTime, deltaTime, fOwner.GetDefaults().GetTimeTransform(), fOwner.GetSx(), fOwner.GetSy() );
+        renderer.BeginFrame( totalTime, deltaTime, fOwner.GetSx(), fOwner.GetSy() );
         
 		ADD_ENTRY( "Scene: Begin Render" );
 		
@@ -281,25 +281,23 @@ Scene::Render( Renderer& renderer, PlatformSurface& rTarget, ProfilingEntryRAII*
 #endif
 
         renderer.EndFrame();
-
-        // When shader code depends on time, then frame is time-dependent.
-        // So only set valid when frame is *in*dependent of time.
-        if ( ! renderer.IsFrameTimeDependent() )
-        {
-            fIsValid = true;
-        }
         
 		ADD_ENTRY( "Scene: Issue Draw Commands" );
 		
         renderer.Swap(); // Swap back and front command buffers
-		
+
 		ADD_ENTRY( "Scene: Swap" );
 		
         renderer.Render(); // Render front command buffer
         
 //        renderer.GetFrameStatistics().Log();
-        
+
 		ADD_ENTRY( "Scene: Process Render Commands" );
+
+		// If any bound program linked either of the time uniforms, we have
+		// a time dependency in our scene and must leave it invalid on this
+		// frame. Otherwise, mark it as valid until any normal change.
+		fIsValid = !renderer.AddedUsesTime();
 
         rTarget.Flush();
 

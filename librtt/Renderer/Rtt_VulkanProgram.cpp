@@ -21,6 +21,9 @@
 #endif
 #include "Core/Rtt_Assert.h"
 
+
+#include "Display/Rtt_ShaderResource.h"
+
 #include <shaderc/shaderc.h>
 #include <algorithm>
 #include <utility>
@@ -44,6 +47,8 @@
 // To reduce memory consumption and startup cost, defer the
 // creation of Vulkan shaders and programs until they're needed.
 // Depending on usage, this could result in framerate dips.
+
+// TODO: verify for updated "uses time" logic, cf. note in Rtt_Scene.cpp
 #define DEFER_VK_CREATION 1
 
 // ----------------------------------------------------------------------------
@@ -146,6 +151,15 @@ VulkanProgram::VulkanProgram( VulkanContext * context )
 	{
 		Reset( fData[i] );
 	}
+}
+
+bool
+VulkanProgram::UsesTime ( Program::Version version, bool includeDelta ) const
+{
+	Rtt_ASSERT( version < Program::kNumVersions );
+	Rtt_ASSERT( ( 0 != fData[version].fProgram ) || ( !fData[version].HasTotalTime() && !fData[version].HasDeltaTime() ) );
+
+	return fData[version].HasTotalTime() || ( includeDelta && fData[version].HasDeltaTime() );
 }
 
 void 

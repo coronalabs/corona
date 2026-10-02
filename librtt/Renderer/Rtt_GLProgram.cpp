@@ -34,10 +34,14 @@
 #include <vector>
 #include "Rtt_Profiling.h"
 
+// Include GL header for glGetActiveUniform
+#include "Renderer/Rtt_GL.h"
 
 // To reduce memory consumption and startup cost, defer the
 // creation of GL shaders and programs until they're needed.
 // Depending on usage, this could result in framerate dips.
+
+// TODO: verify for updated "uses time" logic, cf. note in Rtt_Scene.cpp
 #define DEFER_CREATION 1
 
 // ----------------------------------------------------------------------------
@@ -103,7 +107,8 @@ namespace /*anonymous*/
 		"void main()" \
 		"{" \
 			"gl_FragColor = vec4(1.0);" \
-		"}";}
+		"}";
+}
 
 // ----------------------------------------------------------------------------
 
@@ -148,7 +153,7 @@ GLProgram::Create( CPUResource* resource )
 
 	Rtt_ASSERT( CPUResource::kProgram == resource->GetType() );
 	fResource = resource;
-	
+
 	#if !DEFER_CREATION
 		for( U32 i = 0; i < kMaximumMaskCount + 1; ++i )
 		{
@@ -160,6 +165,7 @@ GLProgram::Create( CPUResource* resource )
     
     Program* program = static_cast<Program*>( fResource );
     ShaderResource* shaderResource = program->GetShaderResource();
+	
     const CoronaShellTransform * transform = shaderResource->GetShellTransform();
 
     if (transform && transform->cleanup)
@@ -223,6 +229,15 @@ GLProgram::Bind( Program::Version version )
     
     glUseProgram( data.fProgram );
     GL_CHECK_ERROR();
+}
+
+bool
+GLProgram::UsesTime ( Program::Version version, bool includeDelta ) const
+{
+	Rtt_ASSERT( version < Program::kNumVersions );
+	Rtt_ASSERT( ( 0 != fData[version].fProgram ) || ( !fData[version].HasTotalTime() && !fData[version].HasDeltaTime() ) );
+
+	return fData[version].HasTotalTime() || ( includeDelta && fData[version].HasDeltaTime() );
 }
 
 void
@@ -313,9 +328,9 @@ GatherAttributeExtensions( const FormatExtensionList* extensionList, std::string
         const FormatExtensionList::Attribute& attribute = extensionList->GetAttributes()[i];
         char buf[64], count[2] = {};
         
-        if (attribute.components > 1)
+        if (attribute.GetComponentCount() > 1)
         {
-            count[0] = '0' + attribute.components;
+            count[0] = '0' + attribute.GetComponentCount();
         }
         
         const char * prim = "float", * vec = "vec";
@@ -689,13 +704,13 @@ GLExtraUniforms::Find( const char * name, GLint & size, GLenum & type )
     
     if (*fCache)
     {
-        for (int i = 0; i < (*fCache)->fInfo.size(); ++i)
+        for (size_t i = 0; i < (*fCache)->fInfo.size(); ++i)
         {
             const auto & pos = (*fCache)->fInfo[i];
             
             if (0 == strcmp( pos.fName.c_str(), name ))
             {
-                entryIndex = i;
+                entryIndex = (int)i;
                 
                 if (pos.fLocations[fVersion] >= 0) // version as well?
                 {
@@ -749,13 +764,13 @@ GLExtraUniforms::Find( const char * name, GLint & size, GLenum & type )
         
         for (uniformIndex = 0; uniformIndex < count; ++uniformIndex)
         {
-            glGetActiveUniform( versionData.fProgram, (GLuint)uniformIndex, GLProgram::kUniformNameBufferSize - 1, &length, &size, &type, nameBuf );
+            ::glGetActiveUniform( versionData.fProgram, (GLuint)uniformIndex, GLProgram::kUniformNameBufferSize - 1, &length, &size, &type, nameBuf );
 
             const char * bracket = strchr( nameBuf, '[' );
             
             if (bracket)
             {
-                length = bracket - nameBuf;
+                length = (GLsizei)(bracket - nameBuf);
             }
             
             if (0 == strncmp( name, nameBuf, length ))

@@ -12,6 +12,8 @@
 #include "Display/Rtt_DisplayDefaults.h"
 #include "Display/Rtt_ShaderResource.h"
 
+#include <type_traits>
+
 // ----------------------------------------------------------------------------
 
 namespace Rtt
@@ -29,6 +31,11 @@ static const Color kWhite = 0xFFFFFFFF;
     static bool kShaderCompilerVerboseDefault = false;
 #endif
 
+
+struct ExtraSpace {
+	TimeTransform fTimeTransform;
+	bool fWrittenTimeTransform = false;
+};
 
 DisplayDefaults::DisplayDefaults()
 :	fClearColor( kBlack ),
@@ -63,29 +70,44 @@ DisplayDefaults::DisplayDefaults()
     fSceneStencilClear( 0 ),
     fAddedStencilClear( 0 )
 {
-	static TimeTransform sTransform;
+	Rtt_STATIC_ASSERT( sizeof(fExtraSpace) >= sizeof(ExtraSpace) );
+	Rtt_STATIC_ASSERT( std::is_trivially_destructible<ExtraSpace>::value );
+	Rtt_STATIC_ASSERT( std::is_trivially_copyable<ExtraSpace>::value );
 
-	fTimeTransform = &sTransform;
+	ExtraSpace es;
 
-	SetTimeTransform( NULL );
+	memcpy( fExtraSpace, &es, sizeof(ExtraSpace) );
 }
 
-const TimeTransform* DisplayDefaults::GetTimeTransform() const
+TimeTransform DisplayDefaults::GetTimeTransform( bool gpuSupportsHighPrecisionShaders ) const
 {
-	return fTimeTransform;
-}
-
-void DisplayDefaults::SetTimeTransform( const TimeTransform *transform )
-{
-	if ( transform )
+	ExtraSpace es;
+	
+	memcpy( &es, fExtraSpace, sizeof(ExtraSpace) );
+	
+	if ( es.fWrittenTimeTransform )
 	{
-		*fTimeTransform = *transform;
+		return es.fTimeTransform;
 	}
-
 	else
 	{
-		fTimeTransform->SetDefault();
+		TimeTransform transform;
+		
+		transform.fMethod = TimeTransform::kPingPong;
+		transform.fArg1 = gpuSupportsHighPrecisionShaders ? 4.55 * 3600 /* 16380, just shy of 2^14 */
+															: 63.975; // similarly almost 2^7; 1/8 second precision
+		return transform;
 	}
+}
+
+void DisplayDefaults::SetTimeTransform( const TimeTransform& transform )
+{
+	ExtraSpace es;
+	
+	es.fTimeTransform = transform;
+	es.fWrittenTimeTransform = true;
+	
+	memcpy( fExtraSpace, &es, sizeof(ExtraSpace) );
 }
 
 // ----------------------------------------------------------------------------

@@ -31,7 +31,7 @@ namespace Rtt
 U32
 FormatExtensionList::Attribute::GetSize() const
 {
-    U32 count = components;
+    U32 count = GetComponentCount();
     
     if (kAttributeType_Byte != type)
     {
@@ -473,7 +473,7 @@ FormatExtensionList::Build( Rtt_Allocator* allocator, const CoronaVertexExtensio
         Attribute attribute = {};
         
         attribute.type = attributeData.type;
-        attribute.components = attributeData.components;
+        attribute.comp_minus_1 = attributeData.components - 1;
         attribute.normalized = attributeData.normalized;
         
         // Any window gets its own group.

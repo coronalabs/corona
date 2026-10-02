@@ -185,7 +185,7 @@ int CoronaRendererWriteStateBlock( const CoronaRenderer * renderer, unsigned lon
                 size = outSize;
             }
             
-            if (size > 0)
+            if (data && size > 0)
             {
                 memcpy( out, data, size );
             }

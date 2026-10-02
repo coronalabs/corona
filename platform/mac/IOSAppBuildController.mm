@@ -1074,7 +1074,7 @@ static NSString *kValueNone = @"None";
 
 	if ([ideviceinstallerOutput contains:@"ERROR:"] || [ideviceinstallerOutput contains:@"Error occurred:"])
 	{
-		NSString *errorMsg = @"*ideviceinstaller* encountered an error installing the app:\n\n";
+		NSString *errorMsg = @"There was a problem installing the app on the iOS device:\n\n";
 
 		// [self showError:@"App Installation Problem" message:[errorMsg stringByAppendingString:ideviceinstallerOutput] helpURL:nil parentWindow:[self window]];
 		[self showModalSheet:@"Device Installation Problem" message:[errorMsg stringByAppendingString:ideviceinstallerOutput] buttonLabels:@[@"OK", @"Retry Installation" ] alertStyle:NSCriticalAlertStyle helpURL:nil parentWindow:[self window] completionHandler: ^(NSModalResponse returnCode)
@@ -1095,7 +1095,7 @@ static NSString *kValueNone = @"None";
 	{
 		[self startTailDeviceSyslog:[XcodeToolHelper pathForIOSDeviceSyslogUtility] appBundlePath:appBundlePath deviceID:@"iPhone OS"];
 
-		NSString *message = [NSString stringWithFormat:@"*%@* is installed on the iOS device and is ready to run\n\nThe device's syslog will appear in the Console until this message is closed (you'll need to *launch* the app on the device before anything appears in the syslog)", self.appName];
+		NSString *message = [NSString stringWithFormat:@"*%@* is installed on the iOS device\n\nThe app's output will appear in the Console until this message is closed", self.appName];
 
 		[self showMessage:@"App Installation Complete" message:message helpURL:nil parentWindow:[self window]];
 

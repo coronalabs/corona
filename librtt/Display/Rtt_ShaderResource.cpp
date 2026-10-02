@@ -27,233 +27,321 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
-bool
-TimeTransform::Apply( Uniform *time, Real *old, U32 now )
+static Real
+Modulo( Real x, Real range )
 {
-	if (NULL != func && NULL != time)
-	{
-		if (timestamp != now)
-		{
-			timestamp = now;
-
-			time->GetValue(cached);
-
-			if (NULL != old)
-			{
-				*old = cached;
-			}
-
-			func( &cached, arg1, arg2, arg3 );
-		}
-
-		time->SetValue(cached);
-
-		return true;
-	}
-
-	return false;
+    return fmod( x, range );
 }
 
-static void
-Modulo( Real *x, Real range, Real, Real )
+static Real
+PingPong( Real x, Real range )
 {
-    *x = fmod( *x, range ); // TODO?: Rtt_RealFmod
-}
-
-static void
-PingPong( Real *x, Real range, Real, Real )
-{
-    Real pos = fmod( *x, Rtt_REAL_2 * range ); // TODO?: Rtt_RealFmod
+    Real pos = fmod( x, Rtt_REAL_2 * range );
 
     if (pos > range)
     {
         pos = Rtt_REAL_2 * range - pos;
     }
 
-    *x = pos;
+    return pos;
 }
 
-static void
-Sine( Real *x, Real amplitude, Real speed, Real shift )
+static Real
+Sine( Real x, Real amplitude, Real speed, Real phase )
 {
-    Real t = *x;
+    return amplitude * Rtt_RealSin( speed * x + phase );
+}
 
-    *x = amplitude * Rtt_RealSin( speed * t + shift );
+static Real
+SmootherStep( Real y1, Real y2, Real t )
+{
+	Real t3 = t * t * t;
+	Real factor = t3 * ( 10. - t * ( 15. - t * 6. ) );
+	
+	return y1 + (y2 - y1) * factor;
+}
+
+static Real
+SmoothedModulo( Real x, Real range, Real extra )
+{
+	Real rem = fmod( x, range + extra );
+	
+	if ( rem < range )
+	{
+		return rem;
+	}
+	else
+	{
+		return SmootherStep( range, 0., ( rem - range ) / extra );
+	}
+}
+
+static Real
+Noise_Lissajous( Real x )
+{
+	return sin( M_PI * x ) + sin( 2. * x );
+}
+
+static Real
+Noise_R2( Real x, Real range )
+{
+	// See from Martin Roberts "Extreme Learning", in particular "Jittering quasirandom point sets":
+	// https://web.archive.org/web/20260228140726/https://extremelearning.com.au/a-simple-method-to-construct-isotropic-quasirandom-blue-noise-point-sequences/
+
+	const double K = 1.0 / 1.324717957244746; /* 1 / plastic constant */
+
+	Real ip, fp = modf( x / range, &ip );
+	Real raw = ip * K;
+	Real y1 = raw - floor( raw );
+	Real y2 = ( raw + K ) - floor( raw + K );
+	
+	return SmootherStep( y1, y2, fp );
+}
+
+Real
+TimeTransform::Apply( Real value ) const
+{
+	switch ( fMethod )
+	{
+	case kNone:
+		return value;
+	case kModulo:
+		return Modulo( value, fArg1 );
+	case kPingPong:
+		return PingPong( value, fArg1 );
+	case kSine:
+		return Sine( value, fArg1, fArg2, fArg3 );
+	case kSmoothedModulo:
+		return SmoothedModulo( value, fArg1, fArg2 );
+	case kNoise_Lissajous:
+		return Noise_Lissajous( value );
+	case kNoise_R2:
+		return Noise_R2( value, fArg1 );
+	default:
+		Rtt_ASSERT_NOT_REACHED();
+		return -1;
+	}
 }
 
 int
 TimeTransform::Push( lua_State *L ) const
 {
-    if ( func )
-    {
-        lua_newtable( L );
+	const char *name = StringForMethod( fMethod );
+	
+	Rtt_ASSERT( name );
 
-        if ( &Modulo == func || &PingPong == func )
-        {
-            lua_pushstring( L, &Modulo == func ? "modulo" : "pingpong" );
-            lua_setfield( L, -2, "func" );
-            lua_pushnumber( L, arg1 );
-            lua_setfield( L, -2, "range" );
-        }
+	lua_newtable( L );
+	lua_pushstring( L, name );
+	lua_setfield( L, -2, "func" );
 
-        else if ( &Sine == func )
-        {
-            lua_pushliteral( L, "sine" );
-            lua_setfield( L, -2, "func" );
-            lua_pushnumber( L, arg1 );
-            lua_setfield( L, -2, "amplitude" );
-            lua_pushnumber( L, (Rtt_REAL_2 * M_PI) / arg2 );
-            lua_setfield( L, -2, "period" );
-            lua_pushnumber( L, arg3 );
-            lua_setfield( L, -2, "shift" );
-        }
+	switch ( fMethod )
+	{
+	case kNoise_Lissajous:
+		break;
+	case kModulo:
+	case kPingPong:
+	case kNoise_R2:
+	case kSmoothedModulo:
+		lua_pushnumber( L, fArg1 );
+		lua_setfield( L, -2, "range" );
+	   
+		if ( kSmoothedModulo == fMethod )
+		{
+			lua_pushnumber( L, fArg2 );
+			lua_setfield( L, -2, "smooth" );
+		}
+		
+		break;
+	case kSine:
+		lua_pushnumber( L, fArg1 );
+		lua_setfield( L, -2, "amplitude" );
+		lua_pushnumber( L, (Rtt_REAL_2 * M_PI) / fArg2 );
+		lua_setfield( L, -2, "period" );
+		lua_pushnumber( L, fArg3 );
+		lua_setfield( L, -2, "phase" );
+		
+		break;
+	default:
+		Rtt_ASSERT_NOT_REACHED();
 
-        else
-        {
-            Rtt_ASSERT_NOT_REACHED();
-
-            return 0;
-        }
-    }
-
-    else
-    {
-        lua_pushnil( L );
-    }
-
+		return 0;
+	}
+        
     return 1;
 }
 
-static void
-GetNumberArg( lua_State * L, int arg, Real * value, const char * func, const char * name, const char * what )
+static bool
+GetNumberArg( lua_State * L, int arg, Real * value, TimeTransform::Method method, const char * name, const char * what )
 {
+	bool ok = true;
+
     lua_getfield( L, arg, name ); // ..., xform, ..., value?
         
-    if (!lua_isnil( L, -1 ))
-    {
-        if (lua_isnumber( L, -1 ))
-        {
-            *value = (Real)lua_tonumber( L, -1 );
-        }
+	if ( lua_isnumber( L, -1 ) )
+	{
+		*value = (Real)lua_tonumber( L, -1 );
+	}
 
-        else
-        {
-            CoronaLuaWarning( L, "%s ignoring invalid '%s' parameter for %s time transform (expected number but got %s)",
-                        what, name, func, lua_typename( L, lua_type( L, -1 ) ) );
-        }
-    }
+	else if ( !lua_isnil( L, -1 ) )
+	{
+		CoronaLuaWarning( L, "%s ignoring invalid '%s' parameter for %s time transform (expected number but got %s)",
+					what, name, TimeTransform::StringForMethod( method ), lua_typename( L, lua_type( L, -1 ) ) );
+	
+		ok = false;
+	}
 
     lua_pop( L, 1 ); // ..., xform, ...
+    
+    return ok;
 }
 
-static void
-GetPositiveNumberArg( lua_State * L, int arg, Real * value, const char * func, const char * name, const char * what )
+static bool
+GetPositiveNumberArg( lua_State * L, int arg, Real * value, TimeTransform::Method method, const char * name, const char * what )
 {
-    Real old = *value;
-
-    GetNumberArg( L, arg, value, func, name, what );
-
-    if (*value <= Rtt_REAL_0)
+    if( GetNumberArg( L, arg, value, method, name, what ) && ( *value > Rtt_REAL_0 ) )
     {
-        *value = old;
-
+		return true;
+	}
+	else
+    {
         CoronaLuaWarning( L, "%s ignoring invalid '%s' parameter for %s time transform (must be positive number)",
-            what, name, func );
+            what, name, TimeTransform::StringForMethod( method ) );
+            
+		return false;
     }
 }
 
-void
-TimeTransform::SetDefault()
+bool
+TimeTransform::Matches( const TimeTransform *other ) const
 {
-    func = &PingPong;
-    arg1 = 50; // 50 should be safe for mediump
-    arg2 = arg3 = 0;
+	if ( NULL != other )
+	{
+		return 0 == memcmp( this, other, sizeof(TimeTransform) );
+	}
+	else
+	{	
+		return kNone == fMethod;
+	}
 }
 
 void
-TimeTransform::SetFunc( lua_State *L, int arg, const char *what, const char *fname )
+TimeTransform::SetMethod( lua_State *L, int arg, const char *what, Method method )
 {
-    switch (*fname)
+	*this = TimeTransform(); // reset to wipe args and account for errors
+
+    switch ( method )
     {
-    case 'm': // modulo
-    case 'p': // pingpong
+    case kModulo:
+    case kPingPong:
+    case kNoise_R2:
         {
             Real range = Rtt_REAL_1;
-                
-            GetPositiveNumberArg( L, arg, &range, fname, "range", what );
 
-            bool isModulo = 'm' == *fname;
-
-            func = isModulo ? &Modulo : &PingPong;
-            arg1 = range;
+            if( GetPositiveNumberArg( L, arg, &range, method, "range", what ) )
+            {
+				fMethod = method;
+				fArg1 = range;
+			}
         }
         break;
-
-    case 's': // sine
+    case kSine:
         {
-            Real amplitude = Rtt_REAL_1, period = Rtt_REAL_2 * M_PI, shift = Rtt_REAL_0;
+            Real amplitude = Rtt_REAL_1, period = Rtt_REAL_2 * M_PI, phase = Rtt_REAL_0;
 
-            GetNumberArg( L, arg, &amplitude, fname, "amplitude", what );
-            GetPositiveNumberArg( L, arg, &period, fname, "period", what );
-            GetNumberArg( L, arg, &shift, fname, "shift", what );
-
-            func = &Sine;
-            arg1 = amplitude;
-            arg2 = (Rtt_REAL_2 * M_PI) / period;
-            arg3 = shift;
+            if( GetNumberArg( L, arg, &amplitude, method, "amplitude", what ) &&
+				GetPositiveNumberArg( L, arg, &period, method, "period", what ) &&
+				GetNumberArg( L, arg, &phase, method, "phase", what ) )
+			{
+				fMethod = method;
+				fArg1 = amplitude;
+				fArg2 = (Rtt_REAL_2 * M_PI) / period;
+				fArg3 = phase;
+			}
         }
         break;
+	case kSmoothedModulo:
+		{
+            Real range = Rtt_REAL_1, smooth = Rtt_REAL_1;
+
+            if( GetPositiveNumberArg( L, arg, &range, method, "range", what ) &&
+				GetPositiveNumberArg( L, arg, &smooth, method, "smooth", what ) )
+			{
+				fMethod = method;
+				fArg1 = range;
+				fArg2 = smooth;
+			}
+        }
+		break;
+
+	case kNoise_Lissajous:
+		fMethod = method;
+		break;
 
     default:
         Rtt_ASSERT_NOT_REACHED();
     }
 }
 
-bool
-TimeTransform::Matches( const TimeTransform *xform1, const TimeTransform *xform2 )
-{
-	if (xform1 == xform2)
-	{
-		return true;
-	}
-
-	else if (NULL == xform1 || NULL == xform2)
-	{
-		return false;
-	}
-
-	else
-	{
-		return xform1->func == xform2->func && xform1->arg1 == xform2->arg1 && xform1->arg2 == xform2->arg2 && xform1->arg3 == xform2->arg3;
-	}
-}
+const static struct {
+	TimeTransform::Method method;
+	const char *name;
+} kMethodPairs[] = {
+	{ TimeTransform::kNone, "none" },
+	{ TimeTransform::kModulo, "modulo" },
+	{ TimeTransform::kPingPong, "pingpong" },
+	{ TimeTransform::kSine, "sine" },
+	{ TimeTransform::kSmoothedModulo, "smoothedModulo" },
+	{ TimeTransform::kNoise_Lissajous, "lissajousNoise" },
+	{ TimeTransform::kNoise_R2, "r2Noise" }
+};
 
 const char*
-TimeTransform::FindFunc( lua_State *L, int arg, const char *what )
+TimeTransform::StringForMethod( Method method )
 {
-	const char *fname = NULL;
+	for ( auto && pair : kMethodPairs )
+	{
+		if ( pair.method == method )
+		{
+			return pair.name;
+		}
+	}
+	
+	Rtt_ASSERT_NOT_REACHED();
+	
+	return NULL;
+}
 
-    lua_getfield( L, arg, "func" );    // ..., xform, ..., func
+TimeTransform::Method
+TimeTransform::MethodForString( const char *name )
+{
+	for ( auto && pair : kMethodPairs )
+	{
+		if ( 0 == strcmp( name, pair.name ) )
+		{
+			return pair.method;
+		}
+	}
+	
+	return kNumMethodTypes;
+}
 
-    if (lua_isstring( L, -1 ))
+TimeTransform::Method
+TimeTransform::FindMethod( lua_State *L, int arg, const char *what )
+{
+	Method method = kNumMethodTypes;
+	
+	// n.b. "func" is documented, so keep in spite of method nomenclature
+
+    lua_getfield( L, arg, "func" ); // ..., xform, ..., func
+
+    if ( lua_isstring( L, -1 ) )
     {
-        fname = lua_tostring( L, -1 );
-
-        bool isValid = strcmp( fname, "modulo" ) == 0 ||
-                        strcmp( fname, "pingpong" ) == 0 ||
-                        strcmp( fname, "sine" ) == 0;
-            
-		if ( !isValid )
-        {
-            CoronaLuaWarning( L, "%s ignoring unknown %s time transform", what, fname );
-
-			fname = NULL;
-        }
+		method = MethodForString( lua_tostring( L, -1 ) );
     }
 
     lua_pop( L, 1 ); // ..., xform, ...
 
-	return fname;
+	return method;
 }
 
 ShaderResource::ShaderResource( Program *program, ShaderTypes::Category category )
@@ -267,9 +355,8 @@ ShaderResource::ShaderResource( Program *program, ShaderTypes::Category category
     fDetailValues( NULL ),
     fDetailsCount( 0U ),
     fShellTransform( NULL ),
-	fTimeTransform( NULL ),
-	fUsesUniforms( false ),
-	fUsesTime( false )
+	fTimeTransform(),
+	fUsesUniforms( false )
 {
 	Init(program);
 }
@@ -285,9 +372,8 @@ ShaderResource::ShaderResource( Program *program, ShaderTypes::Category category
     fDetailValues( NULL ),
     fDetailsCount( 0U ),
     fShellTransform( NULL ),
-	fTimeTransform( NULL ),
-	fUsesUniforms( false ),
-	fUsesTime( false )
+	fTimeTransform(),
+	fUsesUniforms( false )
 {
 	Init(program);
 }
@@ -316,11 +402,6 @@ ShaderResource::~ShaderResource()
 	{
 		Rtt_DELETE( fDefaultData );
     }
-
-	if ( NULL != fTimeTransform )
-	{
-		Rtt_DELETE( fTimeTransform );
-	}
 
     SetEffectCallbacks( NULL );
     SetShellTransform( NULL );

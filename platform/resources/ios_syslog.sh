@@ -8,7 +8,7 @@
 #
 #----------------------------------------------------------------------------
 
-# Tail the syslog of a connected iOS device filtering for Corona
+# Show the output of an app that's just been sent to an iOS or tvOS device (see ios_sendapp.sh)
 
 DEBUG_BUILD_PROCESS=$(defaults read com.coronalabs.Corona_Simulator debugBuildProcess 2>/dev/null)
 
@@ -28,12 +28,6 @@ RUN_UTIL_PATH="${CORONA_RES_DIR}/device-support/run-idevice-util"
 APP="$1"
 TARGETOS="$2"
 
-if [ ! -x "${RUN_UTIL_PATH}" ]
-then
-	echo "${PROGRAM_NAME}: cannot run ${RUN_UTIL_PATH}" >&2
-	exit 1
-fi
-
 # If a target OS is not provided, assume we're trying to target iOS.
 if [ -z "$TARGETOS" ]
 then
@@ -41,6 +35,121 @@ then
 fi
 
 BUNDLE_NAME=$(plutil -convert json "$APP"/Info.plist -o - -r |grep CFBundleName | sed -e 's/.* : "\([^"]*\)",/\1/')
+
+# With Xcode's devicectl we launch the app ourselves and show what it writes to stdout and stderr.  Launching it with
+# OS_ACTIVITY_DT_MODE set copies its log messages there too, including NSLog() and so Corona's print().
+. "${CORONA_RES_DIR}/ios_devicectl.sh"
+
+# Filters the output of "devicectl device process launch --console", prefixing each line with LABEL and leaving out
+# messages that match EXCLUDE_PATTERNS.  devicectl's own errors are held back and the exit status is 2 if the device
+# was locked, 1 for any other error that stopped the app starting and 3 for an error after it started.
+CONSOLE_FILTER_AWK='
+	BEGIN { show = 1 }
+	{ sub(/\r$/, "") }
+	/^ERROR: .*\(com\.apple\.dt\.CoreDeviceError / { failed = 1 }
+	/BSErrorCodeDescription = Locked/ { locked = 1 }
+	failed { error = error ENVIRON["LABEL"] $0 "\n"; next }
+	{ ran = 1 }
+	# Log messages start with a timestamp and the process name and ids, lines without are part of the one before
+	sub(/^[0-9-]+ [0-9:.+-]+ [^[]*\[[0-9]+:[0-9a-fx]+\] /, "") { show = (ENVIRON["LABEL"] $0 !~ ENVIRON["EXCLUDE_PATTERNS"]) }
+	show { print ENVIRON["LABEL"] $0; fflush() }
+	END { if (locked) exit 2; if (failed) { printf "%s", error; exit ran ? 3 : 1 } }
+'
+
+# Succeeds if the device is locked (apps can't be launched until it's unlocked)
+device_is_locked()
+{
+	local JSON LOCKED
+
+	JSON=$(mktemp -t corona-devicectl) || return 1
+
+	"$DEVICECTL" device info lockState --quiet --timeout 30 --device "$1" --json-output "$JSON" >/dev/null 2>&1
+	LOCKED=$(plutil -extract result.passcodeRequired raw -o - "$JSON" 2>/dev/null)
+
+	rm -f "$JSON"
+
+	[ "$LOCKED" == "true" ]
+}
+
+# Run the app on a device, prefixing each line of its output with a label.
+#
+# The app can't start while the device is locked so keep trying until it's unlocked (the lock state devicectl reports
+# doesn't cover every case, the Lock Screen still showing after Touch ID say, so the launch error decides).  Other
+# errors are shown and tried once more because they can be temporary, just after the device is unlocked for one.
+run_app()
+{
+	local DEVICE_ID="$1" DEVICE_NAME="$2" LABEL="$3" STARTING= WAITING= RETRIED= STATUS
+
+	while true
+	do
+		if device_is_locked "$DEVICE_ID"
+		then
+			STATUS=2
+		else
+			if [ -z "$STARTING" ]
+			then
+				echo "${LABEL}Starting $BUNDLE_NAME on $DEVICE_NAME"
+				STARTING=YES
+			fi
+
+			# The app's output only comes to us if devicectl starts it so restart it if it's already running
+			"$DEVICECTL" device process launch --console --terminate-existing --quiet --environment-variables '{"OS_ACTIVITY_DT_MODE": "YES"}' \
+					--device "$DEVICE_ID" "$BUNDLE_ID" 2>&1 |
+				LABEL="$LABEL" EXCLUDE_PATTERNS="$EXCLUDE_PATTERNS" awk "$CONSOLE_FILTER_AWK"
+			STATUS=${PIPESTATUS[1]}
+		fi
+
+		if [ "$STATUS" == 2 ]
+		then
+			if [ -z "$WAITING" ]
+			then
+				echo "${LABEL}Unlock $DEVICE_NAME to start $BUNDLE_NAME"
+				WAITING=YES
+			fi
+
+			sleep 1
+		elif [ "$STATUS" == 1 ] && [ -z "$RETRIED" ]
+		then
+			RETRIED=YES
+			sleep 2
+		else
+			break
+		fi
+	done
+}
+
+if devicectl_find_devices "$TARGETOS"
+then
+	BUNDLE_ID=$(plutil -extract CFBundleIdentifier raw -o - "$APP/Info.plist")
+
+	# The Simulator terminates us when it stops showing the output.  devicectl passes on the signals it can catch
+	# to the app so kill it outright to leave the app running.
+	trap 'trap - TERM; pkill -KILL -g "$(ps -o pgid= -p $$ | tr -d " ")" -x devicectl; kill -TERM 0' TERM
+
+	for DEVICE in "${DEVICECTL_DEVICES[@]}"
+	do
+		LABEL='[Device] '
+
+		if [ "${#DEVICECTL_DEVICES[@]}" -gt 1 ]
+		then
+			LABEL="[$(devicectl_device_name "$DEVICE")] "
+		fi
+
+		run_app "$(devicectl_device_id "$DEVICE")" "$(devicectl_device_name "$DEVICE")" "$LABEL" &
+	done
+
+	wait
+	exit
+fi
+
+# Otherwise use the libimobiledevice tools to tail the device's syslog (see ios_sendapp.sh)
+if ! arch -x86_64 /usr/bin/true 2>/dev/null
+then
+	echo "$PROGRAM_NAME: no devices detected"
+	exit 1
+fi
+
+echo "[Device] Launch $BUNDLE_NAME on the device to see its output"
 
 # echo "DEBUG: $0 $@" >&2
 

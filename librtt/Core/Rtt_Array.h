@@ -344,7 +344,7 @@ namespace Rtt
 	{
 		if (size > fLength)
 		{
-			if (!fLength)
+			if (!fLengthMax)
 			{
 				Reserve(size);
 			}

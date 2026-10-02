@@ -526,8 +526,6 @@ GLCommandBuffer::BindProgram( Program* program, Program::Version version )
 
     fCurrentPrepVersion = version;
     fProgram = program;
-
-    AcquireTimeTransform( program->GetShaderResource() );
 }
 
 void
@@ -791,6 +789,24 @@ GLCommandBuffer::GetCachedParam( CommandBuffer::QueryableParams param )
     return result;
 }
 
+bool
+GLCommandBuffer::HasProgramVersion( Program* program, Program::Version version ) const
+{
+	const GLProgram* glProgram = static_cast<GLProgram*>( program->GetGPUResource() );
+	
+	return ( NULL != glProgram ) && ( 0 != glProgram->fData[version].fProgram );
+}
+
+bool
+GLCommandBuffer::UsesTotalTime( Program* program, Program::Version version ) const
+{
+	const GLProgram* glProgram = static_cast<GLProgram*>( program->GetGPUResource() );
+	
+	Rtt_ASSERT( glProgram );
+	
+	return glProgram->UsesTime( version, false ); 
+}
+
 void
 GLCommandBuffer::AddCommand( const CoronaCommand* command )
 {
@@ -937,6 +953,8 @@ GLCommandBuffer::Execute( bool measureGPU )
     U32 currentAttributeCount = 0, instanceCount = 0;
     bool clearingDepth = false, clearingStencil = false;
 
+	SetDidUseTime( false );
+
     for( U32 i = 0; i < fNumCommands; ++i )
     {
         Command command = Read<Command>();
@@ -1032,9 +1050,15 @@ GLCommandBuffer::Execute( bool measureGPU )
             {
                 fCurrentDrawVersion = Read<Program::Version>();
                 GLProgram* program = Read<GLProgram*>();
+
                 program->Bind( fCurrentDrawVersion );
  
                 program->GetExtraUniformsInfo( fCurrentDrawVersion, extraUniforms );
+
+				if ( !GetDidUseTime() && program->UsesTime( fCurrentDrawVersion, true ) )
+				{
+					SetDidUseTime( true );
+				}
 
                 DEBUG_PRINT( "Bind Program: program=%p version=%i", program, fCurrentDrawVersion );
                 CHECK_ERROR_AND_BREAK;
@@ -1416,47 +1440,15 @@ void
 GLCommandBuffer::Write( T value )
 {
 	U32 size = sizeof(T);
-
-    /*
-    U32 bytesNeeded = fBytesUsed + size;
-    if( bytesNeeded > fBytesAllocated )
-    {
-        U32 doubleSize = fBytesUsed ? 2 * fBytesUsed : 4;
-        U32 newSize = Max( bytesNeeded, doubleSize );
-        U8* newBuffer = new U8[newSize];
-
-        memcpy( newBuffer, fBuffer, fBytesUsed );
-        delete [] fBuffer;
-
-        fBuffer = newBuffer;
-        fBytesAllocated = newSize;
-    }*/
     U8 * writePos = Reserve( size );
 
-    memcpy( /*fBuffer + fBytesUsed*/writePos, &value, size );
-    //fBytesUsed += size;
+    memcpy( writePos, &value, size );
 }
 
 void GLCommandBuffer::ApplyUniforms( GPUResource* resource )
 {
     GLProgram* glProgram = static_cast<GLProgram*>(resource);
-
-    Real rawTotalTime;
-    bool transformed = false;
-
-    if (fUsesTime)
-    {
-        const UniformUpdate& time = fUniformUpdates[Uniform::kTotalTime];
-        if (fTimeTransform)
-        {
-            transformed = fTimeTransform->Apply( time.uniform, &rawTotalTime, time.timestamp );
-        }
-        if (transformed || !TimeTransform::Matches( fTimeTransform, fLastTimeTransform ))
-        {
-            fUniformUpdates[Uniform::kTotalTime].timestamp = glProgram->GetUniformTimestamp( Uniform::kTotalTime, fCurrentPrepVersion ) - 1; // force a refresh
-        }
-    }
-
+    
     for( U32 i = 0; i < Uniform::kNumBuiltInVariables; ++i)
     {
         const UniformUpdate& update = fUniformUpdates[i];
@@ -1464,11 +1456,6 @@ void GLCommandBuffer::ApplyUniforms( GPUResource* resource )
         {
             ApplyUniform( resource, i );
         }
-    }
-
-    if (transformed) // restore raw value (lets us avoid a redundant variable; will also be in place for un-transformed time dependencies)
-    {
-        fUniformUpdates[Uniform::kTotalTime].uniform->SetValue(rawTotalTime);
     }
 }
 

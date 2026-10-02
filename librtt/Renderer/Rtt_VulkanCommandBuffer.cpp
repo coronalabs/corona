@@ -377,8 +377,6 @@ VulkanCommandBuffer::BindProgram( Program* program, Program::Version version )
 
 	fCurrentPrepVersion = version;
 	fProgram = program;
-
-	AcquireTimeTransform( program->GetShaderResource() );
 }
 
 void
@@ -722,6 +720,8 @@ VulkanCommandBuffer::Execute( bool measureGPU )
 		}
 	}
 
+	SetDidUseTime( false );
+
 	std::sort( fOffscreenSequence.begin(), fOffscreenSequence.end() );
 
 	VulkanUniforms uniforms;
@@ -946,7 +946,12 @@ VulkanCommandBuffer::Execute( bool measureGPU )
 					fCurrentDrawVersion = Read<Program::Version>();
 					VulkanProgram* program = Read<VulkanProgram*>();
 					program->Bind( fRenderer, fCurrentDrawVersion );
-
+					
+					if ( !GetDidUseTime() && program->UsesTime( fCurrentDrawVersion, true ) )
+					{
+						SetDidUseTime( true );
+					}
+					
 					stages = Program::Version::kWireframe != fCurrentDrawVersion ? program->GetPushConstantStages() : 0U;
 
 					DEBUG_PRINT( "Bind Program: program=%p version=%i", program, fCurrentDrawVersion );
@@ -1781,36 +1786,15 @@ VulkanCommandBuffer::Write( T value )
 
 void VulkanCommandBuffer::ApplyUniforms( GPUResource* resource )
 {
-	Real rawTotalTime;
-	bool transformed = false;
-
 	VulkanProgram* vulkanProgram = static_cast< VulkanProgram * >( resource );
-
-	if (fUsesTime)
-    {
-        const UniformUpdate& time = fUniformUpdates[Uniform::kTotalTime];
-        if (fTimeTransform)
-        {
-            transformed = fTimeTransform->Apply( time.uniform, &rawTotalTime, time.timestamp );
-        }
-        if (transformed || !TimeTransform::Matches( fTimeTransform, fLastTimeTransform ))
-        {
-            fUniformUpdates[Uniform::kTotalTime].timestamp = vulkanProgram->GetUniformTimestamp( Uniform::kTotalTime, fCurrentPrepVersion ) - 1; // force a refresh
-        }
-    }
 
 	for( U32 i = 0; i < Uniform::kNumBuiltInVariables; ++i)
 	{
 		const UniformUpdate& update = fUniformUpdates[i];
 		if( update.uniform && update.timestamp != vulkanProgram->GetUniformTimestamp( i, fCurrentPrepVersion ) )
-		{		
+		{
 			ApplyUniform( *vulkanProgram, i );
 		}
-	}
-
-	if (transformed) // restore raw value (lets us avoid a redundant variable; will also be in place for un-transformed time dependencies)
-	{
-		fUniformUpdates[Uniform::kTotalTime].uniform->SetValue(rawTotalTime);
 	}
 }
 

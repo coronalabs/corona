@@ -137,6 +137,9 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
 															  attributes:msgAttributes]];
 		[accessory setEditable:NO];
 		[accessory setDrawsBackground:NO];
+		// NSAlert only makes room for the accessory's current frame, and the text view doesn't grow to
+		// fit its text until it is drawn (macOS 27), which spills the text over the message. Fit it now.
+		[accessory sizeToFit];
 
 		NSAlert *alert = [[[NSAlert alloc] init] autorelease];
 		[alert setMessageText:@"CoronaCards Error"];

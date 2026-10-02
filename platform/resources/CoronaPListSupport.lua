@@ -107,6 +107,21 @@ local function getDelegates(tmpDir)
 	return delegates
 end
 
+-- Replace the "@APP_NAME@" token in every string in the Info.plist with the app's name.
+-- The iOS template ships default NS*UsageDescription strings that use it, and it works in
+-- build.settings strings too since this runs after those have been merged in.
+local function substituteAppName( value, appName )
+	if type(value) == "string" then
+		-- escape "%" in the replacement so gsub doesn't treat it as a capture reference
+		return (value:gsub("@APP_NAME@", (appName:gsub("%%", "%%%%"))))
+	elseif type(value) == "table" then
+		for k, v in pairs(value) do
+			value[k] = substituteAppName(v, appName)
+		end
+	end
+	return value
+end
+
 local function inArray(array, item)
     for key, value in pairs(array) do
         if value == item then return key end
@@ -217,7 +232,9 @@ function CoronaPListSupport.modifyPlist( options )
 	-- We process app Info.plists effectively twice, once when the templates are built and once when
 	-- the app itself is built. The meta Info.plist has the place holders prefixed with "TEMPLATE_"
 	-- so when we see that we replace it with the normal placeholders.
-	if infoPlist.CFBundleVersion == "@TEMPLATE_BUNDLE_VERSION@" then
+	local isTemplateBuild = (infoPlist.CFBundleVersion == "@TEMPLATE_BUNDLE_VERSION@")
+
+	if isTemplateBuild then
 		infoPlist.CFBundleVersion = "@BUNDLE_VERSION@"
 		infoPlist.CFBundleShortVersionString = "@BUNDLE_SHORT_VERSION_STRING@"
 	else
@@ -466,6 +483,17 @@ function CoronaPListSupport.modifyPlist( options )
 			end
 
 		end
+	end
+
+	-- Done last so that strings coming from build.settings can use "@APP_NAME@" as well. Skipped
+	-- when building the templates themselves, where the app's name isn't known yet.
+	if not isTemplateBuild then
+		local appName = options.bundledisplayname or options.bundlename or infoPlist.CFBundleDisplayName or infoPlist.CFBundleName
+		if type(appName) ~= "string" or appName == "" or appName:match("[%$@]") then
+			-- no name, or an unexpanded ${PRODUCT_NAME}/@PLACEHOLDER@ from the template
+			appName = "This app"
+		end
+		substituteAppName( infoPlist, appName )
 	end
 
 	if debugBuildProcess and debugBuildProcess ~= 0 then

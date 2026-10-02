@@ -17,6 +17,7 @@
 
 #ifdef Rtt_ORIENTATION
 #include "Rtt_IPhoneDevice.h"
+#include "Rtt_IPhoneOrientation.h"
 #endif
 
 #import "CoronaOrientationProvider.h"
@@ -59,7 +60,7 @@ DeviceOrientation::Type
 IPhoneScreenSurface::GetOrientation() const
 {
 #ifdef Rtt_ORIENTATION
-	UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+	UIInterfaceOrientation orientation = IPhoneOrientation::CurrentInterfaceOrientation( fView );
 	return IPhoneDevice::ToOrientationTypeFromUIInterfaceOrientation( orientation );
 #else
 	// TODO: Pull this out to tvOS-specific code.
