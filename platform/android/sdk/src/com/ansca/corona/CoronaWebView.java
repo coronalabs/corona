@@ -61,6 +61,9 @@ public class CoronaWebView extends WebView  implements NativePropertyResponder {
 	
 	/** Indicates where the URL request came from such as a link or reload. */
 	private int fUrlRequestSourceType;
+
+	/** Last URL dispatched as a urlRequest event. doUpdateVisitedHistory() skips this URL. */
+	private String fLastUrlRequestUrl;
 	
 	// If the webview is currently loading a page
 	private boolean fIsLoading;
@@ -86,6 +89,7 @@ public class CoronaWebView extends WebView  implements NativePropertyResponder {
 		fBackKeySupported = true;
 		fAutoCloseEnabled = true;
 		fUrlRequestSourceType = UrlRequestSourceType.OTHER;
+		fLastUrlRequestUrl = null;
 		fReceivedErrorEvents = new java.util.HashMap<String, com.ansca.corona.events.DidFailLoadUrlTask>();
 		
 		// Set up a web browser event listener.
@@ -411,6 +415,29 @@ public class CoronaWebView extends WebView  implements NativePropertyResponder {
 		return super.onKeyDown(keyCode, event);
 	}
 	
+	/**
+	 * Sends a Lua urlRequest event for the given URL, unless it is an error page that was already reported.
+	 * Records the URL only when the event is sent.
+	 * @param url The URL being requested.
+	 * @param sourceType Corona UrlRequestEvent source type ID.
+	 */
+	private void dispatchShouldLoadUrl(String url, int sourceType) {
+		if (url == null) {
+			url = "";
+		}
+
+		// Do not raise an event if the web view is loading an error page for this URL.
+		// This is because the failed URL's request event has already been raised and should not be repeated.
+		if (fReceivedErrorEvents.containsKey(url)) {
+			return;
+		}
+
+		if (fCoronaRuntime != null && fCoronaRuntime.isRunning()) {
+			fLastUrlRequestUrl = url;
+			fCoronaRuntime.getTaskDispatcher().send(new com.ansca.corona.events.ShouldLoadUrlTask(getId(), url, sourceType));
+		}
+	}
+
 	/** Handles web redirect and error events. */
     private class CoronaWebViewClient extends WebViewClient {
 		/**
@@ -425,6 +452,22 @@ public class CoronaWebView extends WebView  implements NativePropertyResponder {
 		@Override
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
 			fUrlRequestSourceType = UrlRequestSourceType.LINK;
+			return false;
+		}
+
+		/**
+		 * API 24+ overload. On Android N and above, WebView calls this instead of
+		 * {@link #shouldOverrideUrlLoading(WebView, String)}, so this forwards to that method
+		 * to keep the same link-source tracking.
+		 * @param view The WebView that is initiating the callback.
+		 * @param request Details of the URL request about to be loaded.
+		 * @return Returns true to cancel the current load. Returns false to load the URL.
+		 */
+		@Override
+		public boolean shouldOverrideUrlLoading(WebView view, android.webkit.WebResourceRequest request) {
+			if (request != null && request.getUrl() != null) {
+				return shouldOverrideUrlLoading(view, request.getUrl().toString());
+			}
 			return false;
 		}
 		
@@ -462,15 +505,33 @@ public class CoronaWebView extends WebView  implements NativePropertyResponder {
 			// below since an event listener could call loadUrl() and change the source type.
 			int sourceType = fUrlRequestSourceType;
 			fUrlRequestSourceType = UrlRequestSourceType.OTHER;
-			
-			// Raise an event to notify the rest of the system about this URL request.
-			// Note: Do not raise an event if the web view is loading an error page for this URL.
-			//       This is because the failed URL's request event has already been raised and should not be repeated.
-			if (fReceivedErrorEvents.containsKey(url) == false) {
-				if (fCoronaRuntime != null && fCoronaRuntime.isRunning()) {
-					fCoronaRuntime.getTaskDispatcher().send(new com.ansca.corona.events.ShouldLoadUrlTask(getId(), url, sourceType));
-				}
+
+			dispatchShouldLoadUrl(url, sourceType);
+		}
+
+		/**
+		 * Raises urlRequest for same-document navigations that onPageStarted() does not see.
+		 * Skips a URL already reported for this load, and skips about:blank and about:srcdoc.
+		 * @param view Reference to the WebView that is about to load the given URL.
+		 * @param url The URL that is being loaded.
+		 * @param isReload True if the page is being reloaded.
+		 */
+		@Override
+		public void doUpdateVisitedHistory(WebView view, String url, boolean isReload) {
+			super.doUpdateVisitedHistory(view, url, isReload);
+
+			if (url == null || url.length() == 0
+					|| "about:blank".equals(url) || "about:srcdoc".equals(url)) {
+				return;
 			}
+
+			if (url.equals(fLastUrlRequestUrl)) {
+				return;
+			}
+
+			int sourceType = isReload ? UrlRequestSourceType.RELOAD : fUrlRequestSourceType;
+			fUrlRequestSourceType = UrlRequestSourceType.OTHER;
+			dispatchShouldLoadUrl(url, sourceType);
 		}
 		
 		/**
