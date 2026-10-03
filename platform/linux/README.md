@@ -25,12 +25,48 @@ If you have installed CodeLite the workspace file is named "Solar2D.workspace" a
 To build everything run. This will build linux simulator and template and install Solar2D in /usr/local/bin
 
 ```
+cd ~/corona
+rm -rf build
 mkdir build
 cd build
-cmake ..
-make -j8
+cmake .. \
+  -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+  -DCMAKE_C_FLAGS="-Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration"
+make -j$(nproc)
 sudo make install
 ```
 
 You would also need Raspbian binaries to build cross-compiled template for Raspbian Pi. You can download them [here](https://drive.google.com/file/d/1ZysxJdDg-XgU3-jshxUPSewTqBYeA7Qq/view?usp=sharing).
 
+
+## Generate Corona.aar and android-template.zip for Android build
+
+```
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+export ANDROID_HOME=~/Android/SDK
+export PATH="$JAVA_HOME/bin:$PATH"
+
+cd ~/corona/platform/android
+# clean
+rm -rf sdk/.cxx sdk/build app/build
+rm -rf ~/corona/build/Resources/Native/Corona/android/lib/gradle/Corona.aar
+rm -rf ~/corona/build/Resources/Native/Corona/android/resource/android-template.zip
+./gradlew clean
+# build and copy Corona.aar and android-template.zip
+./gradlew installAppTemplateAndAARToSim \
+  -PcoronaResourcesDir=~/corona/build/Resources \
+  -PcoronaNativeOutputDir=~/corona/build/Resources/Native/Corona
+# build and copy android-template.zip
+./gradlew installAppTemplateToSim \
+  -PcoronaResourcesDir=~/corona/build/Resources \
+  -PcoronaNativeOutputDir=~/corona/build/Resources/Native/Corona
+```
+
+## Run app via simulator
+
+```
+cd ~/corona/build
+./Solar2DSimulator /path/to/your/app
+```
+
+Then the app can be built for Android by menu option File > Build > Android
