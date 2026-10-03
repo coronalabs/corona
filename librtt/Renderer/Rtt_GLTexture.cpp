@@ -397,6 +397,7 @@ GLTexture::GetName()
 struct ProbeRAII {
 	ProbeRAII( const CoronaTextureFormatDetails* details )
 	{
+		glGetError(); // eat any error
 		glGenTextures( 1, &fTexture );
 		GL_CHECK_ERROR();
 
@@ -406,7 +407,7 @@ struct ProbeRAII {
 		glTexImage2D( GL_TEXTURE_2D, 0, details->internalFormat, kDim, kDim, 0, details->format, details->type, NULL );
 
 		GLenum err = glGetError();
-		fOK = GL_NO_ERROR == err;
+		fOK = ( GL_NO_ERROR == err );
 		
 		if ( !fOK )
 		{

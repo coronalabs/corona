@@ -616,9 +616,9 @@ int CoronaDefineWordPackedTextureFormat(lua_State *L, const CoronaTextureFormatD
 }
 
 CORONA_API
-int CoronaDefineCompressedTextureFormat(lua_State *L, const CoronaCompressedTextureFormatDetails *details, unsigned int componentCount
+int CoronaDefineCompressedTextureFormat(lua_State *L, const CoronaCompressedTextureFormatDetails *details, unsigned int componentCount)
 {
-	typedef int(*CoronaCallbackType)(lua_State*, const CoronaCompressedTextureFormatDetails*);
+	typedef int(*CoronaCallbackType)(lua_State*, const CoronaCompressedTextureFormatDetails*, unsigned int);
 	CoronaCallbackLoad();
 	return CoronaCallbackInvoke(L, details, componentCount);
 }

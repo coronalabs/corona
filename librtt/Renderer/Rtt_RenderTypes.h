@@ -226,6 +226,7 @@ namespace FormatDetails {
 	bool IsCore( U32 backingValue );
 
 	void AddMaskBit( U32& backingValue );
+	bool HasMaskBit( U32 backingValue );
 
 	U32 BuildFromDescription( const TextureFormatDescription* desc, U32 formatIndex );
 	U32 GatherFamilyInfo( U32 family, U32 target, bool isArray );

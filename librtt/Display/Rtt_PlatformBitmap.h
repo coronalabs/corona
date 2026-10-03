@@ -176,8 +176,7 @@ class PlatformBitmap
 
 		bool IsLandscape() const;
 
-		// TODO: Remove as this is subsumed by GetFormat();
-		Rtt_INLINE bool IsMask() const { return GetFormat().GetValue() == kMask; }
+		Rtt_INLINE bool IsMask() const { return ( kMask == GetFormat().GetValue() ) || FormatDetails::HasMaskBit( GetFormat().GetBackingValue() ); }
 
 	public:
 		RenderTypes::TextureFilter GetMagFilter() const { return (RenderTypes::TextureFilter)fMagFilter; }

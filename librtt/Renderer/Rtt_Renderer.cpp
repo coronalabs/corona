@@ -195,7 +195,8 @@ Renderer::Renderer( Rtt_Allocator* allocator )
 	fCurrentGeometry( NULL ),
     fTimeDependencyCount( 0 ),
     fGuardDraw(),
-    fHasRed( false )
+    fHasRed( false ),
+    fIsRedRenderable( false )
 {
     // Always have at least 1 mask count.
     fMaskCount.Append( 0 );
@@ -240,11 +241,17 @@ Renderer::Initialize()
     details.type = 0x1401;
     details.internalFormat = 0x8229;
     details.format = 0x1903;
+    details.flags = kTextureFormatFlag_ProbeRenderability;
     // ^^ TODO: need ES2 check here...
     
     if ( MatchToFormatDescription( &desc, &details ) )
     {
 		fHasRed = true;
+		
+		if ( desc.fFlags & TextureFormatDescription::kIsRenderable1 )
+		{
+			fIsRedRenderable = true;
+		}
     }
 }
 

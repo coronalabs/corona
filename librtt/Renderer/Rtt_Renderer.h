@@ -338,6 +338,8 @@ class Renderer
 	public:
 		void UpdateCustomFormats( const TextureFormatDescription* formats, U32 count );
 
+		bool IsRedRenderable() const { return fIsRedRenderable; }
+		
 	protected:
 		Rtt_Allocator* fAllocator;
 		
@@ -396,6 +398,7 @@ class Renderer
 		Program* fDefaultPrograms[2]; // default and 2.5D
 
 		bool fHasRed;
+		bool fIsRedRenderable;
 
 		// Non-owning:
 		const TextureFormatDescription* fCustomFormats;

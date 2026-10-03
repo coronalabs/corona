@@ -1358,6 +1358,12 @@ FormatDetails::AddMaskBit( U32& backingValue )
 	backingValue |= kIsMaskFlagMask;
 }
 
+bool
+FormatDetails::HasMaskBit( U32 backingValue )
+{
+	return 0 != ( backingValue & kIsMaskFlagMask );
+}
+
 struct Bits {
 	U32 Get( const MaskInfo& mask ) const { return GetBits( fValue, mask ); }
 	U32 GetCount( const MaskInfo& mask ) const { return Get( mask ) + 1; }

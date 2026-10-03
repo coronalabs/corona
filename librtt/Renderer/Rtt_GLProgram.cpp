@@ -992,7 +992,7 @@ GatherSamplers( GLuint program, GLchar stash[], SamplerItem items[], const int n
 		}
 		else if ( numItems == nameLengths.GetCount() || maxUnits == nameLengths.GetCount() )
 		{
-			Rtt_LogException( "WARNING: sampler `%s` potentially valid, but %u units already allocated; ignoring", buf, numItems );
+			Rtt_LogException( "WARNING: sampler `%s` potentially valid, but %u units already allocated; ignoring", buf, nameLengths.GetCount() );
 			continue;
 		}
 		else if ( 0 == strncmp( buf, "gl_", 3 ) || 0 == strncmp( buf, "__", 2 ) )
