@@ -43,6 +43,7 @@ settings =
 		isGame = true,
 		allowAppsReadOnlyAccessToFiles = false,
 		minSdkVersion = "",
+		resources = "",
 		largeHeap = true,
 		googlePlayGamesAppId = "",
 		mainIntentFilter =
