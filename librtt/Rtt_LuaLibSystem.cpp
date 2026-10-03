@@ -20,7 +20,7 @@
 #include "Rtt_MPlatformDevice.h"
 
 #include "Rtt_Runtime.h"
-#include "Rtt_GPU.h"
+/* #include "Rtt_GPU.h" */ // TODO: created annoying dependencies, and seemed to be mostly dead code (probably safe to remove)
 #include "Rtt_GPUStream.h"
 #include "Rtt_PhysicsWorld.h"
 #include "Rtt_PlatformInAppStore.h"
