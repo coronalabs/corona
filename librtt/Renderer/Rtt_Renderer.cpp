@@ -585,7 +585,11 @@ Renderer::PopMaskCount()
 static bool
 DoExtraTexturesDiffer( const LightPtrArray<Texture>& extraTextures, const TextureList& list, const RenderDataState* renderDataState )
 {
-	if ( ( NULL != renderDataState ) && ( RenderDataState::kSyncConsistent == renderDataState->GetSyncState() ) )
+	if ( ( NULL == renderDataState ) || ( RenderDataState::kSyncConsistent != renderDataState->GetSyncState() ) )
+	{
+		return true; // unknown, so assume the worst
+	}
+	else
 	{
 		U32 unit = 0, usageMask = renderDataState->GetOccupancy();
 		for ( U32 i = 0, iMax = list.GetCountAfterFills(); i < iMax; i++ )
@@ -1046,24 +1050,25 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData, RenderD
 			{
 				Texture* extra = data->fTextures.GetPositionAfterFills()[i]; // n.b. skip fill0 and fill1
 
-				bool usesTexture = ( usageMask & ( 1U << i ) ), isNew = false;
+				bool usesTexture = ( usageMask & ( 1U << i ) );
+				bool isNew = usesTexture && ( extra != fExtraTextures[unit] );
+				
+				if ( ( isNew || !isSynced ) && !extra->fGPUResource )
+				{
+					QueueCreate( extra ); // n.b. do before BindTexture()
+				}
+				
+				if ( isNew )
+				{
+					fBackCommandBuffer->BindTexture( extra, Texture::kNumUnits + unit );
+					fExtraTextures[unit] = extra;
+				}
+				
+				// n.b. does not bind uniform
+			
 				if ( usesTexture )
 				{
-					bool isNew = ( extra != fExtraTextures[unit] );
-					if ( isNew )
-					{
-						fBackCommandBuffer->BindTexture( extra, Texture::kNumUnits + unit );
-						fExtraTextures[unit] = extra;
-					}
-					
-					// n.b. does not bind uniform
-				
 					++unit;
-				}
-
-				if ( ( isNew || !isSynced ) && !extra->fGPUResource ) // always try when unsynced, since no way to know if needed
-				{
-					QueueCreate( extra );
 				}
 			}
 		}
