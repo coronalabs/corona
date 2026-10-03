@@ -137,7 +137,7 @@ SnapshotObject::SnapshotObject(
 	fGroup->SetRenderedOffScreen( true );
 	fCanvas->SetRenderedOffScreen( true );
 
-    SetObjectDesc( "SnapshotObject" );     // for introspection
+    SetObjectDesc( kSnapshotObjectDesc/*"SnapshotObject"*/ );     // for introspection
 }
 
 SnapshotObject::~SnapshotObject()

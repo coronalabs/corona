@@ -89,7 +89,7 @@ ParticleSystemObject::ParticleSystemObject()
 {
 TRACE_CALL;
 
-    SetObjectDesc("ParticleSystemObject"); // for introspection
+    SetObjectDesc(kParticleSystemObjectDesc/*"ParticleSystemObject"*/); // for introspection
 }
 
 ParticleSystemObject::~ParticleSystemObject()

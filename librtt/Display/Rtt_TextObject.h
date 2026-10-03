@@ -37,8 +37,26 @@ class TextObject : public RectObject
 		typedef RectObject Super;
 
 	public:
+		typedef enum _PackedInfo
+		{
+			/* first two bits */
+			kLeftAligned = 0b00,
+			kCenterAligned = 0b01,
+			kRightAligned = 0b10,
+			kAlignMask = 0b11,
+
+			/* third bit */
+			kIsShortString = 0b100,
+			
+			/* fourth bit */
+			kIsOddLaunch = 0b1000
+		}
+		PackedInfo;
+
+	public:
 		static void Unload( DisplayObject& parent );
-		static void Reload( DisplayObject& parent );
+		static void Reload( Display& display, DisplayObject& parent );
+
 #ifdef Rtt_WIN_PHONE_ENV
 		/// <summary>
 		///  <para>Determines if at least 1 text object is flagged as uninitialized for the given display.</para>
@@ -72,8 +90,8 @@ class TextObject : public RectObject
 		virtual ~TextObject();
 
 	protected:
-		bool Initialize();
-		void UpdateScaledFont();
+		bool Initialize( Display& display );
+		void UpdateScaledFont( Display& display );
 		void Reset();
 
 	public:
@@ -97,11 +115,12 @@ class TextObject : public RectObject
 		// TODO: Text properties (size, font, color, etc).  Ugh!
 		void SetColor( Paint* newValue );
 
+		bool HasShortString() const;
 		void SetText( const char* newValue );
-		const char* GetText() const { return fText.GetString(); }
+		const char* GetText() const;
 
 		Real GetBaselineOffset() const { return fBaselineOffset; }
-		void SetSize( Real newValue );
+		void SetSize( const Display& display, Real newValue );
 		Real GetSize() const;
 
 		// Note: assumes receiver will own the font after SetFont() is called
@@ -109,18 +128,15 @@ class TextObject : public RectObject
 //		const PlatformFont* GetFont() const { return fFont; }
 
 		void SetAlignment( const char* newValue );
-		const char* GetAlignment() const { return fAlignment.GetString(); };
-
+		const char* GetAlignment() const;
 
 	private:
-		Display& fDisplay;
-		String fText;
+		uintptr_t fText;
 		PlatformFont* fOriginalFont;
 		PlatformFont* fScaledFont;
 		Real fWidth;
 		Real fHeight;
-		Real fBaselineOffset;	
-		String fAlignment;
+		Real fBaselineOffset;
 		mutable Geometry *fGeometry;
 		mutable Uniform *fMaskUniform;
 };

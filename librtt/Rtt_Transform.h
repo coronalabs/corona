@@ -75,11 +75,18 @@ class Transform
 		Real GetRotation() const { return fRotation; }
 		Real GetSx() const { return fScaleX; }
 		Real GetSy() const { return fScaleY; }
-
+	#if 0
 		Matrix* GetUserMatrix() const { return (Matrix*)( fBits.properties & kUserMatrixMask ); }
 		void SetUserMatrix( Matrix* newValue );
+	#endif
+		typedef enum _Compatibility
+		{
+			kV1, kV2
+		}
+		Compatibility;
 
 	protected:
+	#if 0
 		enum Constants
 		{
 			kIsValid = 0x1,
@@ -90,13 +97,17 @@ class Transform
 		};
 
 		void SetValid() { fBits.properties |= kIsValid; }
-
+	#endif
 	public:
+	#if 0
 		void SetV1Compatibility( bool newValue );
 		bool IsV1Compatibility() const { return (fBits.properties & kIsV1Compatibility) ? true : false; }
+	#endif
 
 	public:
+	#if 0
 		bool IsValid() const { return (fBits.properties & kIsValid) ? true : false; }
+	#endif
 		void Invalidate();
 
 	public:
@@ -104,11 +115,11 @@ class Transform
 		// the const one, but that required making fBits mutable --- 
 		// and in every other method, the constness of fBits *should* be
 		// enforced by the compiler.
-		const Matrix& GetMatrix( const Vertex2 *anchorOffset, const Vertex2 *deltas = NULL ) const
+		const Matrix& GetMatrix( Compatibility v1Compat, const Vertex2 *anchorOffset, const Vertex2 *deltas = NULL ) const
 		{
-			return const_cast< Self* >( this )->GetMatrix( anchorOffset, deltas );
+			return const_cast< Self* >( this )->GetMatrix( v1Compat, anchorOffset, deltas );
 		}
-		Matrix& GetMatrix( const Vertex2 *anchorOffset, const Vertex2 *deltas = NULL );
+		Matrix& GetMatrix( Compatibility v1, const Vertex2 *anchorOffset, const Vertex2 *deltas = NULL );
 
 		void CopyInverseMatrix( const Vertex2* refPt, Matrix& outMatrix ) const;
 
@@ -129,6 +140,8 @@ class Transform
 //#elif 64bit
 //	typedef U64 Properties;
 //#endif
+
+#if 0
 	typedef size_t Properties;
 		Rtt_STATIC_ASSERT( sizeof( Matrix* ) == sizeof( Properties ) );
 		typedef union Bits
@@ -139,6 +152,7 @@ class Transform
 		Bits;
 
 		Bits fBits;
+#endif
 };
 
 // ----------------------------------------------------------------------------

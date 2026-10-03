@@ -52,7 +52,7 @@ EmbossedTextObject::EmbossedTextObject(
 	fIsUsingDefaultHighlightColor( true ),
 	fIsUsingDefaultShadowColor( true )
 {
-    SetObjectDesc( "EmbossedTextObject" );
+    SetObjectDesc( kEmbossedTextObjectDesc/*"EmbossedTextObject"*/ );
 }
 
 /// Destroys this text object and its resources.

@@ -72,12 +72,18 @@ class StageObject : public GroupObject
 		void SetSnapshotBounds( const Rect *r ) { fSnapshotBounds = r; }
 
 	private:
+		struct ObjectAndId {
+			DisplayObject* fObject;
+			const void* fId;
+		};
+	
+	
 		Scene& fOwner;
 		Display& fDisplay;
 
 		StageObject* fNext;
 		DisplayObject* fFocus; // Does not own
-		LightPtrArray< DisplayObject > fFocusObjects; // Use light array b/c we don't own
+		/*LightPtrArray< DisplayObject >*/Array<ObjectAndId> fFocusObjects; // Use light array b/c we don't own
 		const Rect *fSnapshotBounds;
 };
 

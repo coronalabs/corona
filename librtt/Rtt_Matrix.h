@@ -48,6 +48,9 @@ class Matrix
 		Rtt_FORCE_INLINE bool IsIdentity() const { return Rtt_REAL_INF == fRow0[0]; }
 		Rtt_INLINE void SetIdentity() { fRow0[0] = Rtt_REAL_INF; }
 
+		Rtt_FORCE_INLINE bool IsValid() const { return -Rtt_REAL_INF != fRow0[0]; }
+		Rtt_INLINE void Invalidate() { fRow0[0] = -Rtt_REAL_INF; }
+
 		void SetSingular();
 
 		//bool IsSimple() const; // Translation and scale only
