@@ -42,7 +42,7 @@ bool WinSimulatorServices::OpenProject( const char *name ) const
 {
 	if (name)
 	{
-		WinString stringConverter;
+		RttString stringConverter;
 		stringConverter.SetUTF8(name);
 		CString convertedString = stringConverter.GetTCHAR();
 		fSimulatorView.PostOpenWithPath(convertedString);
@@ -305,7 +305,7 @@ bool WinSimulatorServices::EditProject(const char *name) const
 {
 	if (name != NULL && *name != 0)
 	{
-		WinString stringConverter;
+		RttString stringConverter;
 		stringConverter.SetUTF8(name);
 		CString convertedString = stringConverter.GetTCHAR();
 		fSimulatorView.PostOpenWithPath(convertedString);
@@ -324,7 +324,7 @@ bool WinSimulatorServices::ShowProjectFiles(const char *name) const
 {
 	if (name != NULL && *name != 0)
 	{
-		WinString stringConverter;
+		RttString stringConverter;
 		stringConverter.SetUTF8(name);
 		CString convertedString = stringConverter.GetTCHAR();
 		fSimulatorView.PostOpenWithPath(convertedString);
@@ -343,7 +343,7 @@ bool WinSimulatorServices::ShowProjectSandbox(const char *name) const
 {
 	if (name != NULL && *name != 0)
 	{
-		WinString stringConverter;
+		RttString stringConverter;
 		stringConverter.SetUTF8(name);
 		CString convertedString = stringConverter.GetTCHAR();
 		fSimulatorView.PostOpenWithPath(convertedString);

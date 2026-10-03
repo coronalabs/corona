@@ -14,7 +14,7 @@
 #include "MFCVisualManagerWindowsCustom.h"
 #include "resource.h"
 #include "VisualTheme.h"
-#include "WinString.h"
+#include "RttString.h"
 #include <algorithm>
 #include <Psapi.h>
 #include <Shlwapi.h>
@@ -295,7 +295,7 @@ BOOL MainApp::InitInstance()
 	if (customWindowName.length() > 0)
 	{
 		// We'll use the custom window name as the registry entry name. Modify the name to have valid characters.
-		WinString modifiedCustomWindowName(customWindowName.c_str());
+		RttString modifiedCustomWindowName(customWindowName.c_str());
 		for (int index = modifiedCustomWindowName.GetLength() - 1; index >= 0; index--)
 		{
 			auto characterPointer = modifiedCustomWindowName.GetBuffer() + index;
@@ -316,7 +316,7 @@ BOOL MainApp::InitInstance()
 		}
 
 		// Append the above modified custom window name to MFC's default "Workspace" registry entry name.
-		WinString customWorkspaceRegistryEntryName(GetRegistryBase());
+		RttString customWorkspaceRegistryEntryName(GetRegistryBase());
 		customWorkspaceRegistryEntryName.Append(L".");
 		customWorkspaceRegistryEntryName.Append(modifiedCustomWindowName.GetUTF16());
 

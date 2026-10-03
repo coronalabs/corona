@@ -8,36 +8,36 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "WinString.h"
+#include "RttString.h"
 #include "WinFile.h"
 #include <string>
 
 
-WinString::WinString()
+RttString::RttString()
 :	mBuffer(nullptr),
 	mBufferNumChars(0),
 	mUTF8Buffer(nullptr)
 {
 }
 
-WinString::WinString(const char* utf8Text)
-:	WinString()
+RttString::RttString(const char* utf8Text)
+:	RttString()
 {
 	SetUTF8(utf8Text);
 }
 
-WinString::WinString(const wchar_t* utf16Text)
-:	WinString()
+RttString::RttString(const wchar_t* utf16Text)
+:	RttString()
 {
 	SetUTF16(utf16Text);
 }
 
-WinString::WinString(const WinString& string)
-:	WinString(string.mBuffer)
+RttString::RttString(const RttString& string)
+:	RttString(string.mBuffer)
 {
 }
 
-WinString::~WinString()
+RttString::~RttString()
 {
 	if (mBuffer)
 	{
@@ -51,13 +51,13 @@ WinString::~WinString()
 	}
 }
 
-void WinString::operator=(const WinString& string)
+void RttString::operator=(const RttString& string)
 {
 	SetUTF16(string.GetUTF16());
 }
 
 void 
-WinString::Expand( int chars )
+RttString::Expand( int chars )
 {
 	if (chars <= mBufferNumChars)
 	{
@@ -79,7 +79,7 @@ WinString::Expand( int chars )
 }
 
 void
-WinString::ResetUTF8()
+RttString::ResetUTF8()
 {
 	if (mUTF8Buffer)
 	{
@@ -89,7 +89,7 @@ WinString::ResetUTF8()
 }
 
 void
-WinString::SetTCHAR( const TCHAR * newString )
+RttString::SetTCHAR( const TCHAR * newString )
 {
 	if (newString)
 	{
@@ -113,13 +113,13 @@ WinString::SetTCHAR( const TCHAR * newString )
 }
 
 void
-WinString::SetUTF16(const wchar_t *newString)
+RttString::SetUTF16(const wchar_t *newString)
 {
 	SetTCHAR(newString);
 }
 
 const char *
-WinString::GetUTF8() const
+RttString::GetUTF8() const
 {
 	if (mUTF8Buffer)
 	{
@@ -168,13 +168,13 @@ WinString::GetUTF8() const
 }
 
 void 
-WinString::SetUTF8( const char * utf8 )
+RttString::SetUTF8( const char * utf8 )
 {
 	Clear();
 	Append(utf8);
 }
 
-void WinString::Append(const wchar_t *text)
+void RttString::Append(const wchar_t *text)
 {
 	// Do not continue if there is no text to append.
 	if (!text)
@@ -205,7 +205,7 @@ void WinString::Append(const wchar_t *text)
 	ResetUTF8();
 }
 
-void WinString::Append(const wchar_t character)
+void RttString::Append(const wchar_t character)
 {
 	int length = GetLength();
 	if (character == L'\0')
@@ -223,7 +223,7 @@ void WinString::Append(const wchar_t character)
 }
 
 // Appends the given string to this object's string.
-void WinString::Append(const char *text)
+void RttString::Append(const char *text)
 {
 	int currentLength;
 	int textLength;
@@ -268,7 +268,7 @@ void WinString::Append(const char *text)
 
 // Appends a portion of the given string to this object's string. Will automatically append a NULL
 // character to the end of this object's string if the given string portion does not contain one.
-void WinString::Append(const char *text, int startIndex, int charCount)
+void RttString::Append(const char *text, int startIndex, int charCount)
 {
 	int currentLength;
 	int conversionLength;
@@ -302,7 +302,7 @@ void WinString::Append(const char *text, int startIndex, int charCount)
 }
 
 // Replaces all instances of "oldSubstring" with "newSubstring" within this object.
-void WinString::Replace(const char *oldSubstring, const char *newSubstring)
+void RttString::Replace(const char *oldSubstring, const char *newSubstring)
 {
 	std::string newStringBuffer;
 	std::string oldSubstringBuffer;
@@ -348,7 +348,7 @@ void WinString::Replace(const char *oldSubstring, const char *newSubstring)
 }
 
 // Replaces all instances of "oldSubstring" with "newSubstring" within this object.
-void WinString::Replace(const wchar_t *oldSubstring, const wchar_t *newSubstring)
+void RttString::Replace(const wchar_t *oldSubstring, const wchar_t *newSubstring)
 {
 	std::wstring newStringBuffer;
 	std::wstring oldSubstringBuffer;
@@ -394,7 +394,7 @@ void WinString::Replace(const wchar_t *oldSubstring, const wchar_t *newSubstring
 }
 
 // Replaces all instances of "oldCharacter" with "newCharacter" within the string.
-void WinString::Replace(const wchar_t oldCharacter, const wchar_t newCharacter)
+void RttString::Replace(const wchar_t oldCharacter, const wchar_t newCharacter)
 {
 	// Do not continue if given characters match. (String isn't changing.)
 	if (oldCharacter == newCharacter)
@@ -422,7 +422,7 @@ void WinString::Replace(const wchar_t oldCharacter, const wchar_t newCharacter)
 }
 
 // Converts all characters in the string to lower case.
-void WinString::MakeLowerCase()
+void RttString::MakeLowerCase()
 {
 	// Do not continue if there are no characters to convert.
 	if (mBufferNumChars <= 0)
@@ -436,7 +436,7 @@ void WinString::MakeLowerCase()
 }
 
 // Converts all characters in the string to upper case.
-void WinString::MakeUpperCase()
+void RttString::MakeUpperCase()
 {
 	// Do not continue if there are no characters to convert.
 	if (mBufferNumChars <= 0)
@@ -450,7 +450,7 @@ void WinString::MakeUpperCase()
 }
 
 // Determines if this string ends with the given text. This is a case sensitive comparison.
-bool WinString::EndsWith(const char *text)
+bool RttString::EndsWith(const char *text)
 {
 	const char* utf8String;
 	size_t utf8StringLength;
@@ -488,7 +488,7 @@ bool WinString::EndsWith(const char *text)
 /// @param characters Pointer to a null terminated array of characters to trim.
 ///                   The order of these characters does not matter since this is not a sub string search.
 ///                   Can be null or empty, in which case, this function will do thing.
-void WinString::TrimEnd(const wchar_t *characters)
+void RttString::TrimEnd(const wchar_t *characters)
 {
 	// Do not continue if not given any characters to search for.
 	if (!characters)
@@ -545,7 +545,7 @@ void WinString::TrimEnd(const wchar_t *characters)
 /// Removes the given range of characters from the string.
 /// @param startIndex Zero based index to the character where removal should start from.
 /// @param count Number of characters to be removed from the string. Must be greater than zero.
-void WinString::DeleteRange(int startIndex, int count)
+void RttString::DeleteRange(int startIndex, int count)
 {
 	// Do not continue if the string is empty. Nothing to delete.
 	if (IsEmpty())
@@ -591,7 +591,7 @@ void WinString::DeleteRange(int startIndex, int count)
 /// @return Returns a negative number of this object's string is less than the given string.
 ///         Returns zero if this object's string matches the given string.
 ///         Returns a positive number of this object's string is greater than the given string.
-int WinString::Compare(const wchar_t *text) const
+int RttString::Compare(const wchar_t *text) const
 {
 	// Get the length of this object's string and the given string.
 	size_t myLength = GetLength();
@@ -621,7 +621,7 @@ int WinString::Compare(const wchar_t *text) const
 /// @return Returns a negative number of this object's string is less than the given string.
 ///         Returns zero if this object's string matches the given string.
 ///         Returns a positive number of this object's string is greater than the given string.
-int WinString::Compare(const char *text) const
+int RttString::Compare(const char *text) const
 {
 	// Get the length of this object's string and the given string.
 	size_t myLength = GetLength();
@@ -651,7 +651,7 @@ int WinString::Compare(const char *text) const
 /// @return Returns a negative number of this object's string is less than the given string.
 ///         Returns zero if this object's string matches the given string.
 ///         Returns a positive number of this object's string is greater than the given string.
-int WinString::CompareNoCase(const wchar_t *text) const
+int RttString::CompareNoCase(const wchar_t *text) const
 {
 	// Get the length of this object's string and the given string.
 	size_t myLength = GetLength();
@@ -681,7 +681,7 @@ int WinString::CompareNoCase(const wchar_t *text) const
 /// @return Returns a negative number of this object's string is less than the given string.
 ///         Returns zero if this object's string matches the given string.
 ///         Returns a positive number of this object's string is greater than the given string.
-int WinString::CompareNoCase(const char *text) const
+int RttString::CompareNoCase(const char *text) const
 {
 	// Get the length of this object's string and the given string.
 	size_t myLength = GetLength();
@@ -708,7 +708,7 @@ int WinString::CompareNoCase(const char *text) const
 /// Case sensitive match between this object's string and the given string.
 /// @param text Reference to the string object to match with.
 /// @return Returns true if the strings match.
-bool WinString::Equals(const WinString& text) const
+bool RttString::Equals(const RttString& text) const
 {
 	// First, check if the 2 object pointers match. (This is an optimization.)
 	if (&text == this)
@@ -724,7 +724,7 @@ bool WinString::Equals(const WinString& text) const
 /// @param text Pointer to a NULL terminated string to match with.
 ///             Can be NULL which is considered an empty string.
 /// @return Returns true if the strings match.
-bool WinString::Equals(const wchar_t *text) const
+bool RttString::Equals(const wchar_t *text) const
 {
 	return (Compare(text) == 0);
 }
@@ -733,7 +733,7 @@ bool WinString::Equals(const wchar_t *text) const
 /// @param text Pointer to a NULL terminated string to match with.
 ///             Can be NULL which is considered an empty string.
 /// @return Returns true if the strings match.
-bool WinString::Equals(const char *text) const
+bool RttString::Equals(const char *text) const
 {
 	return (Compare(text) == 0);
 }
@@ -741,7 +741,7 @@ bool WinString::Equals(const char *text) const
 /// Non-case sensitive match between this object's string and the given string.
 /// @param text Reference to the string object to match with.
 /// @return Returns true if the strings match.
-bool WinString::EqualsNoCase(const WinString &text) const
+bool RttString::EqualsNoCase(const RttString &text) const
 {
 	// First, check if the 2 object pointers match. (This is an optimization.)
 	if (&text == this)
@@ -757,7 +757,7 @@ bool WinString::EqualsNoCase(const WinString &text) const
 /// @param text Pointer to a NULL terminated string to match with.
 ///             Can be NULL which is considered an empty string.
 /// @return Returns true if the strings match.
-bool WinString::EqualsNoCase(const wchar_t *text) const
+bool RttString::EqualsNoCase(const wchar_t *text) const
 {
 	return (CompareNoCase(text) == 0);
 }
@@ -766,7 +766,7 @@ bool WinString::EqualsNoCase(const wchar_t *text) const
 /// @param text Pointer to a NULL terminated string to match with.
 ///             Can be NULL which is considered an empty string.
 /// @return Returns true if the strings match.
-bool WinString::EqualsNoCase(const char *text) const
+bool RttString::EqualsNoCase(const char *text) const
 {
 	return (CompareNoCase(text) == 0);
 }
@@ -774,7 +774,7 @@ bool WinString::EqualsNoCase(const char *text) const
 /// Case sensitive match between this object's string and the given string.
 /// @param text Reference to the string to be compared against.
 /// @return Returns true if the strings match.
-bool WinString::operator==(const WinString &text) const
+bool RttString::operator==(const RttString &text) const
 {
 	return Equals(text);
 }
@@ -782,15 +782,15 @@ bool WinString::operator==(const WinString &text) const
 /// Determines if the given string and this string do not match.
 /// @param text Reference to the string to be compared against.
 /// @return Returns true if the strings do not match. Returns false if they do match.
-bool WinString::operator!=(const WinString &text) const
+bool RttString::operator!=(const RttString &text) const
 {
 	return !Equals(text);
 }
 
-/// Read a file into a WinString (assumed to be a text file)
+/// Read a file into a RttString (assumed to be a text file)
 /// @param filename Name of desired file
 /// @return Returns true if the file is successfully read.
-bool WinString::GetFileContents(const char *filename)
+bool RttString::GetFileContents(const char *filename)
 {
 	WinFile theFile;
 		
@@ -809,12 +809,12 @@ bool WinString::GetFileContents(const char *filename)
 	return true;
 }
 
-/// Write a file from a WinString (assumed to be a text file)
+/// Write a file from a RttString (assumed to be a text file)
 /// @param filename Name of desired file
 /// @return Returns true if the file is successfully written.
-bool WinString::WriteFileContents(const char *filename)
+bool RttString::WriteFileContents(const char *filename)
 {
-	WinString filepath;
+	RttString filepath;
 	HANDLE fileHandle;
     DWORD dwDesiredAccess = GENERIC_READ | GENERIC_WRITE;
     DWORD dwShareMode = FILE_SHARE_READ;
@@ -855,7 +855,7 @@ bool WinString::WriteFileContents(const char *filename)
 	return true;
 }
 
-int WinString::Format(const char *format, ...)
+int RttString::Format(const char *format, ...)
 {
 	int result = -1;
 
@@ -880,7 +880,7 @@ int WinString::Format(const char *format, ...)
 	return result;
 }
 
-int WinString::Format(const wchar_t *format, ...)
+int RttString::Format(const wchar_t *format, ...)
 {
 	int result = -1;
 

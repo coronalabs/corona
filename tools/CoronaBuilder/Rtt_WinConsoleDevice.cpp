@@ -20,7 +20,7 @@
 #define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
 #include "CryptoPP\md5.h"
 
-#include "WinString.h"
+#include "RttString.h"
 
 #include "Rtt_WinConsoleDevice.h"
 
@@ -79,7 +79,7 @@ WinConsoleDevice::GetName() const
 		BOOL result = GetComputerNameW(buffer, &bufferSize);
 		if (result && buffer[0])
 		{
-			WinString stringConverter;
+			RttString stringConverter;
 			stringConverter.SetUTF16(buffer);
 			int length = strlen(stringConverter.GetUTF8()) + 1;
 			fComputerName = new char[length];

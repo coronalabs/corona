@@ -11,7 +11,7 @@
 #include "resource.h"
 
 #include "CoronaInterface.h"
-#include "WinString.h"
+#include "RttString.h"
 #include "ProgressWnd.h"
 #include "LoginDlg.h"
 

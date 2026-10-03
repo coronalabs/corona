@@ -24,7 +24,7 @@
 #include "Rtt_PreferenceCollection.h"
 #include "Rtt_Runtime.h"
 #include "Rtt_String.h"
-#include "WinString.h"
+#include "RttString.h"
 #include <algorithm>
 #include <io.h>
 #include <shellapi.h>
@@ -113,15 +113,15 @@ namespace Rtt
 
 WinConsolePlatform::WinConsolePlatform()
 {
-	WinString coronaSDKPath = GetDirectoryPath().c_str();
-	WinString resourceDirectoryPath;
+	RttString coronaSDKPath = GetDirectoryPath().c_str();
+	RttString resourceDirectoryPath;
 
 	resourceDirectoryPath.SetUTF8(coronaSDKPath.GetUTF8());
 	resourceDirectoryPath.Append("Resources");
 
 	TCHAR tempPath[MAX_PATH + 1];
 	GetTempPath(MAX_PATH, tempPath);
-	WinString temporaryDirectoryPath;
+	RttString temporaryDirectoryPath;
 	temporaryDirectoryPath.Format("%SCoronaBuilder_%ld", tempPath, GetCurrentProcessId());
 
 	std::wstring pluginsDirectoryPath;
@@ -224,7 +224,7 @@ void WinConsolePlatform::PathForFile(const char *filename, MPlatform::Directory 
 
 	// Check if the file exists, if enabled.
 	// Result will be set to an empty string if the file could not be found.
-	WinString coronaResourceDirectoryPath;
+	RttString coronaResourceDirectoryPath;
 	if (flags & MPlatform::kTestFileExists)
 	{
 		// Check if the given file name exists.
@@ -236,7 +236,7 @@ void WinConsolePlatform::PathForFile(const char *filename, MPlatform::Directory 
 			// File not found. Since it is a resource file, check if it is installed under the Corona Simulator directory.
 			coronaResourceDirectoryPath.SetUTF16(GetDirectoryPath());
 			coronaResourceDirectoryPath.Append(L"\\Resources\\Corona");
-			WinString coronaResourceFilePath(coronaResourceDirectoryPath.GetUTF16());
+			RttString coronaResourceFilePath(coronaResourceDirectoryPath.GetUTF16());
 			coronaResourceFilePath.Append(L'\\');
 			coronaResourceFilePath.Append(filename);
 			doesFileExist = FileExists(coronaResourceFilePath.GetUTF8());
@@ -368,7 +368,7 @@ int WinConsolePlatform::PushSystemInfo(lua_State *L, const char *key) const
 	if (Rtt_StringCompare(key, "appName") == 0)
 	{
 		// Fetch the application's name.
-		WinString appName;
+		RttString appName;
 		CopyAppNameTo(appName);
 		lua_pushstring(L, appName.GetUTF8());
 		pushedValues = 1;
@@ -382,7 +382,7 @@ int WinConsolePlatform::PushSystemInfo(lua_State *L, const char *key) const
 		}
 		else
 		{
-			WinString stringConverter(Interop::ApplicationServices::GetFileVersionString());
+			RttString stringConverter(Interop::ApplicationServices::GetFileVersionString());
 			lua_pushstring(L, stringConverter.GetUTF8());
 		}
 		pushedValues = 1;
@@ -401,7 +401,7 @@ int WinConsolePlatform::PushSystemInfo(lua_State *L, const char *key) const
 		// Fetch the ISO 639 language code with an ISO 15924 script code appended to it if available.
 		// Note: This will return a 3 letter ISO 639-2 code if current language is not in the 2 letter ISO 639-1 standard.
 		//       For example, this can happen with the Hawaiian language, which will return "haw".
-		WinString languageCode;
+		RttString languageCode;
 		const size_t kUtf16StringBufferMaxLength = 128;
 		wchar_t utf16StringBuffer[kUtf16StringBufferMaxLength];
 		utf16StringBuffer[0] = L'\0';

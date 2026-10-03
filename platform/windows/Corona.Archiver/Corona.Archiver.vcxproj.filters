@@ -25,7 +25,7 @@
     <ClCompile Include="..\..\..\librtt\Core\Rtt_FileSystem.cpp">
       <Filter>librtt\Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\Corona.Native.Library.Win32\WinString.cpp">
+    <ClCompile Include="..\Corona.Native.Library.Win32\RttString.cpp">
       <Filter>platform\windows\Corona.Native.Library.Win32</Filter>
     </ClCompile>
     <ClCompile Include="..\Corona.Native.Library.Win32\WinFile.cpp">
@@ -82,7 +82,7 @@
     <ClInclude Include="..\Corona.Native.Library.Win32\WinFile.h">
       <Filter>platform\windows\Corona.Native.Library.Win32</Filter>
     </ClInclude>
-    <ClInclude Include="..\Corona.Native.Library.Win32\WinString.h">
+    <ClInclude Include="..\Corona.Native.Library.Win32\RttString.h">
       <Filter>platform\windows\Corona.Native.Library.Win32</Filter>
     </ClInclude>
   </ItemGroup>
@@ -108,5 +108,8 @@
     <Filter Include="platform\windows\Corona.Native.Library.Win32">
       <UniqueIdentifier>{c5d253c3-0d92-45fe-be6e-9e982a436fe2}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
