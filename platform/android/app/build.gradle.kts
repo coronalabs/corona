@@ -133,6 +133,11 @@ val parsedBuildProperties: JsonObject = run {
 extra["minSdkVersion"] = parsedBuildProperties.lookup<Any?>("buildSettings.android.minSdkVersion").firstOrNull()?.toString()?.toIntOrNull()
         ?: 15
 
+val coronaAndroidResourcesDir = file(coronaSrcDir).resolve(
+        parsedBuildProperties.lookup<Any?>("buildSettings.android.resources").firstOrNull()?.toString()
+                ?.takeIf { it.isNotBlank() }?.replace('\\', '/') ?: "AndroidResources"
+).normalize()
+
 val coronaBuilder = if (windows) {
     "$nativeDir/Corona/win/bin/CoronaBuilder.exe"
 } else if (linux) {
@@ -338,7 +343,7 @@ fun processPluginGradleScripts() {
             throw(ex)
         }
     }
-    fileTree("$coronaSrcDir/AndroidResources") {
+    fileTree(coronaAndroidResourcesDir) {
         include("**/corona.gradle", "**/corona.gradle.kts")
     }.forEach {
         try {
@@ -373,7 +378,7 @@ fun coronaAssetsCopySpec(spec: CopySpec) {
             }
         }
         exclude("**/Icon\r")
-        exclude("AndroidResources/**")
+        exclude { it.file.startsWith(coronaAndroidResourcesDir) }
         if (isLiveBuild) {
             into("corona_live_build_app_")
         } else {
@@ -961,7 +966,7 @@ tasks.create<Copy>("copyAdaptiveIconResources") {
     dependsOn(copyCoronaIconFiles, cleanupIconsDir)
 
     into(generatedMainIconsAndBannersDir)
-    from("$coronaSrcDir/AndroidResources/res")
+    from("$coronaAndroidResourcesDir/res")
 }
 
 tasks.create("copyCoronaIcons") {
@@ -1143,7 +1148,7 @@ dependencies {
     implementation(fileTree(coronaPlugins) {
         include("*/jarLibs/*.jar")
     })
-    implementation(fileTree("$coronaSrcDir/AndroidResources") {
+    implementation(fileTree(coronaAndroidResourcesDir) {
         include("**/*.jar", "**/*.aar")
     })
     if (file("../plugin").exists()) {
