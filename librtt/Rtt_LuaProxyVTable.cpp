@@ -3943,8 +3943,14 @@ LuaDisplayObjectProxyVTable::PushAndRemove( lua_State *L, GroupObject* parent, S
 		StageObject *stage = parent->GetStage();
 		if ( stage )
 		{
-			Rtt_ASSERT( LuaContext::GetRuntime( L )->GetDisplay().HitTestOrphanage() != parent
-						&& LuaContext::GetRuntime( L )->GetDisplay().Orphanage() != parent );
+			Display& display = LuaContext::GetRuntime( L )->GetDisplay();
+			if ( display.HitTestOrphanage() == parent || display.Orphanage() == parent )
+			{
+				// Parent is an orphanage, so the object was already removed;
+				// removing it again is a no-op.
+				lua_pushnil( L );
+				return;
+			}
 
 			SUMMED_TIMING( par1, "Object: PushAndRemove (release)" );
 
@@ -3978,8 +3984,6 @@ LuaDisplayObjectProxyVTable::PushAndRemove( lua_State *L, GroupObject* parent, S
                 // longer on the display. Therefore, we should luaL_unref the
                 // DisplayObject's table. If it's later re-inserted, then we simply
                 // luaL_ref the incoming table.
-                Display& display = LuaContext::GetRuntime( L )->GetDisplay();
-
 
                 // NOTE: Snapshot renamed to HitTest orphanage to clarify usage
                 // TODO: Remove snapshot orphanage --- or verify that we still need it?
