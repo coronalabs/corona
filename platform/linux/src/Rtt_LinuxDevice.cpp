@@ -61,6 +61,7 @@ namespace Rtt
 		case MPlatformDevice::kHeadingEvent:
 		case MPlatformDevice::kMultitouchEvent:
 		case MPlatformDevice::kKeyEvent:
+		case MPlatformDevice::kMouseEvent:
 		case MPlatformDevice::kAccelerometerEvent:
 			hasEventSource = true;
 			break;
