@@ -71,7 +71,8 @@ class PlatformSimulator
 			kHeadingEventMask		= 0x0800,
 			kMultitouchEventMask	= 0x1000,
 			kGyroscopeEventMask		= 0x2000,
-			kMouseEventMask			= 0x4000
+			kMouseEventMask			= 0x4000,
+			kFoldEventMask			= 0x8000
 		}
 		PropertyMask;
 
@@ -200,6 +201,8 @@ class PlatformSimulator
 		bool IsUnfolded() const { return fIsUnfolded; }
 		void SetUnfolded( bool newValue ) { fIsUnfolded = newValue; }
 		void ToggleFold();
+		// The simulated hinge state for system.getInfo("foldState"): "closed"/"open", or NULL when the skin isn't foldable.
+		const char *GetFoldState() const;
 		DeviceOrientation::Type GetOrientation() const { return (DeviceOrientation::Type)fOrientation; }
 		virtual const char *GetOSName() const { return "simulator"; }
 

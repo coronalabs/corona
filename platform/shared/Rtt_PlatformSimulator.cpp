@@ -811,6 +811,9 @@ PropertyMaskForEventType( MPlatformDevice::EventType type )
 		case MPlatformDevice::kMouseEvent:
 			mask = PlatformSimulator::kMouseEventMask;
 			break;
+		case MPlatformDevice::kFoldEvent:
+			mask = PlatformSimulator::kFoldEventMask;
+			break;
 		default:
 			Rtt_ASSERT_NOT_REACHED();
 			break;
@@ -927,11 +930,29 @@ PlatformSimulator::ToggleFold()
 	}
 	fIsUnfolded = unfolded;
 
-	// Folding changes the size of the app's screen, so raise a resize event like a rotation does.
 	Rtt::Runtime& runtime = GetPlayer()->GetRuntime();
+
+	// Tell "fold" listeners first, so they know why the resize that follows happened.
+	if ( IsProperty( kFoldEventMask ) )
+	{
+		FoldEvent event( unfolded ? FoldEvent::kOpen : FoldEvent::kClosed );
+		runtime.DispatchEvent( event );
+	}
+
+	// Folding changes the size of the app's screen, so raise a resize event like a rotation does.
 	runtime.DispatchEvent( ResizeEvent() );
 	fLastDeviceWidth = runtime.GetDisplay().DeviceWidth();
 	fLastDeviceHeight = runtime.GetDisplay().DeviceHeight();
+}
+
+const char *
+PlatformSimulator::GetFoldState() const
+{
+	if ( ! fIsFoldable )
+	{
+		return NULL;
+	}
+	return FoldEvent::StringForState( fIsUnfolded ? FoldEvent::kOpen : FoldEvent::kClosed );
 }
 
 void

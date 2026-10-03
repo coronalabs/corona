@@ -229,6 +229,12 @@ CoronaViewListenerAdapter( lua_State *L )
 	bool fShouldInvalidate;
 	bool fBeganRunLoop;
 
+	// Foldable devices (iOS 27.1+). The UIHingeInteraction is created through the ObjC runtime so
+	// this file also builds with older SDKs; it stays nil when the OS has no hinge support.
+	id fHingeInteraction;
+	int fHingeState; // Rtt::FoldEvent::State
+	CGFloat fHingeAngle; // radians; negative when unknown
+
 	// Gyroscope
 	BOOL gyroscopeEnabled;
 	U64 gyroscopePreviousTimestampCorona;
@@ -331,6 +337,9 @@ CoronaViewListenerAdapter( lua_State *L )
 	_observeSuspendResume = YES;
 	fLastContentHeight = -1;
 	fShouldInvalidate = false;
+	fHingeInteraction = nil;
+	fHingeState = Rtt::FoldEvent::kUnknownState;
+	fHingeAngle = -1;
 	fLoadOrientation = Rtt::DeviceOrientation::kUpright;
 	fParams = nil;
 
@@ -400,6 +409,8 @@ CoronaViewListenerAdapter( lua_State *L )
 // Bottleneck for teardown
 - (void)deallocCommon
 {
+	[self stopHingeMonitoring];
+
 	// TextField/TextBox
 	{
 #ifndef Rtt_TVOS_ENV
@@ -1413,6 +1424,210 @@ PrintTouches( NSSet *touches, const char *header )
 {
 	[super setBounds:bounds];
 	fShouldInvalidate = true;
+}
+
+// Foldable devices and live view resizing
+// ----------------------------------------------------------------------------
+#pragma mark # Foldable devices
+
+- (void)layoutSubviews
+{
+	[super layoutSubviews];
+	[self checkForDeviceSizeChange];
+}
+
+// Opening or closing a foldable (or any other live resize of the view) changes the view's size
+// without an orientation change, which the orientation path below never notices. Re-derive the
+// content scale for the new device size and raise "resize" so the app can lay itself out again.
+- (void)checkForDeviceSizeChange
+{
+	using namespace Rtt;
+
+	Runtime *runtime = self.runtime;
+	if ( ! runtime )
+	{
+		return;
+	}
+
+	Display& display = runtime->GetDisplay();
+	if ( ! display.HasDeviceSizeChanged() )
+	{
+		return;
+	}
+
+	display.DeviceSizeChanged();
+	runtime->DispatchEvent( ResizeEvent() );
+
+	// didOrientationChange: raises "resize" when the content height changes; keep it from raising a second one.
+	fLastContentHeight = (int)display.ContentHeight();
+}
+
+- (BOOL)startHingeMonitoring
+{
+	if ( fHingeInteraction )
+	{
+		return YES;
+	}
+
+	Class interactionClass = NSClassFromString( @"UIHingeInteraction" );
+	if ( ! interactionClass )
+	{
+		return NO; // iOS older than 27.1, tvOS, or a device without a hinge
+	}
+
+	CoronaView *view = self; // Not retained: the interaction is removed in deallocCommon.
+	void (^handler)(id, id) = ^( id interaction, id update )
+	{
+		[view hingeDidUpdate:update];
+	};
+
+	id interaction = [[interactionClass alloc] performSelector:NSSelectorFromString( @"initWithUpdateHandler:" ) withObject:handler];
+	if ( ! interaction )
+	{
+		return NO;
+	}
+
+	fHingeInteraction = interaction; // owned (alloc/init)
+	[self addInteraction:(id< UIInteraction >)interaction];
+	return YES;
+}
+
+- (void)stopHingeMonitoring
+{
+	if ( fHingeInteraction )
+	{
+		[self removeInteraction:(id< UIInteraction >)fHingeInteraction];
+		[fHingeInteraction release];
+		fHingeInteraction = nil;
+	}
+}
+
+// Called by UIKit whenever the hinge angle or status changes. "update.hinge" is nil when the
+// view leaves a hierarchy that reports hinge state.
+- (void)hingeDidUpdate:(id)update
+{
+	using namespace Rtt;
+
+	int state = FoldEvent::kUnknownState;
+	CGFloat angle = -1;
+
+	id hinge = [update valueForKey:@"hinge"];
+	if ( hinge )
+	{
+		angle = [[hinge valueForKey:@"angle"] doubleValue];
+		NSInteger status = [[hinge valueForKey:@"status"] integerValue];
+#ifdef __IPHONE_27_1
+		// Built with the iOS 27.1 SDK or later: use UIKit's own status.
+		switch ( (UIHingeStatus)status )
+		{
+			case UIHingeStatusClosed: state = FoldEvent::kClosed; break;
+			case UIHingeStatusPartiallyOpen: state = FoldEvent::kHalfOpen; break;
+			case UIHingeStatusFullyOpen: state = FoldEvent::kOpen; break;
+			default: break;
+		}
+#else
+		// Built with an older SDK: derive the status from the angle (0 is closed, pi is flat).
+		(void)status;
+		const CGFloat kTolerance = 0.2;
+		if ( angle < kTolerance )
+		{
+			state = FoldEvent::kClosed;
+		}
+		else if ( angle > M_PI - kTolerance )
+		{
+			state = FoldEvent::kOpen;
+		}
+		else
+		{
+			state = FoldEvent::kHalfOpen;
+		}
+#endif
+	}
+
+	bool changed = ( state != fHingeState ) || ( fabs( angle - fHingeAngle ) > 0.001 );
+	fHingeState = state;
+	fHingeAngle = angle;
+	if ( ! changed || FoldEvent::kUnknownState == state )
+	{
+		return;
+	}
+
+	Runtime *runtime = self.runtime;
+	if ( runtime && runtime->Platform().GetDevice().DoesNotify( MPlatformDevice::kFoldEvent ) )
+	{
+		FoldEvent::Orientation orientation = FoldEvent::kUnknownOrientation;
+		MPlatform::ReservedRegion region;
+		bool hasFoldRegion = ( [self copyReservedRegions:&region maxCount:1 kind:MPlatform::ReservedRegion::kDivision] > 0 );
+		if ( hasFoldRegion )
+		{
+			orientation = ( region.width < region.height ) ? FoldEvent::kVertical : FoldEvent::kHorizontal;
+		}
+
+		FoldEvent event( (FoldEvent::State)state, orientation, angle );
+		if ( hasFoldRegion )
+		{
+			event.SetBounds( region.x, region.y, region.width, region.height );
+		}
+		runtime->DispatchEvent( event );
+	}
+}
+
+- (int)foldState
+{
+	return fHingeState;
+}
+
+- (CGFloat)foldAngle
+{
+	return fHingeAngle;
+}
+
+// Fills outRegions with UIKit's reserved regions (camera cutouts and the fold) in pixels of this view.
+// Pass -1 as the kind to get every kind. Returns 0 before iOS 27.1.
+- (int)copyReservedRegions:(Rtt::MPlatform::ReservedRegion *)outRegions maxCount:(int)maxCount kind:(int)kindFilter
+{
+	using namespace Rtt;
+
+	Class kindClass = NSClassFromString( @"UIViewReservedRegionKind" );
+	SEL querySel = NSSelectorFromString( @"reservedRegionsOfKind:" );
+	if ( ! kindClass || ! [self respondsToSelector:querySel] || ! outRegions || maxCount <= 0 )
+	{
+		return 0;
+	}
+
+	CGFloat scale = self.contentScaleFactor;
+	int count = 0;
+	for ( int k = MPlatform::ReservedRegion::kOcclusion; k <= MPlatform::ReservedRegion::kDivision && count < maxCount; k++ )
+	{
+		if ( kindFilter >= 0 && k != kindFilter )
+		{
+			continue;
+		}
+
+		SEL kindSel = NSSelectorFromString( MPlatform::ReservedRegion::kDivision == k ? @"divisionRegionKind" : @"occlusionRegionKind" );
+		if ( ! [kindClass respondsToSelector:kindSel] )
+		{
+			continue;
+		}
+		id kind = [kindClass performSelector:kindSel];
+		NSArray *regions = [self performSelector:querySel withObject:kind];
+		for ( id region in regions )
+		{
+			if ( count >= maxCount )
+			{
+				break;
+			}
+			CGRect frame = [[region valueForKey:@"frame"] CGRectValue];
+			MPlatform::ReservedRegion& out = outRegions[count++];
+			out.kind = (MPlatform::ReservedRegion::Kind)k;
+			out.isActive = [[region valueForKey:@"active"] boolValue];
+			out.x = frame.origin.x * scale;
+			out.y = frame.origin.y * scale;
+			out.width = frame.size.width * scale;
+			out.height = frame.size.height * scale;
+		}
+	}
+	return count;
 }
 
 // CoronaOrientationObserver

@@ -270,6 +270,7 @@ TVOSDevice::HasEventSource( EventType type ) const
 		case MPlatformDevice::kHeadingEvent:
 		case MPlatformDevice::kMultitouchEvent:
 		case MPlatformDevice::kGyroscopeEvent:
+		case MPlatformDevice::kFoldEvent:
 			break;
 		default:
 			Rtt_ASSERT_NOT_REACHED();
@@ -318,6 +319,9 @@ TVOSDevice::BeginNotifications( EventType type ) const
 			CORONA_LOG_WARNING( "Multitouch events are not supported on this platform." );
 			break;
 		}
+		case MPlatformDevice::kFoldEvent:
+			// Fold state is observed by the platform whenever it is available; nothing to start or stop.
+			break;
 		default:
 			Rtt_ASSERT_NOT_REACHED();
 			break;
@@ -350,6 +354,9 @@ TVOSDevice::EndNotifications( EventType type ) const
 		case MPlatformDevice::kHeadingEvent:
 			break;
 		case MPlatformDevice::kMultitouchEvent:
+			break;
+		case MPlatformDevice::kFoldEvent:
+			// Fold state is observed by the platform whenever it is available; nothing to start or stop.
 			break;
 		default:
 			Rtt_ASSERT_NOT_REACHED();

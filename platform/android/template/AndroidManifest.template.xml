@@ -23,6 +23,8 @@
 
         @USER_TARGETED_APP_STORE@
 
+        @USER_APPLICATION_PROPERTIES@
+
         @USER_USES_EXPANSION_FILE@
 
         @USER_USES_GOOGLE_PLAY_GAMES@
@@ -34,7 +36,7 @@
                   @USER_DEFAULT_ORIENTATION@
                   android:label="@string/app_name"
                   @USER_CORONA_ACTIVITY_ATTRIBUTES@
-                  android:configChanges="keyboard|keyboardHidden|navigation|screenSize|orientation"
+                  android:configChanges="keyboard|keyboardHidden|navigation|screenSize|smallestScreenSize|screenLayout|density|orientation"
                   android:launchMode="singleTask"
                   android:exported="true"
                   android:theme="@android:style/Theme.NoTitleBar.Fullscreen">

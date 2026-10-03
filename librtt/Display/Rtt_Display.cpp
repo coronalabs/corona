@@ -1854,6 +1854,30 @@ Display::HasWindowSizeChanged() const
     return ((fStream->DeviceWidth() != fTarget->DeviceWidth()) || (fStream->DeviceHeight() != fTarget->DeviceHeight()));
 }
 
+bool
+Display::HasDeviceSizeChanged() const
+{
+    if (!fStream || !fTarget || !fStream->IsProperty( RenderingStream::kInitialized ))
+    {
+        return false;
+    }
+
+    S32 streamW = fStream->DeviceWidth();
+    S32 streamH = fStream->DeviceHeight();
+    S32 targetW = fTarget->DeviceWidth();
+    S32 targetH = fTarget->DeviceHeight();
+    if ( targetW <= 0 || targetH <= 0 )
+    {
+        return false;
+    }
+
+    // Compare the (short, long) side pairs so that a rotation in progress, where the surface
+    // reports swapped dimensions for a moment, is not mistaken for a device size change.
+    S32 streamShort = Min( streamW, streamH ), streamLong = Max( streamW, streamH );
+    S32 targetShort = Min( targetW, targetH ), targetLong = Max( targetW, targetH );
+    return ( streamShort != targetShort ) || ( streamLong != targetLong );
+}
+
 DeviceOrientation::Type
 Display::GetRelativeOrientation() const
 {

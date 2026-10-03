@@ -1151,6 +1151,11 @@ void AndroidPlatform::GetSafeAreaInsetsPixels(Rtt_Real &top, Rtt_Real &left, Rtt
 	fNativeToJavaBridge->GetSafeAreaInsetsPixels(top, left, bottom, right);
 }
 
+int AndroidPlatform::GetReservedRegionsPixels( ReservedRegion *outRegions, int maxCount ) const
+{
+	return fNativeToJavaBridge->GetReservedRegionsPixels(outRegions, maxCount);
+}
+
 // ----------------------------------------------------------------------------
 
 } // namespace Rtt

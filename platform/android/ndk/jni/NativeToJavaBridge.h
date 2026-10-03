@@ -18,6 +18,7 @@
 #include "Core/Rtt_Array.h"
 #include "Core/Rtt_OperationResult.h"
 #include "Rtt_Preference.h"
+#include "Rtt_MPlatform.h"
 #include <map>
 
 namespace Rtt
@@ -132,6 +133,8 @@ class NativeToJavaBridge
 		int GetStatusBarMode();
 		int GetStatusBarHeight();
 		void GetSafeAreaInsetsPixels(Rtt::Real &top, Rtt::Real &left, Rtt::Real &bottom, Rtt::Real &right);
+		int GetReservedRegionsPixels(Rtt::MPlatform::ReservedRegion *outRegions, int maxCount);
+		bool IsFoldStateAvailable();
 		
 		void ShowNativeAlert( const char * title, const char * msg, 
 			const char ** labels, int numLabels, Rtt::LuaResource * resource );
