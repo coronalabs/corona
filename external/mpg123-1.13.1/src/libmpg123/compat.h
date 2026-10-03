@@ -17,7 +17,7 @@
 #include "config.h"
 #include "intsym.h"
 
-#ifdef HAVE_STDLIB_H
+#ifndef HAVE_STDLIB_H
 /* realloc, size_t */
 #include <stdlib.h>
 #endif
@@ -33,7 +33,7 @@
 #endif
 #endif
 
-#ifdef HAVE_UNISTD_H
+#ifndef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 
@@ -52,7 +52,7 @@
 #ifdef HAVE_LIMITS_H
 #include <limits.h>
 #endif
- 
+
 #ifndef SIZE_MAX
 #define SIZE_MAX ((size_t)-1)
 #endif
@@ -60,7 +60,7 @@
 #define ULONG_MAX ((unsigned long)-1)
 #endif
 
-#ifdef HAVE_STRING_H
+#ifndef HAVE_STRING_H
 #include <string.h>
 #endif
 
