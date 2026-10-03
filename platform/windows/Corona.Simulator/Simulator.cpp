@@ -13,6 +13,9 @@
 #include <io.h>
 #include <ios>
 #include <Fcntl.h>
+#include <stdio.h>
+#include <iostream>
+#include <cstdio>
 
 #include "Simulator.h"
 #include "MainFrm.h"
