@@ -140,13 +140,20 @@ MacSimulator::Initialize(
 	Super::Config config( platform->GetAllocator() );
 	Super::LoadConfig( deviceConfigFile, *platform, config, IsUnfolded() );
 
-	platform->SetAdaptiveWidth( config.GetAdaptiveWidth() );
-	platform->SetAdaptiveHeight( config.GetAdaptiveHeight() );
-
     if (! config.configLoaded)
     {
         return;
     }
+
+	// A screen whose art is wider than tall (a foldable's unfolded inner screen) is a landscape device:
+	// the engine gets its portrait size (see ScreenSizeForEngine()) and the art is turned relative to
+	// that landscape, so a landscape app shows it unturned and a portrait app shows it turned.
+	DeviceOrientation::Type naturalOrientation = SkinNaturalOrientation( config );
+	NSSize deviceSize = ScreenSizeForEngine( config.screenWidth, config.screenHeight, config );
+	NSSize adaptiveSize = ScreenSizeForEngine( config.GetAdaptiveWidth(), config.GetAdaptiveHeight(), config );
+	platform->SetAdaptiveWidth( adaptiveSize.width );
+	platform->SetAdaptiveHeight( adaptiveSize.height );
+	SetScreenNaturalOrientationProperty( naturalOrientation );
 
 	fDeviceConfigFile = [[NSString stringWithExternalString:deviceConfigFile] copy];
 	fMacPlatform = platform;
@@ -246,6 +253,12 @@ MacSimulator::Initialize(
 	[screenView autorelease];
 	[screenView setOrientation:GetOrientation()];
 	[screenView setDelegate:delegate];
+	if ( DeviceOrientation::kUpright != naturalOrientation )
+	{
+		[screenView setDeviceSize:deviceSize];
+		screenView.adaptiveWidth = adaptiveSize.width;
+		screenView.adaptiveHeight = adaptiveSize.height;
+	}
 
 	SimulatorDeviceWindow* instanceWindow = nil;
 	void (^window_close_handler)(id) = ^(id sender)
@@ -331,6 +344,13 @@ MacSimulator::Initialize(
 														isTransparent:GetIsTransparent()];
         
 		[(SkinnableWindow*)instanceWindow setPerformCloseBlock:window_close_handler];
+
+		if ( DeviceOrientation::kUpright != naturalOrientation )
+		{
+			// Landscape art (relaunched unfolded): lay the window out again relative to it
+			instanceWindow.skinNaturalOrientation = naturalOrientation;
+			[(SkinnableWindow*)instanceWindow setOrientation:GetOrientation()];
+		}
 	}
 
 	NSWindowController *windowController = [[NSWindowController alloc] initWithWindow:instanceWindow];
@@ -470,6 +490,40 @@ MacSimulator::SetScreenProperties( const Config& config )
 	[fProperties setValue:( hasLandscapeLeftInsets ? [NSNumber numberWithFloat:Max( config.safeLandscapeLeftScreenInsetRight, 0.0f )] : nil ) forKey:@"safeLandscapeLeftScreenInsetRight"];
 }
 
+// The app orientation a skin's art is drawn for. Phone art is portrait (kUpright). Art that is wider
+// than tall (a foldable's unfolded inner screen) is a landscape device; its camera column sits on the
+// right like the folded screen's, which is landscapeLeft.
+// (TV skins describe their screen in portrait numbers with isUprightOrientationPortrait=false, so
+// only a foldable's wide screen rect counts here.)
+DeviceOrientation::Type
+MacSimulator::SkinNaturalOrientation( const Config& config ) const
+{
+	bool isWide = ( config.isFoldable && config.screenWidth > config.screenHeight );
+	return ( isWide ? DeviceOrientation::kSidewaysLeft : DeviceOrientation::kUpright );
+}
+
+// Corona takes a device's "upright" size as its portrait size and swaps it for a sideways app, so a
+// landscape device's screen is handed over as its portrait size: a landscape app then sees the wide
+// screen as landscape and a portrait app sees the turned screen as portrait, as on the device.
+NSSize
+MacSimulator::ScreenSizeForEngine( float width, float height, const Config& config ) const
+{
+	if ( DeviceOrientation::kUpright != SkinNaturalOrientation( config ) )
+	{
+		return NSMakeSize( height, width );
+	}
+	return NSMakeSize( width, height );
+}
+
+// Tells shell.lua (through MPlatform::kScreenNaturalOrientation) which orientation the status bar and
+// screen dressing art are drawn for, so it turns them relative to that.
+void
+MacSimulator::SetScreenNaturalOrientationProperty( DeviceOrientation::Type naturalOrientation )
+{
+	const char *name = ( DeviceOrientation::kUpright != naturalOrientation ? DeviceOrientation::StringForType( naturalOrientation ) : NULL );
+	[fProperties setValue:( name ? [NSString stringWithUTF8String:name] : nil ) forKey:@"screenNaturalOrientation"];
+}
+
 bool
 MacSimulator::DidChangeFold( bool unfolded )
 {
@@ -488,18 +542,24 @@ MacSimulator::DidChangeFold( bool unfolded )
 	fScreenWidth = config.screenWidth;
 	fScreenHeight = config.screenHeight;
 	SetScreenProperties( config );
-	fMacPlatform->SetAdaptiveWidth( config.GetAdaptiveWidth() );
-	fMacPlatform->SetAdaptiveHeight( config.GetAdaptiveHeight() );
+
+	// The wide inner screen is a landscape device, the folded one a portrait device (see Initialize())
+	DeviceOrientation::Type naturalOrientation = SkinNaturalOrientation( config );
+	NSSize deviceSize = ScreenSizeForEngine( config.screenWidth, config.screenHeight, config );
+	NSSize adaptiveSize = ScreenSizeForEngine( config.GetAdaptiveWidth(), config.GetAdaptiveHeight(), config );
+	fMacPlatform->SetAdaptiveWidth( adaptiveSize.width );
+	fMacPlatform->SetAdaptiveHeight( adaptiveSize.height );
+	SetScreenNaturalOrientationProperty( naturalOrientation );
 
 	GLView *view = GetScreenView();
-	[view setDeviceSize:NSMakeSize( config.screenWidth, config.screenHeight )];
-	view.adaptiveWidth = config.GetAdaptiveWidth();
-	view.adaptiveHeight = config.GetAdaptiveHeight();
+	[view setDeviceSize:deviceSize];
+	view.adaptiveWidth = adaptiveSize.width;
+	view.adaptiveHeight = adaptiveSize.height;
 
 	NSString *skinDir = [fDeviceConfigFile stringByDeletingLastPathComponent];
 	NSString *deviceImageFile = [skinDir stringByAppendingPathComponent:[NSString stringWithExternalString:config.deviceImageFile.GetString()]];
 	NSRect screenRect = NSMakeRect( config.screenOriginX, config.screenOriginY, config.screenWidth, config.screenHeight );
-	[(SkinnableWindow *)fWindow setSkinImage:deviceImageFile screenRect:screenRect];
+	[(SkinnableWindow *)fWindow setSkinImage:deviceImageFile screenRect:screenRect naturalOrientation:naturalOrientation];
 
 	NSString *title = [NSString stringWithFormat:@"%s - %.0fx%.0f", config.windowTitleBarName.GetString(), config.screenWidth, config.screenHeight];
 	[fWindow setTitle:title];

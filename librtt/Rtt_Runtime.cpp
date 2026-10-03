@@ -498,6 +498,15 @@ pushStatusBarFiles( lua_State* L, const MPlatform& platform, Rtt::String& value 
 			lua_pushnumber( L, atof( value.GetString() ) );
 			lua_setfield( L, -2, "height" );
 		}
+
+		// The orientation the screen's art (status bar, dressing) is drawn for when it isn't portrait,
+		// e.g. "landscapeLeft" for a foldable's wide inner screen. shell.lua turns the art relative to it.
+		platform.GetPreference( MPlatform::kScreenNaturalOrientation, &value );
+		if ( ! value.IsEmpty() )
+		{
+			lua_pushstring( L, value.GetString() );
+			lua_setfield( L, -2, "screenNaturalOrientation" );
+		}
 	}
 }
 

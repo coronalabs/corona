@@ -53,16 +53,21 @@ simulator =
 		screenOriginY = 84,
 		screenWidth = 2853,
 		screenHeight = 2007,
-		safeScreenInsetTop = 16 * 3,
+		-- The wide inner screen is a landscape device: the art above is its landscapeLeft, with the
+		-- status column beside the camera on the right and the home indicator at the bottom. The
+		-- Simulator turns it for the other orientations, so each table below is that art turned.
+		-- (Unverified against hardware: iOS may not turn the inner screen at all.)
+		-- portrait: turned a quarter, the camera column at the top
+		safeScreenInsetTop = 84 * 3,
 		safeScreenInsetLeft = 16 * 3,
-		safeScreenInsetBottom = 34 * 3,
-		safeScreenInsetRight = 84 * 3,
-		-- Unverified: iOS doesn't let an app turn the unfolded screen, so this assumes the status column
-		-- stays on the right like on the folded screen.
-		safeLandscapeScreenInsetTop = 16 * 3,
-		safeLandscapeScreenInsetLeft = 16 * 3,
-		safeLandscapeScreenInsetBottom = 34 * 3,
-		safeLandscapeScreenInsetRight = 84 * 3,
+		safeScreenInsetBottom = 16 * 3,
+		safeScreenInsetRight = 34 * 3,
+		-- landscapeRight: turned around, the camera column on the left
+		safeLandscapeScreenInsetTop = 34 * 3,
+		safeLandscapeScreenInsetLeft = 84 * 3,
+		safeLandscapeScreenInsetBottom = 16 * 3,
+		safeLandscapeScreenInsetRight = 16 * 3,
+		-- landscapeLeft: the art as drawn
 		safeLandscapeLeftScreenInsetTop = 16 * 3,
 		safeLandscapeLeftScreenInsetLeft = 16 * 3,
 		safeLandscapeLeftScreenInsetBottom = 34 * 3,

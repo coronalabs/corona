@@ -18,6 +18,18 @@
 
 @implementation SimulatorDeviceWindow
 
+@synthesize skinNaturalOrientation = fSkinNaturalOrientation;
+
+- (Rtt::DeviceOrientation::Type) skinDisplayOrientation
+{
+	using namespace Rtt;
+	if ( DeviceOrientation::IsInterfaceOrientation( fSkinNaturalOrientation ) && DeviceOrientation::kUpright != fSkinNaturalOrientation )
+	{
+		return DeviceOrientation::OrientationForAngle( DeviceOrientation::CalculateRotation( fSkinNaturalOrientation, fCurrentSkinOrientation ) );
+	}
+	return fCurrentSkinOrientation;
+}
+
 @synthesize saveFrameName;
 @synthesize fScreenView;
 
@@ -309,7 +321,7 @@
 
 	NSSize new_skin_size;
 
-	DeviceOrientation::Type orientation = fCurrentSkinOrientation;
+	DeviceOrientation::Type orientation = [self skinDisplayOrientation];
 
 	if( DeviceOrientation::IsUpright( orientation ) )
 	{
@@ -332,7 +344,7 @@
 
 	NSPoint new_glview_origin;
 
-	DeviceOrientation::Type orientation = fCurrentSkinOrientation;
+	DeviceOrientation::Type orientation = [self skinDisplayOrientation];
 
 	if( DeviceOrientation::kUpsideDown == orientation )
 	{
@@ -387,7 +399,7 @@
 
 	NSSize new_glview_size;
 
-	DeviceOrientation::Type orientation = fCurrentSkinOrientation;
+	DeviceOrientation::Type orientation = [self skinDisplayOrientation];
 
 	// This fixes a display glitch when the OpenGL canvas width is an uneven number
 	int widthAdj = 0;

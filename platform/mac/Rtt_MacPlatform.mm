@@ -704,6 +704,9 @@ MacPlatform::GetPreference( Category category, Rtt::String * value ) const
 		case MPlatform::kStatusBarHeight:
 			result = [[[properties valueForKey:@"statusBarHeight"] stringValue] UTF8String];
 			break;
+		case MPlatform::kScreenNaturalOrientation:
+			result = [[properties valueForKey:@"screenNaturalOrientation"] UTF8String];
+			break;
 		case MPlatform::kSubscription:
 			result = [[properties valueForKey:@"subscription"] UTF8String];
 			break;

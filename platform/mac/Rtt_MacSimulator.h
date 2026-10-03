@@ -55,6 +55,13 @@ class MacSimulator : public PlatformSimulator
 		virtual void DidRotate( bool clockwise, DeviceOrientation::Type start, DeviceOrientation::Type end );
 		virtual bool DidChangeFold( bool unfolded );
 
+	private:
+		DeviceOrientation::Type SkinNaturalOrientation( const Config& config ) const;
+		NSSize ScreenSizeForEngine( float width, float height, const Config& config ) const;
+		void SetScreenNaturalOrientationProperty( DeviceOrientation::Type naturalOrientation );
+
+	public:
+
 		// Optional callback for systems when the zoom/scale change finishes.
 		// On Mac, it is used to save the scale factor to user preferences so the next launch can be reopened at the same level.
 		virtual void DidChangeScale( float scalefactor );

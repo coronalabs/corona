@@ -889,11 +889,19 @@ PlatformSimulator::Rotate( bool clockwise )
 	// Note: We have to ignore the render stream's content width and height because it wrongly swaps
 	//       these values when rotating to an orientation the app does not support.
 	bool hasContentWidthHeightChanged = false;
+	bool hasTurnedAround = false;
 	if (IsOrientationSupported(orientation))
 	{
 		if (DeviceOrientation::IsSideways(orientation) != DeviceOrientation::IsSideways(fLastSupportedOrientation))
 		{
 			hasContentWidthHeightChanged = true;
+		}
+		else if (orientation != fLastSupportedOrientation)
+		{
+			// A 180 degree turn (landscapeLeft <-> landscapeRight, portrait <-> upside down). Nothing
+			// changes size, but the skin's status bar and screen dressing (corners, camera) have to
+			// turn with the content, and shell.lua places them from the "resize" event.
+			hasTurnedAround = true;
 		}
 		fLastSupportedOrientation = orientation;
 	}
@@ -902,7 +910,7 @@ PlatformSimulator::Rotate( bool clockwise )
 	// This is expected to be raised after the orientation event.
 	S32 currentDeviceWidth = runtime.GetDisplay().DeviceWidth();
 	S32 currentDeviceHeight = runtime.GetDisplay().DeviceHeight();
-	if (hasContentWidthHeightChanged ||
+	if (hasContentWidthHeightChanged || hasTurnedAround ||
 	    (fLastDeviceWidth != currentDeviceWidth) ||
 	    (fLastDeviceHeight != currentDeviceHeight))
 	{
@@ -923,14 +931,29 @@ PlatformSimulator::ToggleFold()
 		return;
 	}
 
+	Rtt::Runtime& runtime = GetPlayer()->GetRuntime();
+
+	// A foldable's inner screen doesn't turn to orientations the app doesn't support (and the
+	// Simulator doesn't rotate while unfolded), so when the device was turned to an unsupported
+	// orientation, turn it back to the content's orientation first. That keeps the fold on the
+	// same, tested path as folding an upright device.
+	// (The stream's content orientation follows the device even then, so use the last supported one.)
+	if ( ! IsOrientationSupported( GetOrientation() ) && IsOrientationSupported( fLastSupportedOrientation ) )
+	{
+		DeviceOrientation::Type target = fLastSupportedOrientation;
+		bool counterClockwiseIsShorter = ( DeviceOrientation::CalculateRotation( GetOrientation(), target ) == 90 );
+		for ( int i = 0; i < 3 && GetOrientation() != target; i++ )
+		{
+			Rotate( ! counterClockwiseIsShorter );
+		}
+	}
+
 	bool unfolded = ! fIsUnfolded;
 	if ( ! DidChangeFold( unfolded ) )
 	{
 		return;
 	}
 	fIsUnfolded = unfolded;
-
-	Rtt::Runtime& runtime = GetPlayer()->GetRuntime();
 
 	// Tell "fold" listeners first, so they know why the resize that follows happened.
 	if ( IsProperty( kFoldEventMask ) )

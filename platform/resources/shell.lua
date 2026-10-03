@@ -33,6 +33,24 @@ local isSimulatorExtension = params.isSimulatorExtension
 local appOrientation = nil
 local screenDressingMask = nil
 
+-- The orientation to draw the status bar and screen dressing in. Their art is made for the
+-- screen's natural orientation (portrait for phones); a wide screen such as a foldable's inner
+-- screen is drawn for a landscape, so the art is turned by the app's orientation relative to it.
+local orientationAngles = { portrait = 0, landscapeLeft = 90, portraitUpsideDown = 180, landscapeRight = 270 }
+local orientationNames = { [0] = "portrait", [90] = "landscapeLeft", [180] = "portraitUpsideDown", [270] = "landscapeRight" }
+local function overlayOrientation()
+	local natural = statusBarFiles.screenNaturalOrientation
+	if natural and orientationAngles[natural] and appOrientation and orientationAngles[appOrientation] then
+		return orientationNames[ ( orientationAngles[appOrientation] - orientationAngles[natural] ) % 360 ]
+	end
+	return appOrientation
+end
+
+local function isOverlayLandscape()
+	local orientation = overlayOrientation()
+	return ( "landscapeLeft" == orientation ) or ( "landscapeRight" == orientation )
+end
+
 local statusBarNames = {}
 local statusBarImageNames = {}
 
@@ -61,7 +79,7 @@ if statusBarFiles and statusBarFiles.default and not isSimulatorExtension then
 	-- Status bar
 
 	appOrientation = system.orientation
-	local isLandscape = ("landscapeLeft" == appOrientation) or ("landscapeRight" == appOrientation)
+	local isLandscape = isOverlayLandscape()
 
 	-- Loads the hidden portrait and landscape image of every status bar mode
 	local function loadStatusBars()
@@ -128,7 +146,7 @@ if statusBarFiles and statusBarFiles.default and not isSimulatorExtension then
 				if not appOrientation then
 					appOrientation = system.orientation
 				end
-				if appOrientation == "landscapeLeft" or appOrientation == "landscapeRight" then
+				if isOverlayLandscape() then
 					cx, cy = cy, cx
 				end
 
@@ -162,13 +180,14 @@ if statusBarFiles and statusBarFiles.default and not isSimulatorExtension then
 
 			local rotation = 0
 
-			if appOrientation == "portrait" then
+			local dressingOrientation = overlayOrientation()
+			if dressingOrientation == "portrait" then
 				rotation = 0
-			elseif appOrientation == "landscapeLeft" then
+			elseif dressingOrientation == "landscapeLeft" then
 				rotation = 90
-			elseif appOrientation == "portraitUpsideDown" then
+			elseif dressingOrientation == "portraitUpsideDown" then
 				rotation = 180
-			elseif appOrientation == "landscapeRight" then
+			elseif dressingOrientation == "landscapeRight" then
 				rotation = 270
 			end
 
@@ -193,7 +212,7 @@ if statusBarFiles and statusBarFiles.default and not isSimulatorExtension then
 		if not appOrientation then
 			appOrientation = system.orientation
 		end
-		isLandscape = ("landscapeLeft" == appOrientation) or ("landscapeRight" == appOrientation)
+		isLandscape = isOverlayLandscape()
 		if isLandscape then
 			name = string.gsub( name, "(.*)%.png", "%1.landscape.png" )
 		end
@@ -257,7 +276,7 @@ if statusBarFiles and statusBarFiles.default and not isSimulatorExtension then
 		statusBarFiles = files
 		setStatusBarNames()
 		appOrientation = system.orientation
-		isLandscape = ("landscapeLeft" == appOrientation) or ("landscapeRight" == appOrientation)
+		isLandscape = isOverlayLandscape()
 		loadStatusBars()
 
 		self.current = nil
@@ -308,7 +327,7 @@ local function _on_resize( _ )
 		local landscapeName    = string.gsub( portraitFileName, "(.*)%.png", "%1.landscape.png" )
 		local newFileName = portraitFileName
 
-		local isLandscape = ("landscapeLeft" == appOrientation) or ("landscapeRight" == appOrientation)
+		local isLandscape = isOverlayLandscape()
 
 		if isLandscape then
 			newFileName = landscapeName

@@ -118,7 +118,7 @@
 
 	fCurrentSkinOrientation = orientation;
 	
-	[fSkinView setOrientation:orientation];
+	[fSkinView setOrientation:[self skinDisplayOrientation]];
 
 	NSSize newskinsize = [self updateSkinFrameSize];
 	[self updateGLViewFrameSize];
@@ -188,21 +188,20 @@
     }
 }
 
-- (void)setSkinImage:(NSString*)path screenRect:(NSRect)screenRect
+- (void)setSkinImage:(NSString*)path screenRect:(NSRect)screenRect naturalOrientation:(Rtt::DeviceOrientation::Type)naturalOrientation
 {
 	using namespace Rtt;
 
-	DeviceOrientation::Type orientation = fCurrentSkinOrientation;
-
-	// Load the new art upright, then turn it back to the current orientation. The GL view stays
+	// Load the new art upright, then turn it to match the current orientation. The GL view stays
 	// attached (re-adding it would re-run prepareOpenGL); like a rotation, only its frame changes.
 	fScreenRect = screenRect;
+	fSkinNaturalOrientation = naturalOrientation;
 	[fSkinView setOrientation:DeviceOrientation::kUpright];
 	if ( ! [fSkinView setImageWithURL:[NSURL fileURLWithPath:path]] )
 	{
 		Rtt_TRACE_SIM(("Error: could not load skin image '%s'\n", [path UTF8String]));
 	}
-	[fSkinView setOrientation:orientation];
+	[fSkinView setOrientation:[self skinDisplayOrientation]];
 
 	NSSize newSkinSize = [self updateSkinFrameSize];
 	[self updateGLViewFrameSize];
@@ -238,10 +237,29 @@
 
 //	NSLog(@"rotating1 skinView frame    %@", NSStringFromRect([fSkinView frame]));
 
-	// Rotate simulator skin image
-	S32 angle = [fSkinView rotate:clockwise];
-	
-	DeviceOrientation::Type orientation = DeviceOrientation::OrientationForAngle( angle );
+	DeviceOrientation::Type orientation;
+	if ( DeviceOrientation::IsInterfaceOrientation( fSkinNaturalOrientation ) && DeviceOrientation::kUpright != fSkinNaturalOrientation )
+	{
+		// Art drawn for a landscape (a foldable's inner screen): step the app's orientation like
+		// PlatformSimulator::Rotate() does and turn the art relative to the natural orientation.
+		orientation = (DeviceOrientation::Type)( fCurrentSkinOrientation + ( clockwise ? -1 : 1 ) );
+		if ( DeviceOrientation::kUnknown == orientation )
+		{
+			orientation = DeviceOrientation::kSidewaysLeft;
+		}
+		else if ( DeviceOrientation::kFaceUp == orientation )
+		{
+			orientation = DeviceOrientation::kUpright;
+		}
+		fCurrentSkinOrientation = orientation;
+		[fSkinView setOrientation:[self skinDisplayOrientation]];
+	}
+	else
+	{
+		// Rotate simulator skin image
+		S32 angle = [fSkinView rotate:clockwise];
+		orientation = DeviceOrientation::OrientationForAngle( angle );
+	}
 
 	fCurrentSkinOrientation = orientation;
 	[fScreenView setOrientation:orientation];
