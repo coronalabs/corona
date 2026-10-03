@@ -141,11 +141,11 @@ namespace Rtt
 		int getFPS() const	{	return fRuntime ? fRuntime->GetFPS() : 30; }
 
 #if defined(EMSCRIPTEN)
-		static int resizeCallback(int eventType, const EmscriptenUiEvent *uiEvent, void *userData);
-		static int mouseupCallback(int eventType, const EmscriptenMouseEvent *mouseEvent, void * userData);
-		static int touchCallback(int eventType, const EmscriptenTouchEvent *touchEvent, void *userData);
-		static int blurCallback(int eventType, const EmscriptenFocusEvent *focusEvent, void *userData);
-		static int focusCallback(int eventType, const EmscriptenFocusEvent *focusEvent, void *userData);
+		static bool resizeCallback(int eventType, const EmscriptenUiEvent *uiEvent, void *userData);
+		static bool mouseupCallback(int eventType, const EmscriptenMouseEvent *mouseEvent, void * userData);
+		static bool touchCallback(int eventType, const EmscriptenTouchEvent *touchEvent, void *userData);
+		static bool blurCallback(int eventType, const EmscriptenFocusEvent *focusEvent, void *userData);
+		static bool focusCallback(int eventType, const EmscriptenFocusEvent *focusEvent, void *userData);
 		static const char* beforeunloadCallback(int eventType, const void *reserved, void *userData);
 #endif
 
