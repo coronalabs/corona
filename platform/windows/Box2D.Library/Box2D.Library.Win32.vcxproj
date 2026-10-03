@@ -62,11 +62,13 @@
     <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2MotorJoint.h" />
     <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2MouseJoint.h" />
     <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2PrismaticJoint.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2PrismaticJointV2.h" />
     <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2PulleyJoint.h" />
     <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2RevoluteJoint.h" />
     <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2RopeJoint.h" />
     <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2WeldJoint.h" />
     <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2WheelJoint.h" />
+    <ClInclude Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2WheelJointV2.h" />
     <ClInclude Include="..\..\..\external\Box2D\Box2D\Particle\b2Particle.h" />
     <ClInclude Include="..\..\..\external\Box2D\Box2D\Particle\b2ParticleAssembly.h" />
     <ClInclude Include="..\..\..\external\Box2D\Box2D\Particle\b2ParticleGroup.h" />
@@ -119,11 +121,13 @@
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2MotorJoint.cpp" />
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2MouseJoint.cpp" />
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2PrismaticJoint.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2PrismaticJointV2.cpp" />
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2PulleyJoint.cpp" />
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2RevoluteJoint.cpp" />
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2RopeJoint.cpp" />
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2WeldJoint.cpp" />
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2WheelJoint.cpp" />
+    <ClCompile Include="..\..\..\external\Box2D\Box2D\Dynamics\Joints\b2WheelJointV2.cpp" />
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Particle\b2Particle.cpp" />
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Particle\b2ParticleAssembly.cpp" />
     <ClCompile Include="..\..\..\external\Box2D\Box2D\Particle\b2ParticleGroup.cpp" />
