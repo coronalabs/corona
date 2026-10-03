@@ -500,7 +500,7 @@ int CoronaDefineWordPackedTextureFormat( lua_State * L, const CoronaTextureForma
  @param details
 */
 CORONA_API
-int CoronaDefineCompressedTextureFormat( lua_State * L, const CoronaCompressedTextureFormatDetails * details ) CORONA_PUBLIC_SUFFIX;
+int CoronaDefineCompressedTextureFormat( lua_State * L, const CoronaCompressedTextureFormatDetails * details, unsigned int componentCount ) CORONA_PUBLIC_SUFFIX;
 
 #if 0 /* TODO! */
 CORONA_API

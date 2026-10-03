@@ -195,8 +195,9 @@ struct TextureFormatDescription
 	U8 fInputInfo;
 	union {
 		struct {
-			U8 fNumComponents;
+			U8 fUnused[2];
 			U8 fBytesPerComponent;
+			U8 fNumComponents; // also visible to compressed types
 		};
 		struct {
 			U8 fBlockWidth;

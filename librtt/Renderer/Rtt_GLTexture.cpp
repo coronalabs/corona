@@ -40,7 +40,7 @@ namespace /*anonymous*/
 {
     using namespace Rtt;
 
-    void getFormatTokens( Texture::Format format, GLint& internalFormat, GLenum& sourceFormat, GLenum& sourceType )
+    void getFormatTokens( Texture::Format format, GLint& internalFormat, GLenum& sourceFormat, GLenum& sourceType, bool hasRed )
     {
         switch( format.GetValue() )
         {
@@ -48,7 +48,11 @@ namespace /*anonymous*/
 #if defined( Rtt_MetalANGLE)
             case Texture::kLuminance:   internalFormat = GL_RED_EXT;    sourceFormat = GL_RED_EXT;        sourceType = GL_UNSIGNED_BYTE; break;
 #else
-            case Texture::kLuminance:    internalFormat = GL_LUMINANCE;    sourceFormat = GL_LUMINANCE;    sourceType = GL_UNSIGNED_BYTE; break;
+            case Texture::kLuminance: {
+				internalFormat = hasRed ? 0x8229 : GL_LUMINANCE;
+				sourceFormat = hasRed ? 0x1903 : GL_LUMINANCE;
+				sourceType = GL_UNSIGNED_BYTE;
+			}	break;
 #endif
             case Texture::kRGB:            internalFormat = GL_RGB;        sourceFormat = GL_RGB;            sourceType = GL_UNSIGNED_BYTE; break;
             case Texture::kRGBA:        internalFormat = GL_RGBA;        sourceFormat = GL_RGBA;            sourceType = GL_UNSIGNED_BYTE; break;
@@ -120,6 +124,7 @@ GLint CalculateOptimalAlignment(U32 width, GLenum format)
         case GL_RED_EXT:
 #else
         case GL_LUMINANCE:
+        case 0x8229:
 #endif
             bytesPerPixel = 1;
             break;
@@ -224,7 +229,7 @@ GLTexture::Create( CPUResource* resource, const RenderContext* context )
     GLenum type;
     if ( !isNonCore )
     {
-		getFormatTokens( textureFormat, internalFormat, format, type );
+		getFormatTokens( textureFormat, internalFormat, format, type, context->fHasRed );
 	}
 	else
 	{
@@ -296,7 +301,7 @@ GLTexture::Update( CPUResource* resource, const RenderContext* context )
 		bool isNonCore = textureFormat.IsNonCore();
 		if ( !isNonCore )
 		{
-			getFormatTokens( texture->GetFormat(), internalFormat, format, type );
+			getFormatTokens( texture->GetFormat(), internalFormat, format, type, context->fHasRed );
 		}
 		else
 		{

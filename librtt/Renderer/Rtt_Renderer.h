@@ -395,6 +395,8 @@ class Renderer
 
 		Program* fDefaultPrograms[2]; // default and 2.5D
 
+		bool fHasRed;
+
 		// Non-owning:
 		const TextureFormatDescription* fCustomFormats;
 		U32 fCustomFormatCount;

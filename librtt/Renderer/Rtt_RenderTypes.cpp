@@ -1197,9 +1197,13 @@ enum {
 
 		// ...likewise, but for component #2...
 		
-			+ 1, /* component #3 flag */
+			+ 1 /* component #3 flag */
 
 		// ...and component #3.
+
+			+ 1, /* is-mask flag */
+		
+		// In the case of a one-component format, indicate it has mask semantics.
 
 	// These bits describe whether a texture and sampler can pair up, so that paints
 	// know whether they can plug into a given shader input. Some bitmap operations
@@ -1278,7 +1282,8 @@ static const U32 Diff3FlagMask = MAKE_FLAG_MASK( kDiff3FlagOffset, kInputKindOff
 	// can hijack Diff*Flag if #components = 1 (e.g. bit 1 says "is depth or stencil", bit 2 decides which; else = "other" with data)
 	// if we ARE using depth-stencil, we can potentially forgo some stuff, e.g. "has alpha" or "color byte indices"
 
-static const MaskInfo InputKindMask = MAKE_MASK_INFO( kInputKindOffset, kInputKindBits, kDoneOffset );
+static const MaskInfo InputKindMask = MAKE_MASK_INFO( kInputKindOffset, kInputKindBits, kIsMaskFlagOffset );
+static const U32 kIsMaskFlagMask = MAKE_FLAG_MASK( kIsMaskFlagOffset, kDoneOffset );
 
 Rtt_STATIC_ASSERT( kDoneOffset == kAllBits );
 
@@ -1345,6 +1350,12 @@ bool
 FormatDetails::IsCore( U32 v )
 {
 	return 0 == GetFormatIndex( v );
+}
+
+void
+FormatDetails::AddMaskBit( U32& backingValue )
+{
+	backingValue |= kIsMaskFlagMask;
 }
 
 struct Bits {
@@ -1428,7 +1439,7 @@ FormatDetails::BuildFromDescription( const TextureFormatDescription* desc, U32 f
 	{
 		U32 sumOfSizes = desc->fSizes[0] + desc->fSizes[1] + desc->fSizes[2] + desc->fSizes[3];
 
-		bits.Set( sumOfSizes / 8, BytesPerComponentMask );
+		bits.SetCount( sumOfSizes / 8, BytesPerComponentMask );
 		bits.SetFlag( SpecialFlagMask );
 
 		bool hasThreeOrMoreComponents = ( 0 != desc->fSizes[2] );
@@ -1438,11 +1449,13 @@ FormatDetails::BuildFromDescription( const TextureFormatDescription* desc, U32 f
 			U32 dataBits = 0, isReversed = 0 != ( desc->fFlags & TextureFormatDescription::kIsReversed );
 			if ( 0 != desc->fSizes[3] ) // has four components?
 			{
-				// It seems that at least three components in word-packed formats either have
-				// their (floored) average value, or are one greater. Occasionally there might
-				// be an outlier as well; these seem to always be small, i.e. <= 3 bits.
-				// Whether the outlier differs or not, put it in the data and deduct it from the
-				// sum-of-sizes, so that we can get an average honoring the above description.
+				// In the case of word-packed formats with four components, at least three of
+				// them have either their (floored) average value, or are one greater. There
+				// are some formats where the fourth value is an outlier: these always appear
+				// to be small, in particular <= 3 bits.
+				
+				// Whether the outlier differs or not, put it in the data and deduct it from
+				// the sum-of-sizes, giving us an average honoring the above description.
 				U8 outlier;
 				if ( isReversed )
 				{
@@ -1454,7 +1467,7 @@ FormatDetails::BuildFromDescription( const TextureFormatDescription* desc, U32 f
 					outlier = desc->fSizes[3];
 				}
 				
-				Rtt_ASSERT( ( outlier & DataMask.fIncludeMask ) == outlier );
+				Rtt_ASSERT( ( ( outlier << 1 ) & DataMask.fIncludeMask ) == ( outlier << 1 ) );
 				
 				dataBits = outlier;
 				sumOfSizes -= outlier;
@@ -1548,7 +1561,7 @@ FormatDetails::GetSize( U16 w, U16 h, U32 backingValue )
 bool
 FormatDetails::IsCompressed( U32 backingValue )
 {
-	return 3 == Bits{ backingValue }.GetCount( ComponentCountMask );
+	return 3 == Bits{ backingValue }.GetCount( BytesPerComponentMask );
 }
 
 bool

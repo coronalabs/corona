@@ -44,6 +44,7 @@ class GPUResource
 			const void* fBackendInfo; // e.g. could be Vulkan context
 			const TextureFormatDescription* fCustomFormats;
 			S32 fCustomFormatCount;
+			bool fHasRed;
 		};
 
         // Allocate GPU resources appropriate for the given data. It is the

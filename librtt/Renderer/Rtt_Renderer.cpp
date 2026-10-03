@@ -194,7 +194,8 @@ Renderer::Renderer( Rtt_Allocator* allocator )
 	fVertexOffset( 0 ),
 	fCurrentGeometry( NULL ),
     fTimeDependencyCount( 0 ),
-    fGuardDraw()
+    fGuardDraw(),
+    fHasRed( false )
 {
     // Always have at least 1 mask count.
     fMaskCount.Append( 0 );
@@ -232,6 +233,19 @@ Renderer::Initialize()
 {
     fBackCommandBuffer->Initialize();
     fFrontCommandBuffer->Initialize();
+    
+    CoronaTextureFormatDetails details = {};
+    TextureFormatDescription desc = {};
+    
+    details.type = 0x1401;
+    details.internalFormat = 0x8229;
+    details.format = 0x1903;
+    // ^^ TODO: need ES2 check here...
+    
+    if ( MatchToFormatDescription( &desc, &details ) )
+    {
+		fHasRed = true;
+    }
 }
 
 void
@@ -569,13 +583,22 @@ Renderer::PopMaskCount()
 }
 
 static bool
-DoExtraTexturesDiffer( const LightPtrArray<Texture>& extraTextures, const TextureList& list )
+DoExtraTexturesDiffer( const LightPtrArray<Texture>& extraTextures, const TextureList& list, const RenderDataState* renderDataState )
 {
-	for ( U32 i = 0, iMax = list.GetCountAfterFills(); i < iMax; i++ )
+	if ( ( NULL != renderDataState ) && ( RenderDataState::kSyncConsistent == renderDataState->GetSyncState() ) )
 	{
-		if ( extraTextures[i] != list.GetPositionAfterFills()[i] )
+		U32 unit = 0, usageMask = renderDataState->GetOccupancy();
+		for ( U32 i = 0, iMax = list.GetCountAfterFills(); i < iMax; i++ )
 		{
-			return true;
+			if ( usageMask & ( 1U << i ) )
+			{
+				if ( extraTextures[i] != list.GetPositionAfterFills()[unit] )
+				{
+					return true;
+				}
+				
+				++unit;
+			}
 		}
 	}
 	
@@ -618,7 +641,7 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData, RenderD
 			fExtraTextures.PadToSize( extraTextureCount, NULL );
 			fMaxExtraTexturesThisFrame = extraTextureCount;
 		}
-		else if ( !DoExtraTexturesDiffer( fExtraTextures, data->fTextures ) )
+		else if ( !DoExtraTexturesDiffer( fExtraTextures, data->fTextures, renderDataState ) )
 		{
 			extraTextureCount = 0;
 		}
@@ -1023,16 +1046,22 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData, RenderD
 			{
 				Texture* extra = data->fTextures.GetPositionAfterFills()[i]; // n.b. skip fill0 and fill1
 
-				bool usesTextureAndNew = ( usageMask & ( 1U << i ) ) && ( extra != fExtraTextures[unit] );
-				if ( usesTextureAndNew )
+				bool usesTexture = ( usageMask & ( 1U << i ) ), isNew = false;
+				if ( usesTexture )
 				{
-					fBackCommandBuffer->BindTexture( extra, Texture::kNumUnits + unit );
-					fExtraTextures[unit++] = extra;
+					bool isNew = ( extra != fExtraTextures[unit] );
+					if ( isNew )
+					{
+						fBackCommandBuffer->BindTexture( extra, Texture::kNumUnits + unit );
+						fExtraTextures[unit] = extra;
+					}
 					
 					// n.b. does not bind uniform
+				
+					++unit;
 				}
 
-				if ( ( usesTextureAndNew || !isSynced ) && !extra->fGPUResource ) // always try when unsynced, since no way to know if needed
+				if ( ( isNew || !isSynced ) && !extra->fGPUResource ) // always try when unsynced, since no way to know if needed
 				{
 					QueueCreate( extra );
 				}
@@ -1132,6 +1161,7 @@ Renderer::Swap()
     GPUResource::RenderContext context = {};
     context.fCustomFormats = fCustomFormats;
     context.fCustomFormatCount = fCustomFormatCount;
+    context.fHasRed = fHasRed;
     
     for(S32 i = 0; i < fCreateQueue.Length(); ++i)
     {

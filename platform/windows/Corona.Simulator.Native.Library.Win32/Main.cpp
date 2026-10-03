@@ -616,11 +616,11 @@ int CoronaDefineWordPackedTextureFormat(lua_State *L, const CoronaTextureFormatD
 }
 
 CORONA_API
-int CoronaDefineCompressedTextureFormat(lua_State *L, const CoronaCompressedTextureFormatDetails *details)
+int CoronaDefineCompressedTextureFormat(lua_State *L, const CoronaCompressedTextureFormatDetails *details, unsigned int componentCount
 {
 	typedef int(*CoronaCallbackType)(lua_State*, const CoronaCompressedTextureFormatDetails*);
 	CoronaCallbackLoad();
-	return CoronaCallbackInvoke(L, details);
+	return CoronaCallbackInvoke(L, details, componentCount);
 }
 #pragma endregion
 

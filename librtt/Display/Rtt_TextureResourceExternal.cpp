@@ -162,13 +162,18 @@ private:
 #pragma mark == Texture Resource External ==
 
 static void
-ProcessFormat( TextureFactory& factory, const CoronaExternalTextureExtension_CustomFormat* format_ext, ExternalBitmap* bitmap )
+ProcessFormat( TextureFactory& factory, const CoronaExternalTextureExtension_CustomFormat* format_ext, ExternalBitmap* bitmap, bool isMask )
 {
 	U32 index = format_ext->formatIndex;
 	if ( index > 0 && index <= factory.GetCurrentFormatCount() )
 	{
 		const TextureFormatDescription& desc = factory.GetCurrentFormatList()[index - 1];
 		U32 value = FormatDetails::BuildFromDescription( &desc, index );
+
+		if ( !desc.IsWordPacked() && ( 1 == desc.fNumComponents ) && isMask )
+		{
+			FormatDetails::AddMaskBit( value );
+		}
 
 		bitmap->SetCustomFormat( value );
 		// TODO: further need to validate? value != ~0
@@ -233,9 +238,10 @@ ProcessExtensions( TextureFactory& factory, const CoronaExternalTextureCallbacks
 		case kExternalTextureExtension_TextureTarget:
 			ProcessTarget( (CoronaExternalTextureExtension_TextureTarget*)ext, bitmap );
 			break;
-		case kExternalTextureExtension_CustomFormat:
-			ProcessFormat( factory, (CoronaExternalTextureExtension_CustomFormat*)ext, bitmap );
-			break;
+		case kExternalTextureExtension_CustomFormat: {
+			bool isMask = ( NULL != callbacks2->base.getFormat ) && kExternalBitmapFormat_Mask == callbacks2->base.getFormat( bitmap->GetUserData() );
+			ProcessFormat( factory, (CoronaExternalTextureExtension_CustomFormat*)ext, bitmap, isMask );
+		}	break;
 		default:
 			Rtt_ASSERT_NOT_REACHED();
 		}

@@ -33,6 +33,8 @@ ExtraTextureInfo::FindNameInList( const U8* name, const U8* listOfNames, int n )
 {
 	NamesReader reader( name ), listReader( listOfNames );
 	
+	reader.PullNext();
+	
 	return reader.FindCurrentNameInList( listReader, n );
 }
 
@@ -83,15 +85,11 @@ NamesReader::FindCurrentNameInList( NamesReader& headOfList, int n ) const
 {
 	Rtt_ASSERT( fStream );
 
-	NamesReader dup = Clone(); // only for count
-
-	dup.PullNext();
-
-	for ( int i = 0; i < n; ++i )
+	for ( int i = 0; i < n; i++ )
 	{
 		headOfList.PullNext();
 		
-		bool isMatch = ( dup.fCount == headOfList.fCount ) && 0 == memcmp( Current(), headOfList.Current(), dup.fCount );
+		bool isMatch = ( fCount == headOfList.fCount ) && 0 == memcmp( Current(), headOfList.Current(), fCount );
 		if ( isMatch )
 		{
 			return i;
@@ -470,7 +468,7 @@ ShaderResource::~ShaderResource()
 		Rtt_DELETE( fTimeTransform );
 	}
 
-	Rtt_DELETE( fExtraTextureInfo );
+	Rtt_FREE( const_cast<ExtraTextureInfo*>( fExtraTextureInfo ) );
 
     SetEffectCallbacks( NULL );
     SetShellTransform( NULL );
@@ -519,7 +517,7 @@ ShaderResource::GetProgramMod(ProgramMod mod) const
 void
 ShaderResource::SetTextureInfo( const U8* info, U8 count, SamplerTypeDetails fillInfo[2] )
 {
-	Rtt_DELETE( fExtraTextureInfo );
+	Rtt_FREE( const_cast<ExtraTextureInfo*>( fExtraTextureInfo ) );
 	
 	Rtt_ASSERT( ( NULL == info ) == ( 0 == count ) );
 	
@@ -622,7 +620,7 @@ ShaderResource::AreFormatsConsistent( U32 fillBackingValues[], U32 extraTextureB
 	int basePaintIndex = 0; // both name lists are sorted, so avoid searching entire list each iteration
 	
 	NamesReader shaderNamesIter( shaderNames ), paintNamesIter( paintNames );
-	for ( U32 i = 0; i < iMax; i++ )
+	for ( U32 i = 0; i < iMax; i++, basePaintIndex++ )
 	{
 		shaderNamesIter.PullNext();
 	
@@ -632,7 +630,7 @@ ShaderResource::AreFormatsConsistent( U32 fillBackingValues[], U32 extraTextureB
 				
 		if ( index < 0 )
 		{
-			return ReportError( shaderNamesIter, "WARNING: unable to match sampler `%s` with a corresponding texture from the paint" );
+			return ReportError( shaderNamesIter, "WARNING: unable to match sampler `%s` with a corresponding texture from the paints" );
 		}
 		else if ( !DetailsAgreeWithFormat( extraTextureBackingValues[basePaintIndex], shaderDetails[i] ) )
 		{

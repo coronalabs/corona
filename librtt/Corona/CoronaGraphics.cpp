@@ -189,10 +189,13 @@ int CoronaDefineWordPackedTextureFormat( lua_State * L, const CoronaTextureForma
 }
 
 CORONA_API
-int CoronaDefineCompressedTextureFormat( lua_State * L, const CoronaCompressedTextureFormatDetails * details )
+int CoronaDefineCompressedTextureFormat( lua_State * L, const CoronaCompressedTextureFormatDetails * details, unsigned int componentCount )
 {
     Rtt::Renderer& renderer = GetRenderer( L );
     Rtt::TextureFormatDescription desc = Rtt::TextureFormatDescription::MakeCompressed();
+    
+    desc.fNumComponents = componentCount;
+    
 	if ( renderer.MatchToFormatDescription( &desc, details ) )
     {
 		return TryToCommitDescription( L, renderer, desc );

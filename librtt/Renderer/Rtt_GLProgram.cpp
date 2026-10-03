@@ -931,9 +931,11 @@ ValidateLaterVersion( const ShaderResource* shaderResource, const SamplerTypeDet
 		
 		for ( int i = 0; i < numUnits; i++ )
 		{
-			U8 name[ExtraTextureInfo::kMaxPackedNameLength];
+			U8 name[ExtraTextureInfo::kMaxPackedNameLength + 1];
 			
-			ExtraTextureInfo::EncodeName( name, items[i].buf );
+			*name = String::IdentifierLengthToTriples( items[i].length );
+			
+			ExtraTextureInfo::EncodeName( name + 1, items[i].buf );
 
 			int pos = ExtraTextureInfo::FindNameInList( name, extraTextureNames, numUnits );
 			if ( pos >= 0 && items[i].details.Matches( extraDetails[pos] ) ) // if found, check that details also agree
@@ -957,6 +959,10 @@ GatherSamplers( GLuint program, GLchar stash[], SamplerItem items[], const int n
 	GLint activeUniformCount = 0, maxUnits;
 	glGetProgramiv( program, GL_ACTIVE_UNIFORMS, &activeUniformCount );
 	glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS, &maxUnits );
+
+	Rtt_ASSERT( maxUnits >= Texture::kNumUnits );
+
+	maxUnits -= Texture::kNumUnits;
 
 	GLchar * buf = stash;
     for ( GLint i = 0; i < activeUniformCount; i++ )
@@ -1170,7 +1176,7 @@ GLProgram::Update( Program::Version version, VersionData& data )
 
     Rtt_STATIC_ASSERT( sizeof( kDetails ) / sizeof( kDetails[0] ) < 256 );
     
-    SamplerItem items[ 32 - Texture::kNumUnits ];
+    SamplerItem items[ 32 - Texture::kNumUnits ] = {};
     
     const U32 kNumItems = sizeof( items ) / sizeof( *items );
 
