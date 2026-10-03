@@ -76,6 +76,7 @@ class Renderer
 		virtual void EndCapture() {}
 
 		virtual bool MatchToFormatDescription( TextureFormatDescription* desc, const void* data );
+		virtual void DetectOneComponentTextureFormatSupport();
 
 		// Get the current view and projection matrices. These 4x4 matrices are
 		// returned via the given pointers, which are assumed to be non-null.
@@ -338,7 +339,7 @@ class Renderer
 	public:
 		void UpdateCustomFormats( const TextureFormatDescription* formats, U32 count );
 
-		bool IsRedRenderable() const { return fIsRedRenderable; }
+		bool Has8BitRed() const { return fHas8BitRed; }
 		
 	protected:
 		Rtt_Allocator* fAllocator;
@@ -397,8 +398,8 @@ class Renderer
 
 		Program* fDefaultPrograms[2]; // default and 2.5D
 
-		bool fHasRed;
-		bool fIsRedRenderable;
+		bool fIsES2;
+		bool fHas8BitRed;
 
 		// Non-owning:
 		const TextureFormatDescription* fCustomFormats;

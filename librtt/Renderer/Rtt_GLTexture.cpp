@@ -397,7 +397,8 @@ GLTexture::GetName()
 struct ProbeRAII {
 	ProbeRAII( const CoronaTextureFormatDetails* details )
 	{
-		glGetError(); // eat any error
+		while ( GL_NO_ERROR != glGetError() ) { /* empty */ } // eat any errors
+		
 		glGenTextures( 1, &fTexture );
 		GL_CHECK_ERROR();
 
@@ -738,6 +739,34 @@ Renderer::MatchToFormatDescription( TextureFormatDescription* desc, const void* 
 	}
 
 	return false;
+}
+
+void
+Renderer::DetectOneComponentTextureFormatSupport()
+{
+	const char *version = reinterpret_cast<const char *>( glGetString( GL_VERSION ) );
+
+	fIsES2 = ( strstr( version, "OpenGL ES 2" ) == version ) || ( strstr( version, "WebGL 1" ) == version );
+
+#ifdef GL_RED
+	const GLenum kRed = GL_RED, kR8 = GL_R8;
+#elif defined( GL_RED_EXT )
+	const GLenum kRed = GL_RED_EXT, kR8 = GL_R8_EXT;
+#else
+	error Missing RED component defines
+#endif
+
+	CoronaTextureFormatDetails details = {};
+    TextureFormatDescription desc = {};
+    
+    details.type = GL_UNSIGNED_BYTE;
+    details.format = kRed;
+    details.internalFormat = fIsES2 ? details.format : kR8;
+    
+    if ( MatchToFormatDescription( &desc, &details ) )
+    {
+		fHas8BitRed = true;
+    }
 }
 
 // ----------------------------------------------------------------------------

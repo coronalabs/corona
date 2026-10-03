@@ -329,6 +329,8 @@ GraphicsLibrary::defineEffect( lua_State *L )
 int
 GraphicsLibrary::defineShellTransform( lua_State * L )
 {
+	Rtt_Log( "WARNING: shell transforms likely to be deprecated; favor `shellTweaks` instead" );
+
     int ok = 0;
 
     struct PairWithPriority {

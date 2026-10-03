@@ -195,8 +195,8 @@ Renderer::Renderer( Rtt_Allocator* allocator )
 	fCurrentGeometry( NULL ),
     fTimeDependencyCount( 0 ),
     fGuardDraw(),
-    fHasRed( false ),
-    fIsRedRenderable( false )
+    fIsES2( false ),
+    fHas8BitRed( false )
 {
     // Always have at least 1 mask count.
     fMaskCount.Append( 0 );
@@ -235,24 +235,7 @@ Renderer::Initialize()
     fBackCommandBuffer->Initialize();
     fFrontCommandBuffer->Initialize();
     
-    CoronaTextureFormatDetails details = {};
-    TextureFormatDescription desc = {};
-    
-    details.type = 0x1401;
-    details.internalFormat = 0x8229;
-    details.format = 0x1903;
-    details.flags = kTextureFormatFlag_ProbeRenderability;
-    // ^^ TODO: need ES2 check here...
-    
-    if ( MatchToFormatDescription( &desc, &details ) )
-    {
-		fHasRed = true;
-		
-		if ( desc.fFlags & TextureFormatDescription::kIsRenderable1 )
-		{
-			fIsRedRenderable = true;
-		}
-    }
+    DetectOneComponentTextureFormatSupport();
 }
 
 void
@@ -1173,7 +1156,7 @@ Renderer::Swap()
     GPUResource::RenderContext context = {};
     context.fCustomFormats = fCustomFormats;
     context.fCustomFormatCount = fCustomFormatCount;
-    context.fHasRed = fHasRed;
+    context.fHasRed = Has8BitRed();
     
     for(S32 i = 0; i < fCreateQueue.Length(); ++i)
     {
