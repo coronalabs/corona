@@ -45,6 +45,7 @@ class GPUResource
 			const TextureFormatDescription* fCustomFormats;
 			S32 fCustomFormatCount;
 			bool fHasRed;
+			bool fIsES2;
 		};
 
         // Allocate GPU resources appropriate for the given data. It is the

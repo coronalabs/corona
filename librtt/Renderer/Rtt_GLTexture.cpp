@@ -34,13 +34,22 @@
 #if !defined(Rtt_OPENGLES) && !defined(GL_ABGR_EXT)
 #define GL_ABGR_EXT 0x8000
 #endif
+
+#ifdef GL_RED
+	const GLenum kRed = GL_RED, kR8 = GL_R8;
+#elif defined( GL_RED_EXT )
+	const GLenum kRed = GL_RED_EXT, kR8 = GL_R8_EXT;
+#else
+	#error Missing RED component defines
+#endif
+
 // ----------------------------------------------------------------------------
 
 namespace /*anonymous*/
 {
     using namespace Rtt;
 
-    void getFormatTokens( Texture::Format format, GLint& internalFormat, GLenum& sourceFormat, GLenum& sourceType, bool hasRed )
+    void getFormatTokens( Texture::Format format, GLint& internalFormat, GLenum& sourceFormat, GLenum& sourceType, bool hasRed, bool isES2 )
     {
         switch( format.GetValue() )
         {
@@ -49,8 +58,15 @@ namespace /*anonymous*/
             case Texture::kLuminance:   internalFormat = GL_RED_EXT;    sourceFormat = GL_RED_EXT;        sourceType = GL_UNSIGNED_BYTE; break;
 #else
             case Texture::kLuminance: {
-				internalFormat = hasRed ? 0x8229 : GL_LUMINANCE;
-				sourceFormat = hasRed ? 0x1903 : GL_LUMINANCE;
+				sourceFormat = hasRed ? kRed : GL_LUMINANCE;
+				if ( isES2 )
+				{
+					internalFormat = sourceFormat;
+				}
+				else
+				{
+					internalFormat = hasRed ? kR8 : GL_LUMINANCE;
+				}
 				sourceType = GL_UNSIGNED_BYTE;
 			}	break;
 #endif
@@ -124,7 +140,8 @@ GLint CalculateOptimalAlignment(U32 width, GLenum format)
         case GL_RED_EXT:
 #else
         case GL_LUMINANCE:
-        case 0x8229:
+        case kRed: // ES2...
+        case kR8: // ...otherwise
 #endif
             bytesPerPixel = 1;
             break;
@@ -229,7 +246,7 @@ GLTexture::Create( CPUResource* resource, const RenderContext* context )
     GLenum type;
     if ( !isNonCore )
     {
-		getFormatTokens( textureFormat, internalFormat, format, type, context->fHasRed );
+		getFormatTokens( textureFormat, internalFormat, format, type, context->fHasRed, context->fIsES2 );
 	}
 	else
 	{
@@ -301,7 +318,7 @@ GLTexture::Update( CPUResource* resource, const RenderContext* context )
 		bool isNonCore = textureFormat.IsNonCore();
 		if ( !isNonCore )
 		{
-			getFormatTokens( texture->GetFormat(), internalFormat, format, type, context->fHasRed );
+			getFormatTokens( texture->GetFormat(), internalFormat, format, type, context->fHasRed, context->fIsES2 );
 		}
 		else
 		{
@@ -746,15 +763,10 @@ Renderer::DetectOneComponentTextureFormatSupport()
 {
 	const char *version = reinterpret_cast<const char *>( glGetString( GL_VERSION ) );
 
-	fIsES2 = ( strstr( version, "OpenGL ES 2" ) == version ) || ( strstr( version, "WebGL 1" ) == version );
-
-#ifdef GL_RED
-	const GLenum kRed = GL_RED, kR8 = GL_R8;
-#elif defined( GL_RED_EXT )
-	const GLenum kRed = GL_RED_EXT, kR8 = GL_R8_EXT;
-#else
-	error Missing RED component defines
-#endif
+	if ( NULL != version )
+	{
+		fIsES2 = ( strstr( version, "OpenGL ES 2" ) == version ) || ( strstr( version, "WebGL 1" ) == version );
+	}
 
 	CoronaTextureFormatDetails details = {};
     TextureFormatDescription desc = {};

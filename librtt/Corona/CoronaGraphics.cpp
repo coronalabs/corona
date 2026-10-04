@@ -562,7 +562,14 @@ int CoronaGeometryUnregisterVertexExtension( lua_State * L, const char * name )
 CORONA_API
 int CoronaShaderGetEffectDetail( const CoronaShader * shader, int index, CoronaEffectDetail * detail )
 {
-	Rtt_LogException( "WARNING: effect details likely to be deprecated" );
+	static bool sHasWarned;
+	
+	if ( !sHasWarned )
+	{
+		Rtt_LogException( "WARNING: effect details likely to be deprecated" );
+		
+		sHasWarned = true; // n.b. a bit flaky; won't refire on relaunch
+	}
 
     const Rtt::Shader * shaderObject = OBJECT_HANDLE_LOAD( Shader, shader );
 

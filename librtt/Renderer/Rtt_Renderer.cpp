@@ -1184,6 +1184,7 @@ Renderer::Swap()
     context.fCustomFormats = fCustomFormats;
     context.fCustomFormatCount = fCustomFormatCount;
     context.fHasRed = Has8BitRed();
+    context.fIsES2 = fIsES2;
     
     for(S32 i = 0; i < fCreateQueue.Length(); ++i)
     {
