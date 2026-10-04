@@ -152,8 +152,9 @@ public class FoldStateMonitor {
 		private final androidx.core.util.Consumer<androidx.window.layout.WindowLayoutInfo> fListener;
 
 		Impl() {
+			// getOrCreate() lives on the Kotlin companion object; the interface itself has no static method.
 			fTracker = new androidx.window.java.layout.WindowInfoTrackerCallbackAdapter(
-					androidx.window.layout.WindowInfoTracker.getOrCreate(fActivity));
+					androidx.window.layout.WindowInfoTracker.Companion.getOrCreate(fActivity));
 			final android.os.Handler handler = new android.os.Handler(android.os.Looper.getMainLooper());
 			fExecutor = new java.util.concurrent.Executor() {
 				@Override

@@ -592,8 +592,12 @@ IPhonePlatformBase::PushSystemInfo( lua_State *L, const char *key ) const
 		if ( state )
 		{
 			lua_pushstring( L, state );
-			pushedValues = 1;
 		}
+		else
+		{
+			lua_pushnil( L ); // an explicit nil, so tostring(system.getInfo("foldState")) works
+		}
+		pushedValues = 1;
 	}
 	else
 	{
