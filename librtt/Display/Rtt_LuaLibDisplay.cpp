@@ -1979,8 +1979,8 @@ DisplayLibrary::getDefault( lua_State *L )
 	}
     else if ( ( Rtt_StringCompare( key, "timeTransform" ) == 0 ) )
     {
-        const TimeTransform* transform = defaults.GetTimeTransform();
-        result = transform->Push( L );
+        TimeTransform transform = defaults.GetTimeTransform( display.GetGpuSupportsHighPrecisionFragmentShaders() );
+        result = transform.Push( L );
     }
     else if ( ( Rtt_StringCompare( key, "skipsCulling" ) == 0 ) )
     {
@@ -2171,30 +2171,16 @@ DisplayLibrary::setDefault( lua_State *L )
 	}
     else if ( ( Rtt_StringCompare( key, "timeTransform" ) == 0 ) )
     {
-        if ( lua_isstring( L, index ) )
+        if ( lua_istable( L, index ) )
         {
-            const char* str = lua_tostring( L, index );
-            if ( Rtt_StringCompare( str, "none" ) == 0 )
-            {
-                TimeTransform dummy; // n.b. leave func NULL
-
-                defaults.SetTimeTransform( &dummy );
-            }
-            else if ( Rtt_StringCompare( str, "default" ) == 0 )
-            {
-                defaults.SetTimeTransform( NULL );
-            }
-        }
-        else
-        {
-            const char* fname = TimeTransform::FindFunc( L, index, "display.setDefault()" );
-            if (fname)
+            TimeTransform::Method method = TimeTransform::FindMethod( L, index, "display.setDefault()" );
+            if (TimeTransform::kNumMethodTypes != method)
             {
                 TimeTransform transform;
 
-                transform.SetFunc( L, index, "display.setDefault()", fname );
+                transform.SetMethod( L, index, "display.setDefault()", method );
                         
-                defaults.SetTimeTransform( &transform );
+                defaults.SetTimeTransform( transform );
             }
         }
     }

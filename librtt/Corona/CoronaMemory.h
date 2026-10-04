@@ -206,6 +206,8 @@ typedef struct CoronaMemoryInterfaceInfo {
 	int dataSize;
 } CoronaMemoryInterfaceInfo;
 
+typedef struct CoronaMemoryAcquireState CoronaMemoryAcquireState;
+
 /**
  Memory operations built atop the user-provided callbacks, provided when the interface has been acquired.
  Always-fail / no-op stubs will be provided for absent callbacks.
@@ -216,7 +218,7 @@ typedef struct CoronaMemoryInterface {
 	/**
 	 Passthrough wrapper to `getReadableBytes()`, if available, else returns `NULL`.
 	*/
-	const void* ( *getReadableBytes )( struct CoronaMemoryAcquireState *state );
+	const void* ( *getReadableBytes )( CoronaMemoryAcquireState *state );
 
 	/**
 	 If `getReadableBytes()` is absent, returns `NULL`.
@@ -224,19 +226,19 @@ typedef struct CoronaMemoryInterface {
 	 Failing that, it will call `resize()`, if present, in read mode.
 	 If the resize was successful, gets the bytes; else returns `NULL`.
 	*/
-	const void* ( *getReadableBytesOfSize )( struct CoronaMemoryAcquireState *state, size_t n );
+	const void* ( *getReadableBytesOfSize )( CoronaMemoryAcquireState *state, size_t n );
 
 	/**
 	 If `getReadableBytes()` is absent, does nothing.
 	 Otherwise, gets the bytes and writes them to `output`, up to a maximum of `outputSize` bytes. If fewer than
 	 `outputSize` bytes were available and `ignoreExtra` is 0, the leftover bytes will be set to 0.
 	*/
-	void ( *copyBytesTo )( struct CoronaMemoryAcquireState *state, void* output, size_t outputSize, int ignoreExtra );
+	void ( *copyBytesTo )( CoronaMemoryAcquireState *state, void* output, size_t outputSize, int ignoreExtra );
 
 	/**
 	 Passthrough wrapper to `getWriteableBytes()`, if available, else returns `NULL`.
 	*/
-	void* ( *getWriteableBytes )( struct CoronaMemoryAcquireState *state );
+	void* ( *getWriteableBytes )( CoronaMemoryAcquireState *state );
 
 	/**
 	 If `getWriteableBytes()` is absent, returns `NULL`.
@@ -244,32 +246,32 @@ typedef struct CoronaMemoryInterface {
 	 Failing that, it will call `resize()`, if present, in write mode.
 	 If the resize was successful, gets the bytes; else returns `NULL`.	 
 	*/
-	void* ( *getWriteableBytesOfSize )( struct CoronaMemoryAcquireState *state, size_t n );
+	void* ( *getWriteableBytesOfSize )( CoronaMemoryAcquireState *state, size_t n );
 
 	/**
 	 Passthrough wrapper to `resize()`, if available, else returns 0.
 	*/
-	int ( *resize )( struct CoronaMemoryAcquireState *state, size_t size, int writeable );
+	int ( *resize )( CoronaMemoryAcquireState *state, size_t size, int writeable );
 
 	/**
 	 Passthrough wrapper to `getByteCount()`. (As a dummy, returns 0.)
 	*/
-	size_t ( *getByteCount )( struct CoronaMemoryAcquireState *state );
+	size_t ( *getByteCount )( CoronaMemoryAcquireState *state );
 
 	/**
 	 Passthrough wrapper to `getAlignment()`, if available, else returns 0.
 	*/
-	size_t ( *getAlignment )( struct CoronaMemoryAcquireState *state );
+	size_t ( *getAlignment )( CoronaMemoryAcquireState *state );
 
 	/**
 	  Passthrough wrapper to `getSize()`, if available, else returns 0.
 	*/
-	int ( *getSize )( struct CoronaMemoryAcquireState *state, unsigned int index, size_t *size );
+	int ( *getSize )( CoronaMemoryAcquireState *state, unsigned int index, size_t *size );
 
 	/**
 	 Passthrough wrapper to `getStride()`, if available, else returns 0.
 	*/
-	int ( *getStride )( struct CoronaMemoryAcquireState *state, unsigned int index, size_t *stride );
+	int ( *getStride )( CoronaMemoryAcquireState *state, unsigned int index, size_t *stride );
 } CoronaMemoryInterface;
 
 /**

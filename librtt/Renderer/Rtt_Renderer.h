@@ -65,7 +65,7 @@ class Renderer
 		// Perform any per-frame preparation. Total time is the time in seconds
 		// since the start of the application. Delta time is the amount of time
 		// in seconds it took to complete the previous frame.
-		virtual void BeginFrame( Real totalTime, Real deltaTime, const TimeTransform *defTimeTransform, Real contentScaleX, Real contentScaleY, bool isCapture = false );
+		virtual void BeginFrame( Real totalTime, Real deltaTime, Real contentScaleX, Real contentScaleY, bool isCapture = false );
 
         // Perform any per-frame finalization.
         virtual void EndFrame();
@@ -453,6 +453,9 @@ class Renderer
 		};
 		
 		GuardInfo fGuardDraw;
+        
+		const TimeTransform* fPrevTimeTransform;   
+		float fRawTime;
 };
 
 // ----------------------------------------------------------------------------

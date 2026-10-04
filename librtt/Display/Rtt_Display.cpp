@@ -767,7 +767,7 @@ Display::Capture( DisplayObject *object,
         }
     }
 
-	fRenderer->BeginFrame( 0.1f, 0.1f, GetDefaults().GetTimeTransform(), GetSx(), GetSy(), true );
+	fRenderer->BeginFrame( 0.1f, 0.1f, GetSx(), GetSy(), true );
 
     ////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////

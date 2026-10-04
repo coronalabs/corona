@@ -8,7 +8,7 @@
 #
 #----------------------------------------------------------------------------
 
-# Send an APP to an iOS device connected to the computer
+# Send an APP to an iOS or tvOS device connected to the computer
 
 DEBUG_BUILD_PROCESS=$(defaults read com.coronalabs.Corona_Simulator debugBuildProcess 2>/dev/null)
 
@@ -28,12 +28,6 @@ APP="$1"
 APPNAME=$(basename "$1")
 TARGETOS="$2"
 
-if [ ! -x "${RUN_UTIL_PATH}" ]
-then
-	echo "${PROGRAM_NAME}: cannot run ${RUN_UTIL_PATH}" >&2
-	exit 1
-fi
-
 if [ ! -d "$APP" ]
 then
 	echo "${PROGRAM_NAME}: cannot open '$APP'" >&2
@@ -44,6 +38,32 @@ fi
 if [ -z "$TARGETOS" ]
 then
     TARGETOS="iPhone OS"
+fi
+
+# Use Xcode's devicectl if it can see a device
+. "${CORONA_RES_DIR}/ios_devicectl.sh"
+
+if devicectl_find_devices "$TARGETOS"
+then
+	ERROR_CODE=0
+
+	for DEVICE in "${DEVICECTL_DEVICES[@]}"
+	do
+		echo "Installing '$APPNAME' on $(devicectl_device_name "$DEVICE") ..."
+
+		# Failures are reported on lines starting "ERROR:"
+		"$DEVICECTL" device install app --quiet --timeout 300 --device "$(devicectl_device_id "$DEVICE")" "$APP" || ERROR_CODE=1
+	done
+
+	exit $ERROR_CODE
+fi
+
+# Otherwise use the libimobiledevice tools (needed for devices running iOS 16 or earlier).  These are Intel only
+# so on Apple silicon they need Rosetta.
+if ! arch -x86_64 /usr/bin/true 2>/dev/null
+then
+	echo "$PROGRAM_NAME: no devices detected (connect one with a USB cable, or pair it in Xcode's Devices and Simulators window to use it over the network)" >&2
+	exit 1
 fi
 
 if [ ! -x "$RUN_UTIL_PATH" ]

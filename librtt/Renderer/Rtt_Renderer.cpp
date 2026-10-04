@@ -197,6 +197,7 @@ Renderer::Renderer( Rtt_Allocator* allocator )
     fGuardDraw(),
     fIsES2( false ),
     fHas8BitRed( false )
+    fPrevTimeTransform( NULL )
 {
     // Always have at least 1 mask count.
     fMaskCount.Append( 0 );
@@ -246,7 +247,7 @@ Renderer::SetDefaultPrograms( Program *defaultPrograms[] )
 }
 
 void
-Renderer::BeginFrame( Real totalTime, Real deltaTime, const TimeTransform *defTimeTransform, Real contentScaleX, Real contentScaleY, bool )
+Renderer::BeginFrame( Real totalTime, Real deltaTime, Real contentScaleX, Real contentScaleY, bool )
 {
     fContentScaleX = contentScaleX;
     fContentScaleY = contentScaleY;
@@ -284,7 +285,6 @@ Renderer::BeginFrame( Real totalTime, Real deltaTime, const TimeTransform *defTi
     fBackCommandBuffer->BindUniform( fDeltaTime, Uniform::kDeltaTime );
     
     fBackCommandBuffer->ClearUserUniforms();
-    fBackCommandBuffer->PrepareTimeTransforms( totalTime, defTimeTransform );
     
     fBackCommandBuffer->SetBlendEnabled( fPrevious.fBlendEquation != RenderTypes::kDisabledEquation );
     fBackCommandBuffer->SetBlendFunction( fPrevious.fBlendMode );
@@ -299,6 +299,9 @@ Renderer::BeginFrame( Real totalTime, Real deltaTime, const TimeTransform *defTi
 	fMaxExtraTexturesThisFrame = 0;
     
     DEBUG_PRINT( "--Begin Frame: Renderer--\n" );
+
+	fPrevTimeTransform = NULL;
+	fRawTime = totalTime;
 }
 
 void
@@ -988,7 +991,31 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData, RenderD
         }
 
         Program::Version version = fWireframeEnabled ? Program::kWireframe : static_cast<Program::Version>( MaskCount() );
+        
+        // If the program version does nothing with time, we can avoid doing
+        // anything here. Otherwise, we need to check if the transform details
+        // differ from the "current" one and, if so, update the "total time"
+        // uniform accordingly along with said bookkeeping.
+        
+        // On its first frame of use, a version will not yet have been linked
+        // by this point, and so cannot say which of its uniforms are valid.
+        // Thus in that case we just proceed as if we do have "total time":
+        // we will handle it in the event we do, and otherwise the worst that
+        // happens is an update that never gets used.
+
+        bool hasVersionBound = fBackCommandBuffer->HasProgramVersion( data->fProgram, version );
+		bool mightHaveTotalTime = !hasVersionBound || fBackCommandBuffer->UsesTotalTime( data->fProgram, version );
+		const TimeTransform& timeTransform = shaderResource->GetTimeTransform();
+		if( mightHaveTotalTime && !timeTransform.Matches( fPrevTimeTransform ) )
+		{
+			fTotalTime->SetValue( timeTransform.Apply( fRawTime ) );
+			fBackCommandBuffer->BindUniform( fTotalTime, Uniform::kTotalTime );
+			
+			fPrevTimeTransform = &timeTransform;
+		}
+
         fBackCommandBuffer->BindProgram( data->fProgram, version );
+
         fPrevious.fProgram = data->fProgram;
         INCREMENT( fStatistics.fProgramBindCount );
         fCurrentProgramMaskCount = MaskCount();
@@ -1349,7 +1376,7 @@ Renderer::AddStateBlock( const CoronaStateBlock & block )
     
     if (length > 0)
     {
-        const StateBlockInfo* lastInfo = fCustomInfo->fStateBlocks.ReadAccess()[length - 1];
+        const StateBlockInfo* lastInfo = fCustomInfo->fStateBlocks[length - 1];
         
         info.fOffset = lastInfo->fOffset + lastInfo->fSize;
     }
@@ -1388,7 +1415,7 @@ Renderer::GetStateBlockInfo( U16 id, U8 *& start, U32 & size, bool mightDirty )
         start = fWorkingState.WriteAccess() + info->fOffset;
         size = info->fSize;
 
-		if (mightDirty)
+        if (mightDirty)
 		{
 			fMaybeDirty = true; // TODO: use a couple bitsets, in lieu of dirtyIndices
 		}
@@ -2232,11 +2259,7 @@ Renderer::GetVersionCode( bool addingMask ) const
 bool
 Renderer::AddedUsesTime()
 {
-	bool addedUsesTime = ShaderResource::GetAddedUsesTime();
-
-	ShaderResource::SetAddedUsesTime( false );
-
-	return addedUsesTime;
+	return fFrontCommandBuffer->GetDidUseTime();
 }
 
 void

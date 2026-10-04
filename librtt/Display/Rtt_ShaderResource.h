@@ -151,21 +151,34 @@ private:
 
 struct TimeTransform
 {
-    typedef Real (*Func)( Real time, Real arg1, Real arg2, Real arg3 );
+	typedef enum _Method
+	{
+		kNone = 0,
+		kModulo,
+		kPingPong,
+		kSine,
+		kSmoothedModulo,
+		kNoise_Lissajous,
+		kNoise_R2,
+		kNumMethodTypes
+	}
+	Method;
 
-    TimeTransform() : func( NULL ), arg1( 0 ), arg2( 0 ), arg3( 0 )
+    TimeTransform() : fMethod( kNone ), fArg1( 0 ), fArg2( 0 ), fArg3( 0 )
     {
     }
 
 	Real Apply( Real value ) const;
     int Push( lua_State *L ) const;
-    void SetDefault();
-    void SetFunc( lua_State *L, int arg, const char *what, const char *fname );
+    bool Matches( const TimeTransform* other ) const;
+    void SetMethod( lua_State *L, int arg, const char *what, Method method );
 
-    static const char* FindFunc( lua_State *L, int arg, const char *what );
+	static const char* StringForMethod( Method method );
+	static Method MethodForString( const char *name );
+    static Method FindMethod( lua_State *L, int arg, const char *what );
 
-    Func func;
-    Real arg1, arg2, arg3;
+	Method fMethod;
+    Real fArg1, fArg2, fArg3;
 };
 
 // ----------------------------------------------------------------------------
@@ -209,9 +222,6 @@ class ShaderResource
         bool UsesUniforms() const { return fUsesUniforms; }
         void SetUsesUniforms( bool newValue ) { fUsesUniforms = newValue; }
 
-        bool UsesTime() const { return fUsesTime; }
-        void SetUsesTime( bool newValue ) { fUsesTime = newValue; }
-    
         const CoronaEffectCallbacks * GetEffectCallbacks() const { return fEffectCallbacks; }
         void SetEffectCallbacks( CoronaEffectCallbacks * callbacks );
         const CoronaShellTransform * GetShellTransform() const { return fShellTransform; }
@@ -224,8 +234,8 @@ class ShaderResource
 
         int GetEffectDetail( int index, CoronaEffectDetail & detail ) const;
 
-        TimeTransform *GetTimeTransform() const { return fTimeTransform; }
-        void SetTimeTransform( TimeTransform *transform ) { fTimeTransform = transform; }
+        const TimeTransform& GetTimeTransform() const { return fTimeTransform; }
+        void SetTimeTransform( const TimeTransform& transform ) { fTimeTransform = transform; }
     public:
         // Shader either stores params on per-vertex basis or in uniforms.
         // Batching most likely breaks as soon as you use uniforms,
@@ -304,7 +314,7 @@ class ShaderResource
         char* fExtensionPrelude;
         const ExtraTextureInfo *fExtraTextureInfo;
         U32 fDetailsCount;
-        TimeTransform *fTimeTransform;
+        TimeTransform fTimeTransform;
         SamplerTypeDetails fFillTextureInfo[2];
         U8 fExtraTextureCount;
         U8 fFirstVersion : 2;
@@ -314,9 +324,6 @@ class ShaderResource
         bool fUsesUniforms;
         bool fUsesTime;
         bool fTextureInfoIsSet;
-        
-        static bool sAddedUsesTime; // has ANY ShaderResource added the "uses time" flag?
-
 };
 
 // ----------------------------------------------------------------------------

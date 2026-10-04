@@ -30,7 +30,6 @@ class Texture;
 class Uniform;
 class ShaderResource;
 class FormatExtensionList;
-struct TimeTransform;
 
 // ----------------------------------------------------------------------------
 
@@ -103,6 +102,9 @@ class CommandBuffer
         
         virtual S32 GetCachedParam( CommandBuffer::QueryableParams param ) = 0;
 
+		virtual bool HasProgramVersion( Program* program, Program::Version version ) const { return false; }
+		virtual bool UsesTotalTime( Program* program, Program::Version version ) const { return false; }
+
         virtual void AddCommand( const CoronaCommand * command ) = 0;
         virtual void IssueCommand( U16 id, const void * data, U32 size ) = 0;
 
@@ -119,11 +121,9 @@ class CommandBuffer
         // it is valid if the time returned is actually for a previous frame.
         virtual Real Execute( bool measureGPU ) = 0;
 
-    public:
-        void PrepareTimeTransforms( float rawTime, const TimeTransform* transform );
-
-    protected:
-        void AcquireTimeTransform( ShaderResource* resource );
+	public:
+		void SetDidUseTime( bool newValue ) { fDidUseTime = newValue; }
+		bool GetDidUseTime() const { return fDidUseTime; }
 
     private:
         virtual void InitializeFBO() = 0;
@@ -137,8 +137,7 @@ class CommandBuffer
         U32 fNumCommands;
         U32 fBytesAllocated;
         U32 fBytesUsed;
-		TimeTransform* fTimeTransform;
-        Real fDefaultTransformedTime;
+		bool fDidUseTime;
 };
 
 // ----------------------------------------------------------------------------

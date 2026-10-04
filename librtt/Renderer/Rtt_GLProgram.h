@@ -59,6 +59,8 @@ class GLProgram : public GPUResource
 			fData[version].fTimestamps[ unit ] = timestamp;
 		}
 
+		bool UsesTime ( Program::Version version, bool includeDelta ) const;
+
 	private:
 		// To make custom shader code work seamlessly with masking, multiple
 		// versions of each Program are automatically compiled and linked, 
@@ -73,12 +75,9 @@ class GLProgram : public GPUResource
 			
 			// Metadata
 			int fHeaderNumLines;
-			
-			bool HasTime() const
-			{
-				return -1 != fUniformLocations[Uniform::kTotalTime] ||
-						-1 != fUniformLocations[Uniform::kDeltaTime];
-			}
+
+			bool HasTotalTime() const { return -1 != fUniformLocations[Uniform::kTotalTime]; }
+			bool HasDeltaTime() const { return -1 != fUniformLocations[Uniform::kDeltaTime]; }
 		};
 
 		void Create( Program::Version version, VersionData& data );

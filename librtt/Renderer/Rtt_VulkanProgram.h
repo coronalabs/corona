@@ -112,6 +112,8 @@ class VulkanProgram : public GPUResource
 
 			std::string fError;
 		};
+		
+		bool UsesTime ( Program::Version version, bool includeDelta ) const;
 
 	private:
 		// To make custom shader code work seamlessly with masking, multiple
@@ -135,11 +137,8 @@ class VulkanProgram : public GPUResource
 			// Metadata
 			int fHeaderNumLines;
 			
-			bool HasTime() const
-			{
-				return fUniformLocations[Uniform::kTotalTime].IsValid() ||
-						fUniformLocations[Uniform::kDeltaTime].IsValid();
-			}
+			bool HasTotalTime() const { return fUniformLocations[Uniform::kTotalTime].IsValid(); }
+			bool HasDeltaTime() const { return fUniformLocations[Uniform::kDeltaTime].IsValid(); }
 		};
 
 		void Create( Program::Version version, VersionData& data );

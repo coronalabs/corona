@@ -28,6 +28,23 @@
 	<string>MainWindow</string>
 	<key>NSMainNibFile~ipad</key>
 	<string>MainWindow-iPad</string>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>Default Configuration</string>
+					<key>UISceneDelegateClassName</key>
+					<string>CoronaSceneDelegate</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
 	<key>UIPrerenderedIcon</key>
 	<true/>
 	<key>UIRequiresFullScreen</key>
@@ -37,36 +54,36 @@
 	<key>UIStatusBarStyle</key>
 	<string>UIStatusBarStyleBlackTranslucent</string>
 	<key>NSAppleMusicUsageDescription</key>
- 	<string>Set Apple Music description in build settings</string>
-     <key>NSBluetoothPeripheralUsageDescription</key>
- 	<string>Set Bluetooth Peripheral description in build settings</string>
-     <key>NSCalendarsUsageDescription</key>
- 	<string>Set Calendars Peripheral description in build settings</string>
-     <key>NSCameraUsageDescription</key>
- 	<string>Set Camera Usage Description in build settings</string>
-     <key>NSContactsUsageDescription</key>
- 	<string>Set Contacts Usage Description in build settings</string>
-     <key>NSHomeKitUsageDescription</key>
- 	<string>Set Home Kit Usage Description in build settings</string>
-     <key>NSLocationAlwaysUsageDescription</key>
- 	<string>Set Location Always Usage Description in build settings</string>
-     <key>NSLocationUsageDescription</key>
- 	<string>Set Location Usage Description in build settings</string>
-     <key>NSLocationWhenInUseUsageDescription</key>
- 	<string>Set Location When In Use Usage description in build settings</string>
-     <key>NSMicrophoneUsageDescription</key>
- 	<string>Set Microphone Recognition Usage description in build settings</string>
-     <key>NSMotionUsageDescription</key>
- 	<string>Set Motion Usage description in build settings</string>
-     <key>NSPhotoLibraryUsageDescription</key>
- 	<string>Set Photo Usage description in build settings</string>
-     <key>NSRemindersUsageDescription</key>
- 	<string>Set Reminders Usage description in build settings</string>
-     <key>NSSiriUsageDescription</key>
- 	<string>Set Siri Usage description in build settings</string>
-     <key>NSSpeechRecognitionUsageDescription</key>
- 	<string>Set Speech Recognition Usage description in build settings</string>
- 	<key>NSPhotoLibraryAddUsageDescription</key>
- 	<string>Set Photo Library Add Usage description in build settings</string>
+	<string>@APP_NAME@ does not access your Apple Music library.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>@APP_NAME@ does not use Bluetooth.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>@APP_NAME@ does not access your calendar.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>@APP_NAME@ does not use your camera.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>@APP_NAME@ does not access your contacts.</string>
+	<key>NSHomeKitUsageDescription</key>
+	<string>@APP_NAME@ does not use HomeKit.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>@APP_NAME@ does not use your location.</string>
+	<key>NSLocationUsageDescription</key>
+	<string>@APP_NAME@ does not use your location.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>@APP_NAME@ does not use your location.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>@APP_NAME@ does not use the microphone.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>@APP_NAME@ does not use motion data.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>@APP_NAME@ does not read from your photo library.</string>
+	<key>NSRemindersUsageDescription</key>
+	<string>@APP_NAME@ does not access reminders.</string>
+	<key>NSSiriUsageDescription</key>
+	<string>@APP_NAME@ does not integrate with Siri.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>@APP_NAME@ does not use speech recognition.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>@APP_NAME@ does not access your photo library.</string>
 </dict>
 </plist>

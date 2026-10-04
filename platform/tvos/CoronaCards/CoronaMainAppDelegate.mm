@@ -45,6 +45,17 @@ FOUNDATION_EXPORT void CoronaSetDelegateClass( Class c )
 
 // ----------------------------------------------------------------------------
 
+// Scene-based life cycle (mandatory for apps built with the tvOS 27 SDK). Named, together with the Main storyboard,
+// by UIApplicationSceneManifest in the template's Info.plist. UIKit hands it the storyboard's window; it passes that
+// window to CoronaMainAppDelegate (CoronaMainViewController starts the runtime through it) and forwards the scene
+// callbacks to the application-level delegate methods so plugins see the same callbacks as before.
+API_AVAILABLE(tvos(13.0))
+@interface CoronaMainSceneDelegate : UIResponder< UIWindowSceneDelegate >
+
+@property (nonatomic, retain) UIWindow *window;
+
+@end
+
 @interface CoronaMainAppDelegate () <CoronaRuntime, CoronaViewLaunchDelegate>
 
 @property (retain, nonatomic) CoronaMainViewController *viewController;
@@ -461,5 +472,124 @@ SetLaunchArgs( UIApplication *application, NSDictionary *launchOptions, Rtt::Run
 }
 
 // ----------------------------------------------------------------------------
+
+@end
+
+
+// CoronaMainSceneDelegate
+// ----------------------------------------------------------------------------
+
+// Folds the scene connection options into the launch options, the way the pre-scene life cycle delivered them
+static NSDictionary *
+LaunchOptionsWithConnectionOptions( NSDictionary *launchOptions, UISceneConnectionOptions *connectionOptions ) API_AVAILABLE(tvos(13.0))
+{
+	NSMutableDictionary *result = ( launchOptions ? [[launchOptions mutableCopy] autorelease] : [NSMutableDictionary dictionary] );
+
+	UIOpenURLContext *urlContext = [connectionOptions.URLContexts anyObject];
+	if ( urlContext && nil == [result objectForKey:UIApplicationLaunchOptionsURLKey] )
+	{
+		[result setObject:urlContext.URL forKey:UIApplicationLaunchOptionsURLKey];
+		if ( urlContext.options.sourceApplication )
+		{
+			[result setObject:urlContext.options.sourceApplication forKey:UIApplicationLaunchOptionsSourceApplicationKey];
+		}
+	}
+
+	return result;
+}
+
+@implementation CoronaMainSceneDelegate
+
+- (void)dealloc
+{
+	[_window release];
+	[super dealloc];
+}
+
+- (CoronaMainAppDelegate *)appDelegate
+{
+	id delegate = [UIApplication sharedApplication].delegate;
+	return ( [delegate isKindOfClass:[CoronaMainAppDelegate class]] ? (CoronaMainAppDelegate *)delegate : nil );
+}
+
+- (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions
+{
+	CoronaMainAppDelegate *appDelegate = [self appDelegate];
+	if ( ! appDelegate || ! [scene isKindOfClass:[UIWindowScene class]] )
+	{
+		NSLog( @"CoronaMainSceneDelegate: the application delegate is not a CoronaMainAppDelegate, the scene is left unattached" );
+		return;
+	}
+
+	UIWindowScene *windowScene = (UIWindowScene *)scene;
+
+	// UIKit creates the window from the storyboard named by UISceneStoryboardFile; fall back to doing it here
+	if ( ! self.window )
+	{
+		self.window = [[[UIWindow alloc] initWithWindowScene:windowScene] autorelease];
+		self.window.rootViewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateInitialViewController];
+	}
+	self.window.windowScene = windowScene;
+
+	// CoronaMainViewController starts the runtime through the app delegate once its view loads, which needs the
+	// window and, for apps launched with a URL, launch options that include it
+	appDelegate.window = self.window;
+	appDelegate.launchOptions = LaunchOptionsWithConnectionOptions( appDelegate.launchOptions, connectionOptions );
+
+	[self.window makeKeyAndVisible];
+}
+
+// UIKit does not call the application-level versions of these when the app uses scenes, so forward them.
+
+- (void)sceneDidBecomeActive:(UIScene *)scene
+{
+	[[self appDelegate] applicationDidBecomeActive:[UIApplication sharedApplication]];
+}
+
+- (void)sceneWillResignActive:(UIScene *)scene
+{
+	[[self appDelegate] applicationWillResignActive:[UIApplication sharedApplication]];
+}
+
+- (void)sceneWillEnterForeground:(UIScene *)scene
+{
+	[[self appDelegate] applicationWillEnterForeground:[UIApplication sharedApplication]];
+}
+
+- (void)sceneDidEnterBackground:(UIScene *)scene
+{
+	[[self appDelegate] applicationDidEnterBackground:[UIApplication sharedApplication]];
+}
+
+- (void)scene:(UIScene *)scene openURLContexts:(NSSet<UIOpenURLContext *> *)URLContexts
+{
+	CoronaMainAppDelegate *appDelegate = [self appDelegate];
+	UIApplication *application = [UIApplication sharedApplication];
+
+	for ( UIOpenURLContext *context in URLContexts )
+	{
+		NSMutableDictionary *options = [NSMutableDictionary dictionary];
+		if ( context.options.sourceApplication )
+		{
+			[options setObject:context.options.sourceApplication forKey:UIApplicationOpenURLOptionsSourceApplicationKey];
+		}
+		if ( context.options.annotation )
+		{
+			[options setObject:context.options.annotation forKey:UIApplicationOpenURLOptionsAnnotationKey];
+		}
+		[options setObject:[NSNumber numberWithBool:context.options.openInPlace] forKey:UIApplicationOpenURLOptionsOpenInPlaceKey];
+
+		[appDelegate application:application openURL:context.URL options:options];
+	}
+}
+
+- (void)scene:(UIScene *)scene continueUserActivity:(NSUserActivity *)userActivity
+{
+	CoronaMainAppDelegate *appDelegate = [self appDelegate];
+	if ( [appDelegate respondsToSelector:@selector(application:continueUserActivity:restorationHandler:)] )
+	{
+		[appDelegate application:[UIApplication sharedApplication] continueUserActivity:userActivity restorationHandler:^( NSArray< id< UIUserActivityRestoring > > *restorableObjects ) {}];
+	}
+}
 
 @end

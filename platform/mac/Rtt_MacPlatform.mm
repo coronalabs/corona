@@ -1687,6 +1687,9 @@ MacPlatform::RuntimeErrorNotification( const char *errorType, const char *messag
 																	  attributes:textAttributes]];
 				[accessory setEditable:NO];
 				[accessory setDrawsBackground:NO];
+				// NSAlert only makes room for the accessory's current frame, and the text view doesn't grow to
+				// fit its text until it is drawn (macOS 27), which spills the text over the message. Fit it now.
+				[accessory sizeToFit];
 
 				[alert setAccessoryView:accessory];
 			}
@@ -2121,6 +2124,12 @@ void MacPlatform::GetSafeAreaInsetsPixels(Rtt_Real &top, Rtt_Real &left, Rtt_Rea
 		left = [[properties valueForKey:@"safeLandscapeScreenInsetLeft"] floatValue];
 		bottom = [[properties valueForKey:@"safeLandscapeScreenInsetBottom"] floatValue];
 		right = [[properties valueForKey:@"safeLandscapeScreenInsetRight"] floatValue];
+
+		// Skins give the landscape insets for landscapeRight. Turned the other way, left and right trade places.
+		if (DeviceOrientation::kSidewaysLeft == GetDevice().GetOrientation())
+		{
+			Swap(left, right);
+		}
 
 		top += statusBarMult * [[properties valueForKey:@"safeLandscapeScreenInsetStatusBar"] floatValue];
 	}

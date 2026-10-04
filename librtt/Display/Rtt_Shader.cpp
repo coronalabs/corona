@@ -285,7 +285,7 @@ Shader::Draw( Renderer& renderer, const RenderData& objectData, const GeometryWr
     if (DoAnyBeforeDrawAndThenOriginal( state, renderer, objectData ))
     {
         // No-op
-        renderer.TallyTimeDependency( fResource->UsesTime() );	
+    //    renderer.TallyTimeDependency( fResource->UsesTime() );	
         renderer.Insert( & objectData, GetData(), &fRenderDataState );
     }
 
