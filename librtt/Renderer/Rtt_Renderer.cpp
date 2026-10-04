@@ -196,7 +196,7 @@ Renderer::Renderer( Rtt_Allocator* allocator )
     fTimeDependencyCount( 0 ),
     fGuardDraw(),
     fIsES2( false ),
-    fHas8BitRed( false )
+    fHas8BitRed( false ),
     fPrevTimeTransform( NULL )
 {
     // Always have at least 1 mask count.

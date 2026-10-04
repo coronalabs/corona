@@ -262,10 +262,6 @@ class ShaderResource
     public:
         void SetProgramMod(ProgramMod mod, Program *program);
         Program *GetProgramMod(ProgramMod mod) const;
-        
-	public:
-		static void SetAddedUsesTime( bool newValue ) { sAddedUsesTime = newValue; }
-		static bool GetAddedUsesTime() { return sAddedUsesTime; }
 
 	public:
 		void SetTextureInfo( const U8* info, U8 count, SamplerTypeDetails fillInfo[2] );

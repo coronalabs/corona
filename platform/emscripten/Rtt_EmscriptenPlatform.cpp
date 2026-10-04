@@ -294,13 +294,6 @@ namespace Rtt
 			}
 		}
 
-		if (result && result->GetFormat().GetValue() == PlatformBitmap::kUndefined)
-		{
-			// failed to load bitmap
-			Rtt_DELETE(result);
-			result = NULL;
-		}
-
 		return result;
 	}
 
