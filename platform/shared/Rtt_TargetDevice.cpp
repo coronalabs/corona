@@ -48,7 +48,7 @@ static StaticTargetDeviceFinalizer sTargetDeviceFinalizer;
 #if defined( Rtt_WIN_ENV )
 const char *kDefaultSkinName = "Samsung Galaxy S21";
 #else
-const char *kDefaultSkinName = "iPhone 5";
+const char *kDefaultSkinName = "iPhone 18 Pro";
 #endif
     
 TargetDevice::SkinSpec **TargetDevice::fSkins = NULL;
