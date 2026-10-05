@@ -1095,21 +1095,24 @@ IPhonePlatform::CancelNotification( void *notificationId ) const
 void
 IPhonePlatform::RuntimeErrorNotification( const char *errorType, const char *message, const char *stacktrace ) const
 {
-	// In the delegate we catch the press of the button on the non-modal dialog and take the app down
 	AppDelegate *delegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
 
 	// we need to suspend the app so Lua doesn't keep churning out errors
 	[delegate suspend];
 	
 	// This alert is designed to be similar to the Android version (we remove empty file and linenumber info if it's there)
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithUTF8String:errorType]
-												message:[[NSString stringWithUTF8String:message] stringByReplacingOccurrencesOfString:@"?:0: " withString:@""]
-												   delegate:delegate
-										  cancelButtonTitle:@"OK"
-										  otherButtonTitles:nil];
+	NSString *m = [[NSString stringWithUTF8String:message] stringByReplacingOccurrencesOfString:@"?:0: " withString:@""];
+	UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[NSString stringWithUTF8String:errorType]
+																			 message:m
+																	  preferredStyle:UIAlertControllerStyleAlert];
 
-	[alert show];
-	[alert release];
+	// take the app down when the button is pressed
+	[alertController addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+		[NSException raise:@"Solar2D Runtime Error" format:@"%@", m];
+	}]];
+
+	UIViewController *viewController = (UIViewController *)GetView().delegate;
+	[viewController presentViewController:alertController animated:YES completion:nil];
 }
 
 

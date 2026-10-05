@@ -1425,16 +1425,6 @@ SetLaunchArgs( UIApplication *application, NSDictionary *launchOptions, Rtt::Run
 	return fCoronaDelegate;
 }
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-	// NSLog(@"alertView:clickedButtonAtIndex: %@", alertView.title);
-	
-	if ([alertView.title hasSuffix:@" error"])
-	{
-		[NSException raise:@"Solar2D Runtime Error" format:@"%@", alertView.message];
-	}
-}
-
 /*
 // NSURLConnection Delegate Methods
 // ----------------------------------------------------------------------------
