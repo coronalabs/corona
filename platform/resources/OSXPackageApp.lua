@@ -192,7 +192,7 @@ local function getCopyResourcesScript( src, dst, options )
 		exit 1
 	fi
 
-	rsync -rv --times --delete-excluded {{EXCLUDED_FILES}} --exclude="*.lua" --exclude="build.settings" --exclude=".*"  --delete --prune-empty-dirs --links --copy-unsafe-links --hard-links --perms --chmod="Da+rx,Fa+r" --human-readable --itemize-changes "$SRC_DIR/" "$DST_DIR"
+	rsync -rv --times --delete-excluded {{EXCLUDED_FILES}} --exclude="*.lua" --exclude="**/*.lua" --exclude="build.settings" --exclude=".*" --exclude="**/.*" --delete --prune-empty-dirs --links --copy-unsafe-links --hard-links --perms --chmod="Da+rx,Fa+r" --human-readable --itemize-changes "$SRC_DIR/" "$DST_DIR"
 
 ]==]
 
