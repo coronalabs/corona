@@ -1681,10 +1681,12 @@ function iPhonePostPackage( params )
 		-- compile Xcode assets for icon
 		if options.settings and options.settings.iphone then
 			setStatus("Compiling Xcode assets catalog")
+			local plist = options.settings.iphone.plist or {}
+			local minimumOSVersion = plist.MinimumOSVersion or captureCommandOutput("plutil -extract MinimumOSVersion raw -o - " .. options.appBundleFile .. "/Info.plist")
 			local xcassetPlatformOptions = {
 				{ "target-device", "iphone" },
 				{ "target-device", "ipad" },
-				{ "minimum-deployment-target", "8.0" },
+				{ "minimum-deployment-target", tostring(minimumOSVersion) },
 				{ "platform", options.signingIdentity and "iphoneos" or "iphonesimulator" },
 
 				 {"app-icon", "AppIcon"},
