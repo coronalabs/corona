@@ -979,65 +979,6 @@ NativeToJavaBridge::GetSafeAreaInsetsPixels(Rtt::Real &top, Rtt::Real &left, Rtt
 	}
 }
 
-int
-NativeToJavaBridge::GetReservedRegionsPixels(Rtt::MPlatform::ReservedRegion *outRegions, int maxCount)
-{
-	NativeTrace trace( "NativeToJavaBridge::GetReservedRegionsPixels" );
-	int count = 0;
-	if ( NULL == outRegions || maxCount <= 0 )
-	{
-		return 0;
-	}
-	jclassInstance bridge( GetJNIEnv(), kNativeToJavaBridge );
-	if ( bridge.isValid() ) 
-	{
-		jmethodID methodId = bridge.getEnv()->GetStaticMethodID( bridge.getClass(), 
-								"callGetReservedRegions", "(Lcom/ansca/corona/CoronaRuntime;)[F" );
-		if (methodId)
-		{
-			jobject objArray = bridge.getEnv()->CallStaticObjectMethod( bridge.getClass(), methodId, fCoronaRuntime );
-			HandleJavaException();
-			if (objArray == NULL) return 0;
-			jfloatArray jfArray = (jfloatArray)objArray;
-			jsize len = bridge.getEnv()->GetArrayLength( jfArray );
-			float* data = bridge.getEnv()->GetFloatArrayElements( jfArray, 0 );
-			// Six floats per region: kind, active, x, y, width, height.
-			for ( jsize i = 0; i + 6 <= len && count < maxCount; i += 6 )
-			{
-				Rtt::MPlatform::ReservedRegion& r = outRegions[count++];
-				r.kind = ( data[i] >= 0.5f ) ? Rtt::MPlatform::ReservedRegion::kDivision : Rtt::MPlatform::ReservedRegion::kOcclusion;
-				r.isActive = ( data[i + 1] >= 0.5f );
-				r.x = data[i + 2];
-				r.y = data[i + 3];
-				r.width = data[i + 4];
-				r.height = data[i + 5];
-			}
-			bridge.getEnv()->ReleaseFloatArrayElements( jfArray, data, 0 );
-			bridge.getEnv()->DeleteLocalRef( jfArray );
-		}
-	}
-	return count;
-}
-
-bool
-NativeToJavaBridge::IsFoldStateAvailable()
-{
-	NativeTrace trace( "NativeToJavaBridge::IsFoldStateAvailable" );
-	bool result = false;
-	jclassInstance bridge( GetJNIEnv(), kNativeToJavaBridge );
-	if ( bridge.isValid() ) 
-	{
-		jmethodID methodId = bridge.getEnv()->GetStaticMethodID( bridge.getClass(), 
-								"callIsFoldStateAvailable", "(Lcom/ansca/corona/CoronaRuntime;)Z" );
-		if (methodId)
-		{
-			result = bridge.getEnv()->CallStaticBooleanMethod( bridge.getClass(), methodId, fCoronaRuntime );
-			HandleJavaException();
-		}
-	}
-	return result;
-}
-
 bool
 NativeToJavaBridge::LoadImage(
 	const char *filePath, AndroidImageData &imageData, bool convertToGrayscale,

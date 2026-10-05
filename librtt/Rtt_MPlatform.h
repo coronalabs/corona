@@ -208,28 +208,6 @@ class MPlatform
 
 		virtual void GetSafeAreaInsetsPixels(Rtt_Real &top, Rtt_Real &left, Rtt_Real &bottom, Rtt_Real &right) const = 0;
 
-		// A rect of the rendering surface that the system reserves: a camera cutout that occludes
-		// content, or a fold/hinge that divides it. Coordinates are surface pixels.
-		struct ReservedRegion
-		{
-			enum Kind
-			{
-				kOcclusion = 0,
-				kDivision
-			};
-
-			Kind kind;
-			bool isActive; // e.g. a fold is active only while the device is partially open
-			Rtt_Real x;
-			Rtt_Real y;
-			Rtt_Real width;
-			Rtt_Real height;
-		};
-
-		// Fills up to maxCount regions and returns how many the platform knows about.
-		// Platforms without reserved regions (most desktops) report none.
-		virtual int GetReservedRegionsPixels( ReservedRegion *outRegions, int maxCount ) const { return 0; }
-
 		virtual NativeAlertRef ShowNativeAlert(
 			const char *title,
 			const char *msg,

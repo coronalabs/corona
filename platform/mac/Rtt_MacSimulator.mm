@@ -145,18 +145,9 @@ MacSimulator::Initialize(
         return;
     }
 
-	// A screen whose art is wider than tall (a foldable's unfolded inner screen) is a landscape device:
-	// the engine gets its portrait size (see ScreenSizeForEngine()) and the art is turned relative to
-	// that landscape, so a landscape app shows it unturned and a portrait app shows it turned.
-	DeviceOrientation::Type naturalOrientation = SkinNaturalOrientation( config );
-	NSSize deviceSize = ScreenSizeForEngine( config.screenWidth, config.screenHeight, config );
-	NSSize adaptiveSize = ScreenSizeForEngine( config.GetAdaptiveWidth(), config.GetAdaptiveHeight(), config );
-	platform->SetAdaptiveWidth( adaptiveSize.width );
-	platform->SetAdaptiveHeight( adaptiveSize.height );
-	SetScreenNaturalOrientationProperty( naturalOrientation );
-
 	fDeviceConfigFile = [[NSString stringWithExternalString:deviceConfigFile] copy];
 	fMacPlatform = platform;
+	DeviceOrientation::Type naturalOrientation = ApplyScreenSize( config, nil );
 	SetIsFoldable( config.isFoldable );
 	if ( ! config.isFoldable )
 	{
@@ -255,9 +246,7 @@ MacSimulator::Initialize(
 	[screenView setDelegate:delegate];
 	if ( DeviceOrientation::kUpright != naturalOrientation )
 	{
-		[screenView setDeviceSize:deviceSize];
-		screenView.adaptiveWidth = adaptiveSize.width;
-		screenView.adaptiveHeight = adaptiveSize.height;
+		ApplyScreenSize( config, screenView ); // the engine gets the wide screen as its portrait size
 	}
 
 	SimulatorDeviceWindow* instanceWindow = nil;
@@ -490,11 +479,9 @@ MacSimulator::SetScreenProperties( const Config& config )
 	[fProperties setValue:( hasLandscapeLeftInsets ? [NSNumber numberWithFloat:Max( config.safeLandscapeLeftScreenInsetRight, 0.0f )] : nil ) forKey:@"safeLandscapeLeftScreenInsetRight"];
 }
 
-// The app orientation a skin's art is drawn for. Phone art is portrait (kUpright). Art that is wider
-// than tall (a foldable's unfolded inner screen) is a landscape device; its camera column sits on the
-// right like the folded screen's, which is landscapeLeft.
-// (TV skins describe their screen in portrait numbers with isUprightOrientationPortrait=false, so
-// only a foldable's wide screen rect counts here.)
+// The app orientation a skin's art is drawn for: portrait (kUpright) for phones; a foldable's wide
+// inner screen is landscapeLeft (camera column on the right, like the folded screen). TV skins give
+// portrait numbers with isUprightOrientationPortrait=false, so only a foldable's wide rect counts.
 DeviceOrientation::Type
 MacSimulator::SkinNaturalOrientation( const Config& config ) const
 {
@@ -502,9 +489,8 @@ MacSimulator::SkinNaturalOrientation( const Config& config ) const
 	return ( isWide ? DeviceOrientation::kSidewaysLeft : DeviceOrientation::kUpright );
 }
 
-// Corona takes a device's "upright" size as its portrait size and swaps it for a sideways app, so a
-// landscape device's screen is handed over as its portrait size: a landscape app then sees the wide
-// screen as landscape and a portrait app sees the turned screen as portrait, as on the device.
+// Corona takes a device's upright size as portrait and swaps it for a sideways app, so a landscape
+// device's wide screen is handed over as its portrait size.
 NSSize
 MacSimulator::ScreenSizeForEngine( float width, float height, const Config& config ) const
 {
@@ -515,13 +501,28 @@ MacSimulator::ScreenSizeForEngine( float width, float height, const Config& conf
 	return NSMakeSize( width, height );
 }
 
-// Tells shell.lua (through MPlatform::kScreenNaturalOrientation) which orientation the status bar and
-// screen dressing art are drawn for, so it turns them relative to that.
-void
-MacSimulator::SetScreenNaturalOrientationProperty( DeviceOrientation::Type naturalOrientation )
+// Hands the engine the screen and adaptive sizes for the skin's natural orientation (a wide inner screen
+// as its portrait size), tells shell.lua (MPlatform::kScreenNaturalOrientation) which orientation the
+// status bar and dressing art are drawn for, and resizes the GL view when one is given.
+DeviceOrientation::Type
+MacSimulator::ApplyScreenSize( const Config& config, GLView *view )
 {
+	DeviceOrientation::Type naturalOrientation = SkinNaturalOrientation( config );
+	NSSize deviceSize = ScreenSizeForEngine( config.screenWidth, config.screenHeight, config );
+	NSSize adaptiveSize = ScreenSizeForEngine( config.GetAdaptiveWidth(), config.GetAdaptiveHeight(), config );
+	fMacPlatform->SetAdaptiveWidth( adaptiveSize.width );
+	fMacPlatform->SetAdaptiveHeight( adaptiveSize.height );
+
 	const char *name = ( DeviceOrientation::kUpright != naturalOrientation ? DeviceOrientation::StringForType( naturalOrientation ) : NULL );
 	[fProperties setValue:( name ? [NSString stringWithUTF8String:name] : nil ) forKey:@"screenNaturalOrientation"];
+
+	if ( view )
+	{
+		[view setDeviceSize:deviceSize];
+		view.adaptiveWidth = adaptiveSize.width;
+		view.adaptiveHeight = adaptiveSize.height;
+	}
+	return naturalOrientation;
 }
 
 bool
@@ -543,18 +544,8 @@ MacSimulator::DidChangeFold( bool unfolded )
 	fScreenHeight = config.screenHeight;
 	SetScreenProperties( config );
 
-	// The wide inner screen is a landscape device, the folded one a portrait device (see Initialize())
-	DeviceOrientation::Type naturalOrientation = SkinNaturalOrientation( config );
-	NSSize deviceSize = ScreenSizeForEngine( config.screenWidth, config.screenHeight, config );
-	NSSize adaptiveSize = ScreenSizeForEngine( config.GetAdaptiveWidth(), config.GetAdaptiveHeight(), config );
-	fMacPlatform->SetAdaptiveWidth( adaptiveSize.width );
-	fMacPlatform->SetAdaptiveHeight( adaptiveSize.height );
-	SetScreenNaturalOrientationProperty( naturalOrientation );
-
 	GLView *view = GetScreenView();
-	[view setDeviceSize:deviceSize];
-	view.adaptiveWidth = adaptiveSize.width;
-	view.adaptiveHeight = adaptiveSize.height;
+	DeviceOrientation::Type naturalOrientation = ApplyScreenSize( config, view );
 
 	NSString *skinDir = [fDeviceConfigFile stringByDeletingLastPathComponent];
 	NSString *deviceImageFile = [skinDir stringByAppendingPathComponent:[NSString stringWithExternalString:config.deviceImageFile.GetString()]];

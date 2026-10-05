@@ -1319,7 +1319,6 @@ static const char kParticleCollisionName[] = "particleCollision";
 static const char kKeyName[] = "key";
 static const char kInputDeviceStatusName[] = "inputDeviceStatus";
 static const char kMouseName[] = "mouse";
-static const char kFoldName[] = "fold";
 
 static MPlatformDevice::EventType
 EventTypeForName( const char *eventName )
@@ -1377,10 +1376,6 @@ EventTypeForName( const char *eventName )
     else if ( strcmp( kMouseName, eventName ) == 0 )
     {
         result = MPlatformDevice::kMouseEvent;
-    }
-    else if ( strcmp( kFoldName, eventName ) == 0 )
-    {
-        result = MPlatformDevice::kFoldEvent;
     }
     
     return result;

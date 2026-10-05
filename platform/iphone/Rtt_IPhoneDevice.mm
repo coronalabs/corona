@@ -401,10 +401,6 @@ IPhoneDevice::HasEventSource( EventType type ) const
 				hasEventSource = true;
 			}
 			break;
-		case MPlatformDevice::kFoldEvent:
-			// UIHingeInteraction arrived in iOS 27.1; its presence means the OS can report a hinge.
-			hasEventSource = ( nil != NSClassFromString( @"UIHingeInteraction" ) );
-			break;
 		default:
 			Rtt_ASSERT_NOT_REACHED();
 			break;
@@ -469,11 +465,6 @@ IPhoneDevice::BeginNotifications( EventType type ) const
 			fView.multipleTouchEnabled = YES;
 			break;
 		}
-		case MPlatformDevice::kFoldEvent:
-		{
-			[fView startHingeMonitoring];
-			break;
-		}
 		default:
 			Rtt_ASSERT_NOT_REACHED();
 			break;
@@ -527,11 +518,6 @@ IPhoneDevice::EndNotifications( EventType type ) const
 		case MPlatformDevice::kMultitouchEvent:
 		{
 			fView.multipleTouchEnabled = NO;
-			break;
-		}
-		case MPlatformDevice::kFoldEvent:
-		{
-			// Keep observing so system.getInfo("foldState") stays current; FoldEvent dispatch is gated by DoesNotify().
 			break;
 		}
 		default:

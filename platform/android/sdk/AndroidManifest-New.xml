@@ -16,9 +16,7 @@
             android:required="false" />
 
         <!-- Keep honoring orientation locks and resizability settings on large screens (600dp+)
-             when targeting API 36; without this, Android 16 ignores them for non-game apps.
-             build.settings android.allowRestrictedResizability = false turns this off, and the
-             opt-out stops working once an app targets API 37. -->
+             when targeting API 36; without this, Android 16 ignores them for non-game apps. -->
         <property
             android:name="android.window.PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY"
             android:value="true" />

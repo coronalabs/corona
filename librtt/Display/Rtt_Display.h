@@ -301,9 +301,7 @@ class Display
         // Returns true if they defer, meaning that the caller should then call WindowSizeChanged() to update content scales.
         virtual bool HasWindowSizeChanged() const;
 
-        // Like HasWindowSizeChanged(), but ignores a plain width/height swap from a rotation.
-        // Returns true only when the surface's upright device size differs from the stream's,
-        // e.g. a foldable device was opened or closed or the window was resized.
+        // Like HasWindowSizeChanged(), but ignores the width/height swap of a rotation.
         virtual bool HasDeviceSizeChanged() const;
 
     public:

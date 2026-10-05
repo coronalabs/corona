@@ -45,7 +45,6 @@ class MPlatformDevice
 			kKeyEvent,
 			kInputDeviceStatusEvent,
 			kMouseEvent,
-			kFoldEvent,
 
 			kNumTypes
 		}

@@ -88,8 +88,6 @@ local intentFilters = {}
 local usesExpansionFile = false
 local largeHeap = false
 local isGame = false
-local supportsFoldables = false
-local allowRestrictedResizability = nil
 local installLocation = "auto"
 local targetedAppStore = "none"
 local manifestChildXmlElements = {}
@@ -477,25 +475,6 @@ if "table" == type(buildSettings) then
 			isGame = buildSettings.android.isGame
 		end
 
-		-- Fetch the "supportsFoldables" flag. It links Jetpack WindowManager (androidx.window) into the app,
-		-- which backs the Lua "fold" event, system.getInfo("foldState") and display.getReservedRegions().
-		if type(buildSettings.android.supportsFoldables) == "boolean" then
-			supportsFoldables = buildSettings.android.supportsFoldables
-		end
-		-- Jetpack WindowManager needs Android 6.0 (API 23).
-		if supportsFoldables and (tonumber(minSdkVersion) or 0) < 23 then
-			print("WARNING: android.supportsFoldables requires minSdkVersion 23 or higher. Raising minSdkVersion to 23.")
-			minSdkVersion = "23"
-		end
-
-		-- Fetch the "allowRestrictedResizability" flag. Android 16 ignores orientation locks, aspect ratio
-		-- limits and resizeableActivity="false" on screens 600dp and wider (unfolded foldables, tablets)
-		-- for non-game apps targeting API 36. Corona keeps them honored by default; set this to false to
-		-- let the app fill such screens instead. The opt-out stops working when targeting API 37.
-		if type(buildSettings.android.allowRestrictedResizability) == "boolean" then
-			allowRestrictedResizability = buildSettings.android.allowRestrictedResizability
-		end
-
 		-- Fetch install location.
 		stringValue = buildSettings.android.installLocation
 		if ("string" == type( stringValue )) and (string.len( stringValue ) > 0) then
@@ -743,22 +722,11 @@ end
 manifestKeys.USER_LARGE_HEAP = stringBuffer
 
 -- Create an "isGame" application tag attribute if set.
--- "appCategory" is the current form of the same flag; among other things it exempts games from
--- Android 16's rule that ignores orientation locks on large screens.
 stringBuffer = ""
 if isGame == true then
-	stringBuffer = 'android:isGame="true" android:appCategory="game"'
+	stringBuffer = 'android:isGame="true"'
 end
 manifestKeys.USER_IS_GAME = stringBuffer
-
--- Create <property> children of the <application> tag.
-stringBuffer = ""
-if allowRestrictedResizability ~= nil then
-	-- The Corona library manifest sets this property to "true"; replace that value with the app's choice.
-	stringBuffer = '<property android:name="android.window.PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY" ' ..
-	               'android:value="' .. tostring(allowRestrictedResizability) .. '" tools:replace="android:value" />'
-end
-manifestKeys.USER_APPLICATION_PROPERTIES = stringBuffer
 
 -- Only create a "screenOrientation" attribute if the app does NOT support orientation changes.
 -- This allows the OS to handle the orientation and respects system preferences lke auto-rotate.

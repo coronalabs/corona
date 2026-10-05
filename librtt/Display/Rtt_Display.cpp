@@ -1862,20 +1862,14 @@ Display::HasDeviceSizeChanged() const
         return false;
     }
 
-    S32 streamW = fStream->DeviceWidth();
-    S32 streamH = fStream->DeviceHeight();
-    S32 targetW = fTarget->DeviceWidth();
-    S32 targetH = fTarget->DeviceHeight();
+    S32 streamW = fStream->DeviceWidth(), streamH = fStream->DeviceHeight();
+    S32 targetW = fTarget->DeviceWidth(), targetH = fTarget->DeviceHeight();
     if ( targetW <= 0 || targetH <= 0 )
     {
         return false;
     }
-
-    // Compare the (short, long) side pairs so that a rotation in progress, where the surface
-    // reports swapped dimensions for a moment, is not mistaken for a device size change.
-    S32 streamShort = Min( streamW, streamH ), streamLong = Max( streamW, streamH );
-    S32 targetShort = Min( targetW, targetH ), targetLong = Max( targetW, targetH );
-    return ( streamShort != targetShort ) || ( streamLong != targetLong );
+    // Compare (short, long) side pairs so a rotation in progress, which swaps them briefly, doesn't count
+    return ( Min( streamW, streamH ) != Min( targetW, targetH ) ) || ( Max( streamW, streamH ) != Max( targetW, targetH ) );
 }
 
 DeviceOrientation::Type

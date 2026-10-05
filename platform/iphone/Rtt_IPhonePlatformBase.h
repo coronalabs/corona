@@ -74,9 +74,6 @@ class IPhonePlatformBase : public ApplePlatform
 
 		virtual int PushSystemInfo( lua_State *L, const char *key ) const;
 
-		// Camera cutouts and the fold of a foldable device, from UIKit's reserved regions (iOS 27.1+).
-		virtual int GetReservedRegionsPixels( ReservedRegion *outRegions, int maxCount ) const;
-
 		virtual NSString *PathForPluginsFile( const char *filename ) const;
 
 #if Rtt_IPHONE_PLATFORM_STUB

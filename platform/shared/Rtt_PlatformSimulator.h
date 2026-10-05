@@ -71,8 +71,7 @@ class PlatformSimulator
 			kHeadingEventMask		= 0x0800,
 			kMultitouchEventMask	= 0x1000,
 			kGyroscopeEventMask		= 0x2000,
-			kMouseEventMask			= 0x4000,
-			kFoldEventMask			= 0x8000
+			kMouseEventMask			= 0x4000
 		}
 		PropertyMask;
 
@@ -195,21 +194,17 @@ class PlatformSimulator
 		void Rotate( bool clockwise );
 		virtual void Shake();
 
-		// Foldable devices. Set the initial state before Initialize(); ToggleFold() swaps the screen
-		// at runtime and sends the app a "resize" event.
+		// Foldable skins. Set the initial state before Initialize(); ToggleFold() swaps the screen and raises "resize".
 		bool IsFoldable() const { return fIsFoldable; }
 		bool IsUnfolded() const { return fIsUnfolded; }
 		void SetUnfolded( bool newValue ) { fIsUnfolded = newValue; }
 		void ToggleFold();
-		// The simulated hinge state for system.getInfo("foldState"): "closed"/"open", or NULL when the skin isn't foldable.
-		const char *GetFoldState() const;
 		DeviceOrientation::Type GetOrientation() const { return (DeviceOrientation::Type)fOrientation; }
 		virtual const char *GetOSName() const { return "simulator"; }
 
 		virtual void DidRotate( bool clockwise, DeviceOrientation::Type start, DeviceOrientation::Type end ) = 0;
 
-		// Platforms that support foldable skins swap in the screen for the new fold state and
-		// return true.
+		// Platforms that support foldable skins swap in the screen for the new fold state and return true.
 		virtual bool DidChangeFold( bool unfolded ) { return false; }
 
 		// Optional callback for systems when the zoom/scale change finishes.

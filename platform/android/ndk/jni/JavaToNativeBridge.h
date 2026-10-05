@@ -84,8 +84,6 @@ class JavaToNativeBridge
 		void LocationEvent(double lat, double lon, double altitude, double accuracy, double speed, double bearing, double time);
 		void OrientationChanged(int newOrientation, int oldOrientation);
 		void ResizeEvent();
-		// state/orientation are Rtt::FoldEvent values (same numbering as Java's FoldStateMonitor); bounds in window pixels.
-		void FoldEvent(int state, int orientation, bool hasBounds, float x, float y, float width, float height);
 		void AlertCallback(int which, bool cancelled);
 		void SoundEndCallback( long id );
 		void VideoEndCallback( long id );

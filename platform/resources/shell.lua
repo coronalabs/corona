@@ -52,7 +52,6 @@ local function isOverlayLandscape()
 end
 
 local statusBarNames = {}
-local statusBarImageNames = {}
 
 local function setStatusBarNames()
 	statusBarNames = {
@@ -75,62 +74,59 @@ local function statusBarContentHeight( img )
 	return height*display.contentScaleY
 end
 
+-- Loads the hidden portrait and landscape image of every status bar mode
+local function loadStatusBars()
+	local isLandscape = isOverlayLandscape()
+
+	local x = display.screenOriginX
+	local y = display.screenOriginY
+    local sx = display.contentScaleX
+	local sy = display.contentScaleY
+	if isLandscape then
+		sx, sy = sy, sx
+	end
+
+	for _,v in pairs( statusBarNames ) do
+		local portraitFilename = v
+		local landscapeFilename = string.gsub( portraitFilename, "(.*)%.png", "%1.landscape.png" )
+		local imgPortrait = display.newImage( overlay, portraitFilename, system.SkinResourceDirectory, x, y, true )
+		local imgLandscape = display.newImage( overlay, landscapeFilename, system.SkinResourceDirectory, x, y, true )
+
+		overlay[portraitFilename] = imgPortrait
+		overlay[landscapeFilename] = imgLandscape
+
+        if imgPortrait ~= nil then
+            imgPortrait.xScale = sx
+            imgPortrait.yScale = sy
+
+			-- Move offscreen
+			imgPortrait.y = imgPortrait.y - (imgPortrait.height * 2)
+            imgPortrait.isVisible = false
+        else
+            print("Warning: Could not load status bar image '"..portraitFilename.."'")
+        end
+
+        if imgLandscape ~= nil then
+            imgLandscape.xScale = sy
+            imgLandscape.yScale = sx
+
+            -- Move offscreen
+            imgLandscape.y = imgLandscape.y - (imgLandscape.height * 2)
+            imgLandscape.isVisible = false
+        else
+            print("Warning: Could not load status bar image '"..landscapeFilename.."'")
+        end
+	end
+
+	-- add unique string value after creating status bar image objects
+	statusBarNames[display.HiddenStatusBar] = "none"
+end
+
 if statusBarFiles and statusBarFiles.default and not isSimulatorExtension then
 	-- Status bar
 
 	appOrientation = system.orientation
 	local isLandscape = isOverlayLandscape()
-
-	-- Loads the hidden portrait and landscape image of every status bar mode
-	local function loadStatusBars()
-		local x = display.screenOriginX
-		local y = display.screenOriginY
-		local sx = display.contentScaleX
-		local sy = display.contentScaleY
-		if isLandscape then
-			sx, sy = sy, sx
-		end
-
-		statusBarImageNames = {}
-		for _,v in pairs( statusBarNames ) do
-			local portraitFilename = v
-			local landscapeFilename = string.gsub( portraitFilename, "(.*)%.png", "%1.landscape.png" )
-			if not overlay[portraitFilename] then
-				local imgPortrait = display.newImage( overlay, portraitFilename, system.SkinResourceDirectory, x, y, true )
-				local imgLandscape = display.newImage( overlay, landscapeFilename, system.SkinResourceDirectory, x, y, true )
-
-				overlay[portraitFilename] = imgPortrait
-				overlay[landscapeFilename] = imgLandscape
-				table.insert( statusBarImageNames, portraitFilename )
-				table.insert( statusBarImageNames, landscapeFilename )
-
-				if imgPortrait ~= nil then
-					imgPortrait.xScale = sx
-					imgPortrait.yScale = sy
-
-					-- Move offscreen
-					imgPortrait.y = imgPortrait.y - (imgPortrait.height * 2)
-					imgPortrait.isVisible = false
-				else
-					print("Warning: Could not load status bar image '"..portraitFilename.."'")
-				end
-
-				if imgLandscape ~= nil then
-					imgLandscape.xScale = sy
-					imgLandscape.yScale = sx
-
-					-- Move offscreen
-					imgLandscape.y = imgLandscape.y - (imgLandscape.height * 2)
-					imgLandscape.isVisible = false
-				else
-					print("Warning: Could not load status bar image '"..landscapeFilename.."'")
-				end
-			end
-		end
-
-		-- add unique string value after creating status bar image objects
-		statusBarNames[display.HiddenStatusBar] = "none"
-	end
 	loadStatusBars()
 
 	function overlay:showScreenDressing( )
@@ -261,10 +257,12 @@ if statusBarFiles and statusBarFiles.default and not isSimulatorExtension then
 			return
 		end
 
-		for _, name in ipairs( statusBarImageNames ) do
-			if self[name] then
-				self[name]:removeSelf()
-				self[name] = nil
+		for _, name in pairs( statusBarNames ) do
+			for _, key in ipairs( { name, string.gsub( name, "(.*)%.png", "%1.landscape.png" ) } ) do
+				if self[key] then
+					self[key]:removeSelf()
+					self[key] = nil
+				end
 			end
 		end
 		if self._screenDressing then

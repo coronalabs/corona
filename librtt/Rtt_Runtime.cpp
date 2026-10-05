@@ -447,66 +447,36 @@ restrictLibs( lua_State *L )
 static void
 pushStatusBarFiles( lua_State* L, const MPlatform& platform, Rtt::String& value )
 {
-	lua_newtable( L );
+	static const struct { MPlatform::Category category; const char *key; } kFiles[] =
 	{
-		platform.GetPreference( MPlatform::kDefaultStatusBarFile, &value );
+		{ MPlatform::kDefaultStatusBarFile, "default" },
+		{ MPlatform::kDarkStatusBarFile, "dark" },
+		{ MPlatform::kTranslucentStatusBarFile, "translucent" },
+		{ MPlatform::kLightTransparentStatusBarFile, "lightTransparent" },
+		{ MPlatform::kDarkTransparentStatusBarFile, "darkTransparent" },
+		{ MPlatform::kScreenDressingFile, "screenDressing" },
+		// The orientation the art is drawn for when it isn't portrait, e.g. "landscapeLeft" for a
+		// foldable's wide inner screen; shell.lua turns the art relative to it.
+		{ MPlatform::kScreenNaturalOrientation, "screenNaturalOrientation" },
+	};
+
+	lua_newtable( L );
+	for ( size_t i = 0; i < sizeof( kFiles ) / sizeof( kFiles[0] ); i++ )
+	{
+		platform.GetPreference( kFiles[i].category, &value );
 		if ( ! value.IsEmpty() )
 		{
 			lua_pushstring( L, value.GetString() );
-			lua_setfield( L, -2, "default" );
+			lua_setfield( L, -2, kFiles[i].key );
 		}
+	}
 
-		platform.GetPreference( MPlatform::kDarkStatusBarFile, &value );
-		if ( ! value.IsEmpty() )
-		{
-			lua_pushstring( L, value.GetString() );
-			lua_setfield( L, -2, "dark" );
-		}
-
-		platform.GetPreference( MPlatform::kTranslucentStatusBarFile, &value );
-		if ( ! value.IsEmpty() )
-		{
-			lua_pushstring( L, value.GetString() );
-			lua_setfield( L, -2, "translucent" );
-		}
-
-		platform.GetPreference( MPlatform::kLightTransparentStatusBarFile, &value );
-		if ( ! value.IsEmpty() )
-		{
-			lua_pushstring( L, value.GetString() );
-			lua_setfield( L, -2, "lightTransparent" );
-		}
-
-		platform.GetPreference( MPlatform::kDarkTransparentStatusBarFile, &value );
-		if ( ! value.IsEmpty() )
-		{
-			lua_pushstring( L, value.GetString() );
-			lua_setfield( L, -2, "darkTransparent" );
-		}
-
-		platform.GetPreference( MPlatform::kScreenDressingFile, &value );
-		if ( ! value.IsEmpty() )
-		{
-			lua_pushstring( L, value.GetString() );
-			lua_setfield( L, -2, "screenDressing" );
-		}
-
-		// Status bar height (pixels) for skins whose status bar art is taller than the bar
-		platform.GetPreference( MPlatform::kStatusBarHeight, &value );
-		if ( ! value.IsEmpty() )
-		{
-			lua_pushnumber( L, atof( value.GetString() ) );
-			lua_setfield( L, -2, "height" );
-		}
-
-		// The orientation the screen's art (status bar, dressing) is drawn for when it isn't portrait,
-		// e.g. "landscapeLeft" for a foldable's wide inner screen. shell.lua turns the art relative to it.
-		platform.GetPreference( MPlatform::kScreenNaturalOrientation, &value );
-		if ( ! value.IsEmpty() )
-		{
-			lua_pushstring( L, value.GetString() );
-			lua_setfield( L, -2, "screenNaturalOrientation" );
-		}
+	// Status bar height (pixels) for skins whose status bar art is taller than the bar
+	platform.GetPreference( MPlatform::kStatusBarHeight, &value );
+	if ( ! value.IsEmpty() )
+	{
+		lua_pushnumber( L, atof( value.GetString() ) );
+		lua_setfield( L, -2, "height" );
 	}
 }
 

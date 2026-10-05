@@ -67,8 +67,6 @@ bool EmscriptenDevice::HasEventSource( EventType type ) const
 		case MPlatformDevice::kKeyEvent:
 			hasEventSource = true;
 			break;
-		case MPlatformDevice::kFoldEvent:
-			break;
 		default:
 			Rtt_ASSERT_NOT_REACHED();
 			break;
@@ -89,9 +87,6 @@ void EmscriptenDevice::BeginNotifications( EventType type ) const
 		case MPlatformDevice::kHeadingEvent:
 		case MPlatformDevice::kMultitouchEvent:
 			break;
-		case MPlatformDevice::kFoldEvent:
-			// Fold state is observed by the platform whenever it is available; nothing to start or stop.
-			break;
 		default:
 			Rtt_ASSERT_NOT_REACHED();
 			break;
@@ -110,9 +105,6 @@ void EmscriptenDevice::EndNotifications( EventType type ) const
 		case MPlatformDevice::kGyroscopeEvent:
 		case MPlatformDevice::kHeadingEvent:
 		case MPlatformDevice::kMultitouchEvent:
-			break;
-		case MPlatformDevice::kFoldEvent:
-			// Fold state is observed by the platform whenever it is available; nothing to start or stop.
 			break;
 		default:
 			Rtt_ASSERT_NOT_REACHED();

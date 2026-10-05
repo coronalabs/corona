@@ -171,7 +171,6 @@ class AndroidPlatform : public MPlatform
 		virtual void CancelNativeAlert( NativeAlertRef alert, S32 index ) const;
 
 		virtual void GetSafeAreaInsetsPixels(Rtt_Real &top, Rtt_Real &left, Rtt_Real &bottom, Rtt_Real &right) const;
-		virtual int GetReservedRegionsPixels( ReservedRegion *outRegions, int maxCount ) const;
 
 	public:
 		virtual void* CreateAndScheduleNotification( lua_State *L, int index ) const;

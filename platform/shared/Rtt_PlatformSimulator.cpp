@@ -811,9 +811,6 @@ PropertyMaskForEventType( MPlatformDevice::EventType type )
 		case MPlatformDevice::kMouseEvent:
 			mask = PlatformSimulator::kMouseEventMask;
 			break;
-		case MPlatformDevice::kFoldEvent:
-			mask = PlatformSimulator::kFoldEventMask;
-			break;
 		default:
 			Rtt_ASSERT_NOT_REACHED();
 			break;
@@ -898,9 +895,7 @@ PlatformSimulator::Rotate( bool clockwise )
 		}
 		else if (orientation != fLastSupportedOrientation)
 		{
-			// A 180 degree turn (landscapeLeft <-> landscapeRight, portrait <-> upside down). Nothing
-			// changes size, but the skin's status bar and screen dressing (corners, camera) have to
-			// turn with the content, and shell.lua places them from the "resize" event.
+			// A 180 degree turn changes no size, but shell.lua turns the status bar and screen dressing on "resize"
 			hasTurnedAround = true;
 		}
 		fLastSupportedOrientation = orientation;
@@ -933,11 +928,9 @@ PlatformSimulator::ToggleFold()
 
 	Rtt::Runtime& runtime = GetPlayer()->GetRuntime();
 
-	// A foldable's inner screen doesn't turn to orientations the app doesn't support (and the
-	// Simulator doesn't rotate while unfolded), so when the device was turned to an unsupported
-	// orientation, turn it back to the content's orientation first. That keeps the fold on the
-	// same, tested path as folding an upright device.
-	// (The stream's content orientation follows the device even then, so use the last supported one.)
+	// Turned to an orientation the app doesn't support? Turn back to the content's orientation first;
+	// DeviceSizeChanged() can't replay an unsupported rotation. (The stream's content orientation
+	// follows the device even then, so use the last supported one.)
 	if ( ! IsOrientationSupported( GetOrientation() ) && IsOrientationSupported( fLastSupportedOrientation ) )
 	{
 		DeviceOrientation::Type target = fLastSupportedOrientation;
@@ -955,27 +948,10 @@ PlatformSimulator::ToggleFold()
 	}
 	fIsUnfolded = unfolded;
 
-	// Tell "fold" listeners first, so they know why the resize that follows happened.
-	if ( IsProperty( kFoldEventMask ) )
-	{
-		FoldEvent event( unfolded ? FoldEvent::kOpen : FoldEvent::kClosed );
-		runtime.DispatchEvent( event );
-	}
-
 	// Folding changes the size of the app's screen, so raise a resize event like a rotation does.
 	runtime.DispatchEvent( ResizeEvent() );
 	fLastDeviceWidth = runtime.GetDisplay().DeviceWidth();
 	fLastDeviceHeight = runtime.GetDisplay().DeviceHeight();
-}
-
-const char *
-PlatformSimulator::GetFoldState() const
-{
-	if ( ! fIsFoldable )
-	{
-		return NULL;
-	}
-	return FoldEvent::StringForState( fIsUnfolded ? FoldEvent::kOpen : FoldEvent::kClosed );
 }
 
 void

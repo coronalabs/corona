@@ -406,15 +406,6 @@ Java_com_ansca_corona_JavaToNativeShim_nativeResizeEvent(JNIEnv * env, jclass c,
 }
 
 JNIEXPORT void JNICALL
-Java_com_ansca_corona_JavaToNativeShim_nativeFoldEvent(
-	JNIEnv * env, jclass c, jlong bridgeAddress, jint state, jint orientation, jboolean hasBounds,
-	jfloat x, jfloat y, jfloat width, jfloat height)
-{
-	JavaToNativeBridgeFromMemoryAddress(bridgeAddress)->FoldEvent(
-			(int)state, (int)orientation, (bool)hasBounds, (float)x, (float)y, (float)width, (float)height);
-}
-
-JNIEXPORT void JNICALL
 Java_com_ansca_corona_JavaToNativeShim_nativeAlertCallback(JNIEnv * env, jclass c, jlong bridgeAddress, jint which, jboolean cancelled)
 {
 #ifdef DEBUG

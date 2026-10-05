@@ -132,7 +132,6 @@ bool WinRTDevice::HasEventSource( EventType type ) const
 		case MPlatformDevice::kHeadingEvent:
 		case MPlatformDevice::kInputDeviceStatusEvent:
 		case MPlatformDevice::kMouseEvent:
-		case MPlatformDevice::kFoldEvent:
 			break;
 		case MPlatformDevice::kOrientationEvent:
 		case MPlatformDevice::kMultitouchEvent:
@@ -165,9 +164,6 @@ void WinRTDevice::BeginNotifications( EventType type ) const
 		case MPlatformDevice::kMultitouchEvent:
 			fEnvironment->InteropServices->InputDeviceServices->MultitouchEnabled = true;
 			break;
-		case MPlatformDevice::kFoldEvent:
-			// Fold state is observed by the platform whenever it is available; nothing to start or stop.
-			break;
 		default:
 			Rtt_ASSERT_NOT_REACHED();
 			break;
@@ -192,9 +188,6 @@ void WinRTDevice::EndNotifications( EventType type ) const
 			break;
 		case MPlatformDevice::kMultitouchEvent:
 			fEnvironment->InteropServices->InputDeviceServices->MultitouchEnabled = false;
-			break;
-		case MPlatformDevice::kFoldEvent:
-			// Fold state is observed by the platform whenever it is available; nothing to start or stop.
 			break;
 		default:
 			Rtt_ASSERT_NOT_REACHED();

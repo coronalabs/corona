@@ -14,7 +14,6 @@
 #import "CoronaRuntime.h"
 #include "Rtt_DeviceOrientation.h"
 #include "Rtt_MetalAngleTypes.h"
-#include "Rtt_MPlatform.h"
 
 // ----------------------------------------------------------------------------
 
@@ -83,13 +82,6 @@ class IPhonePlatformBase;
 #endif
 
 - (void)dismissKeyboard;
-
-// Foldable devices (iOS 27.1+; no-ops elsewhere)
-- (BOOL)startHingeMonitoring; // YES when the OS reports hinge state for this view
-- (void)stopHingeMonitoring;
-- (int)foldState; // Rtt::FoldEvent::State; kUnknownState when not monitored or not foldable
-- (CGFloat)foldAngle; // radians; negative when unknown
-- (int)copyReservedRegions:(Rtt::MPlatform::ReservedRegion *)outRegions maxCount:(int)maxCount kind:(int)kindFilter; // kindFilter -1 = all
 
 @end
 

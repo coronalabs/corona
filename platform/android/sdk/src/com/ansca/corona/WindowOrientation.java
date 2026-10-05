@@ -158,8 +158,7 @@ public final class WindowOrientation {
 		int displayAngle;
 		android.view.WindowManager windowManager =
 				(android.view.WindowManager)context.getSystemService(android.content.Context.WINDOW_SERVICE);
-		int rotation = windowManager.getDefaultDisplay().getRotation();
-		switch (rotation) {
+		switch (windowManager.getDefaultDisplay().getRotation()) {
 			case android.view.Surface.ROTATION_180:
 				displayAngle = 180;
 				break;
@@ -173,32 +172,9 @@ public final class WindowOrientation {
 				displayAngle = 0;
 				break;
 		}
-		WindowOrientation orientation = fromDegrees(context, displayAngle);
-
-		// The display rotation alone describes the whole screen, not this app's window. In split screen,
-		// in a freeform window, or on a foldable whose inner screen has a different shape than the outer
-		// one, the window can be portrait while the display is landscape (or the reverse). The renderer
-		// refuses to draw while the surface shape disagrees with the orientation, so let the window's own
-		// shape decide between portrait and landscape and keep the rotation only for the left/right or
-		// upright/upside-down flavor.
-		if (android.os.Build.VERSION.SDK_INT >= 30) {
-			try {
-				android.graphics.Rect bounds = windowManager.getCurrentWindowMetrics().getBounds();
-				boolean isWindowLandscape = bounds.width() > bounds.height();
-				if (isWindowLandscape && orientation.isPortrait()) {
-					orientation = (rotation == android.view.Surface.ROTATION_270 || rotation == android.view.Surface.ROTATION_180)
-							? LANDSCAPE_LEFT : LANDSCAPE_RIGHT;
-				}
-				else if (!isWindowLandscape && orientation.isLandscape()) {
-					orientation = (rotation == android.view.Surface.ROTATION_180 || rotation == android.view.Surface.ROTATION_270)
-							? PORTRAIT_UPSIDE_DOWN : PORTRAIT_UPRIGHT;
-				}
-			}
-			catch (Exception ex) { }
-		}
 
 		// Return the current orientation.
-		return orientation;
+		return fromDegrees(context, displayAngle);
 	}
 
 	/**

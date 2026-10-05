@@ -1238,23 +1238,6 @@ MacPlatform::PushSystemInfo( lua_State *L, const char *key ) const
 		lua_pushstring(L, "");
 		pushedValues = 1;
 	}
-	else if (Rtt_StringCompare(key, "foldState") == 0)
-	{
-#if Rtt_AUTHORING_SIMULATOR
-		// "closed" or "open" for a foldable skin (Hardware > Unfold); nil for every other skin.
-		MacSimulator *simulator = ((AppDelegate*)[NSApp delegate]).simulator;
-		const char *state = (simulator != nil) ? simulator->GetFoldState() : NULL;
-		if (state)
-		{
-			lua_pushstring(L, state);
-		}
-		else
-		{
-			lua_pushnil(L); // an explicit nil, so tostring(system.getInfo("foldState")) works
-		}
-		pushedValues = 1;
-#endif
-	}
 	else if ( Rtt_StringCompare( key, "darkMode" ) == 0 )
 	{
 		BOOL res = NO;

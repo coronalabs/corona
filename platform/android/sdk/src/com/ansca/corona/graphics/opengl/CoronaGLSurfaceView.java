@@ -239,13 +239,7 @@ public class CoronaGLSurfaceView extends GLSurfaceView {
 		// This won't match device orientation if the activity was assigned a fixed orientation.
 		// Note: Only store the current orientation if the application supports it.
 		//       This way it'll never be reported to Lua via an orientation event.
-		//       The exception is when the surface already has the other shape: Android 16+ ignores
-		//       orientation locks on large screens (unfolded foldables, tablets), and the renderer
-		//       would otherwise refuse to draw until the orientation matched again.
-		boolean doesSurfaceDisagree =
-				(fCurrentWindowOrientation.isPortrait() && (width > height)) ||
-				(fCurrentWindowOrientation.isLandscape() && (width < height));
-		if ((isCurrentOrientationSupported || doesSurfaceDisagree) && (fCurrentWindowOrientation != currentOrientation)) {
+		if (isCurrentOrientationSupported && (fCurrentWindowOrientation != currentOrientation)) {
 			fPreviousWindowOrientation = fCurrentWindowOrientation;
 			fCurrentWindowOrientation = currentOrientation;
 		}

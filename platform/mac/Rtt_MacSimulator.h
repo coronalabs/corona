@@ -58,7 +58,7 @@ class MacSimulator : public PlatformSimulator
 	private:
 		DeviceOrientation::Type SkinNaturalOrientation( const Config& config ) const;
 		NSSize ScreenSizeForEngine( float width, float height, const Config& config ) const;
-		void SetScreenNaturalOrientationProperty( DeviceOrientation::Type naturalOrientation );
+		DeviceOrientation::Type ApplyScreenSize( const Config& config, GLView *view );
 
 	public:
 
