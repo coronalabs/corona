@@ -558,30 +558,6 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
 
 // ----------------------------------------------------------------------------
 
-// Target of Hardware > Unfold/Fold. It validates only its own item, which is enabled for
-// foldable skins and titled for the current state.
-@interface FoldMenuTarget : NSObject
-@end
-
-@implementation FoldMenuTarget
-
-- (void) toggleFold:(id)sender
-{
-	[(AppDelegate*)[NSApp delegate] toggleFold:sender];
-}
-
-- (BOOL) validateMenuItem:(NSMenuItem *)menuItem
-{
-	Rtt::MacSimulator *simulator = ((AppDelegate*)[NSApp delegate]).simulator;
-	BOOL foldable = ( simulator != NULL && simulator->IsFoldable() );
-	[menuItem setTitle:( foldable && simulator->IsUnfolded() ? @"Fold" : @"Unfold" )];
-	return foldable;
-}
-
-@end
-
-// ----------------------------------------------------------------------------
-
 @interface AppDelegate ()
 
 @property (nonatomic, readwrite, copy) NSString* fAppPath;
@@ -2884,23 +2860,29 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
 	}
 }
 
-// Adds Hardware > Unfold (⇧⌘F) below Shake
+// Adds Hardware > Unfold (⇧⌘F) below Shake; validateMenuItem: enables it for foldable skins
 - (void) addFoldMenuItem
 {
-	static FoldMenuTarget *sFoldMenuTarget = nil;
-
 	NSMenu *hardwareMenu = [[[NSApp mainMenu] itemWithTitle:@"Hardware"] submenu];
 	NSInteger shakeIndex = [hardwareMenu indexOfItemWithTarget:nil andAction:@selector(shake:)];
-	if (hardwareMenu == nil || shakeIndex < 0 || sFoldMenuTarget != nil)
+	if (hardwareMenu != nil && shakeIndex >= 0)
 	{
-		return;
+		NSMenuItem *item = [[[NSMenuItem alloc] initWithTitle:@"Unfold" action:@selector(toggleFold:) keyEquivalent:@"f"] autorelease];
+		[item setKeyEquivalentModifierMask:(NSEventModifierFlagCommand | NSEventModifierFlagShift)];
+		[item setTarget:self];
+		[hardwareMenu insertItem:item atIndex:shakeIndex + 1];
 	}
+}
 
-	sFoldMenuTarget = [[FoldMenuTarget alloc] init];
-	NSMenuItem *item = [[[NSMenuItem alloc] initWithTitle:@"Unfold" action:@selector(toggleFold:) keyEquivalent:@"f"] autorelease];
-	[item setKeyEquivalentModifierMask:(NSEventModifierFlagCommand | NSEventModifierFlagShift)];
-	[item setTarget:sFoldMenuTarget];
-	[hardwareMenu insertItem:item atIndex:shakeIndex + 1];
+- (BOOL) validateMenuItem:(NSMenuItem *)menuItem
+{
+	if ([menuItem action] == @selector(toggleFold:))
+	{
+		BOOL foldable = (fSimulator != NULL && fSimulator->IsFoldable());
+		[menuItem setTitle:(foldable && fSimulator->IsUnfolded() ? @"Fold" : @"Unfold")];
+		return foldable;
+	}
+	return YES;
 }
 
 -(IBAction)back:(id)sender

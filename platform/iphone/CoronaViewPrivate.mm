@@ -1429,25 +1429,13 @@ PrintTouches( NSSet *touches, const char *header )
 // orientation path below never notices: raise "resize" for the new device size.
 - (void)checkForDeviceSizeChange
 {
-	using namespace Rtt;
-
-	Runtime *runtime = self.runtime;
-	if ( ! runtime )
+	Rtt::Runtime *runtime = self.runtime;
+	if ( runtime && runtime->GetDisplay().HasDeviceSizeChanged() )
 	{
-		return;
+		runtime->GetDisplay().DeviceSizeChanged();
+		runtime->DispatchEvent( Rtt::ResizeEvent() );
+		fLastContentHeight = (int)runtime->GetDisplay().ContentHeight(); // so didOrientationChange: doesn't raise a second "resize"
 	}
-
-	Display& display = runtime->GetDisplay();
-	if ( ! display.HasDeviceSizeChanged() )
-	{
-		return;
-	}
-
-	display.DeviceSizeChanged();
-	runtime->DispatchEvent( ResizeEvent() );
-
-	// didOrientationChange: raises "resize" when the content height changes; keep it from raising a second one.
-	fLastContentHeight = (int)display.ContentHeight();
 }
 
 // CoronaOrientationObserver

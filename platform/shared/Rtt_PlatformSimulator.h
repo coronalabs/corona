@@ -219,8 +219,6 @@ class PlatformSimulator
 
 	protected:
 		void SetOrientationSupported( DeviceOrientation::Type orientation );
-
-	protected:
 		void SetIsFoldable( bool newValue ) { fIsFoldable = newValue; }
 
 	protected:

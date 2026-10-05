@@ -242,15 +242,7 @@
 	{
 		// Art drawn for a landscape (a foldable's inner screen): step the app's orientation like
 		// PlatformSimulator::Rotate() does and turn the art relative to the natural orientation.
-		orientation = (DeviceOrientation::Type)( fCurrentSkinOrientation + ( clockwise ? -1 : 1 ) );
-		if ( DeviceOrientation::kUnknown == orientation )
-		{
-			orientation = DeviceOrientation::kSidewaysLeft;
-		}
-		else if ( DeviceOrientation::kFaceUp == orientation )
-		{
-			orientation = DeviceOrientation::kUpright;
-		}
+		orientation = DeviceOrientation::OrientationForAngle( ( DeviceOrientation::AngleForOrientation( fCurrentSkinOrientation ) + ( clockwise ? 270 : 90 ) ) % 360 );
 		fCurrentSkinOrientation = orientation;
 		[fSkinView setOrientation:[self skinDisplayOrientation]];
 	}
