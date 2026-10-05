@@ -205,7 +205,7 @@ local function getCopyResourcesScript( src, dst, should_preserve, live_build, op
 		exit 1
 	fi
 
-	rsync {{DEBUG_FLAGS}} -r --times --delete-excluded {{EXCLUDED_FILES}} {{EXCLUDE_LUA_AND_BUILD_SETTINGS}} --exclude=".*" --exclude="**/.*" --delete --prune-empty-dirs --links --copy-unsafe-links --hard-links --perms --chmod="Da+rx,Fa+r" --human-readable "$SRC_DIR/" "$DST_DIR"
+	rsync {{DEBUG_FLAGS}} -r --times --delete-excluded {{EXCLUDED_FILES}} {{EXCLUDE_LUA_AND_BUILD_SETTINGS}} --exclude=".*"  --delete --prune-empty-dirs --links --copy-unsafe-links --hard-links --perms --chmod="Da+rx,Fa+r" --human-readable "$SRC_DIR/" "$DST_DIR"
 
 	# run pngcrush appropriately
 	if [ "$SHOULD_PRESERVE" == "NO" ]
@@ -254,7 +254,7 @@ local function getCopyResourcesScript( src, dst, should_preserve, live_build, op
 
 	-- Replace the placeholders in the script with the generated code (or an empty string if there was none)
 	local debugFlags = (debugBuildProcess > 0) and "-v --itemize-changes" or ""
-	local excludeLuaAndBuildSettings = (live_build) and "" or "--exclude='**/*.lua' --exclude='*.lua' --exclude='build.settings'" -- don't exclude Lua files and build.settings for live builds
+	local excludeLuaAndBuildSettings = (live_build) and "" or "--exclude='*.lua' --exclude='build.settings'" -- don't exclude Lua files and build.settings for live builds
 	script = script:gsub("{{EXCLUDED_FILES}}", excludedFilesSh)
 	script = script:gsub("{{EXCLUDE_LUA_AND_BUILD_SETTINGS}}", excludeLuaAndBuildSettings)
 	script = script:gsub("{{DEBUG_FLAGS}}", debugFlags)
