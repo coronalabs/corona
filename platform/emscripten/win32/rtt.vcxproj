@@ -657,7 +657,7 @@
     <ClCompile Include="..\..\..\external\libjpeg\jidctfst.c" />
     <ClCompile Include="..\..\..\external\libjpeg\jidctint.c" />
     <ClCompile Include="..\..\..\external\libjpeg\jidctred.c" />
-    <ClCompile Include="..\..\..\external\libjpeg\jmemansi.c" />
+    <ClCompile Include="..\..\..\external\libjpeg\jmemnobs.c" />
     <ClCompile Include="..\..\..\external\libjpeg\jmemmgr.c" />
     <ClCompile Include="..\..\..\external\libjpeg\jquant1.c" />
     <ClCompile Include="..\..\..\external\libjpeg\jquant2.c" />
