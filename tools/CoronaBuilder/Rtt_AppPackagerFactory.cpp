@@ -10,6 +10,11 @@
 #include "Core/Rtt_Build.h"
 
 #include "Rtt_AppPackagerFactory.h"
+#if defined(Rtt_LINUX_ENV)
+#include <unistd.h>
+#include <limits.h>
+#include <string.h>
+#endif
 
 #if defined(CORONABUILDER_ANDROID)
 #include "Rtt_AndroidAppPackager.h"
@@ -394,6 +399,19 @@ AppPackagerFactory::GetResourceDirectory() const
 	return GetResourceDirectoryOSX();
 #elif defined(Rtt_WIN_ENV)
 	return GetResourceDirectoryWin();
+#elif defined(Rtt_LINUX_ENV)
+	// On Linux, resources are alongside the Solar2DBuilder binary in Resources/
+	static char resourceDir[PATH_MAX + 1];
+	if (resourceDir[0] == '\0') {
+		ssize_t count = readlink("/proc/self/exe", resourceDir, PATH_MAX);
+		resourceDir[count] = '\0';
+		char *slash = strrchr(resourceDir, '/');
+		if (slash) *slash = '\0';
+		strncat(resourceDir, "/Resources", PATH_MAX - strlen(resourceDir));
+	}
+	return resourceDir;
+#else
+	return NULL;
 #endif
 }
 
