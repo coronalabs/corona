@@ -310,7 +310,8 @@ void SimulatorRuntimeEnvironment::OnRuntimeLoaded(RuntimeEnvironment& sender, co
 
 	// Add Lua event listeners.
 	fLuaMouseEventCallback.RegisterTo(sender.GetRuntime()->VMContext().L());
-	fLuaMouseEventCallback.AddToRuntimeEventListeners("mouse");
+	// true: this is the Simulator's own listener, so don't warn about the simulated device (see init.lua).
+	fLuaMouseEventCallback.AddToRuntimeEventListeners("mouse", true);
 }
 
 void SimulatorRuntimeEnvironment::OnRuntimeTerminating(RuntimeEnvironment& sender, const EventArgs& arguments)

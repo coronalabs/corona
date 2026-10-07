@@ -231,13 +231,16 @@ class LuaMethodCallback
 
 		  @param eventName The name of the event, such as "enterFrame".
 
+		  @param suppressSimulatorWarning When true, Runtime:addEventListener skips its warning that the
+		  simulated device would not generate this event on real hardware (used for Simulator-internal listeners).
+
 		  @return
 		  Returns true if the Lua Runtime function was successfully called.
 		
 		  Returns false if given a null "eventName" argument, if this callback's Lua function is no longer registered,
 		  or if failed to access the Lua Runtime object.
 		 */
-		bool AddToRuntimeEventListeners(const char* eventName)
+		bool AddToRuntimeEventListeners(const char* eventName, bool suppressSimulatorWarning = false)
 		{
 			// Validate.
 			if (!fLuaStatePointer || !eventName || (LUA_NOREF == fLuaRegistryReferenceId))
@@ -262,7 +265,10 @@ class LuaMethodCallback
 			lua_insert(fLuaStatePointer, -2);
 			lua_pushstring(fLuaStatePointer, eventName);
 			lua_rawgeti(fLuaStatePointer, LUA_REGISTRYINDEX, fLuaRegistryReferenceId);
-			CoronaLuaDoCall(fLuaStatePointer, 3, 0);
+			// 4th arg lets Runtime:addEventListener suppress its simulated-device warning for this
+			// internally-added listener (see init.lua).
+			lua_pushboolean(fLuaStatePointer, suppressSimulatorWarning ? 1 : 0);
+			CoronaLuaDoCall(fLuaStatePointer, 4, 0);
 			return true;
 		}
 

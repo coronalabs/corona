@@ -421,11 +421,11 @@ MacDevice::HasEventSource( EventType type ) const
 		case MPlatformDevice::kGyroscopeEvent:
 		case MPlatformDevice::kMultitouchEvent:
 		case MPlatformDevice::kHeadingEvent:
-		case MPlatformDevice::kMouseEvent:
 			hasEventSource = false;
 			break;
 		case MPlatformDevice::kLocationEvent:
 		case MPlatformDevice::kKeyEvent:
+		case MPlatformDevice::kMouseEvent:
 		case MPlatformDevice::kInputDeviceStatusEvent:
 			hasEventSource = true;
 			break;
