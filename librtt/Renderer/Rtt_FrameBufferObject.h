@@ -18,6 +18,7 @@
 namespace Rtt
 {
 
+class BufferBitmap;
 class Texture;
 
 // ----------------------------------------------------------------------------
@@ -42,6 +43,8 @@ class FrameBufferObject : public CPUResource
 		U8 GetDepthBits() const { return fDepthBits; }
 		U8 GetStencilBits() const { return fStencilBits; }
 		bool GetMustClear() const { return fMustClear; }
+		
+		static void Capture( BufferBitmap& bitmap, S32 x_in_pixels, S32 y_in_pixels, S32 w_in_pixels, S32 h_in_pixels );
 
 	private:
 		Texture* fTexture;
