@@ -2096,7 +2096,7 @@ Renderer::MergeVertexData( Geometry::Vertex** destination, const Geometry::Verte
     
     ++*destination;
 
-    WriteGeometry( *destination, extensionSrc, sizeof(Geometry::Vertex) * extraCount, index, 1, GeometryWriter::kExtra );
+    WriteGeometry( *destination, extensionSrc, sizeof(Geometry::Vertex) * extraCount, index, extraCount, GeometryWriter::kExtra );
 
     /* memcpy( *destination, &extensionSrc[index * extraCount], sizeof(Geometry::Vertex) * extraCount ); */
     
