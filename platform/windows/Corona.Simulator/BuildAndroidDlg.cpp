@@ -17,7 +17,7 @@
 #include "BuildProgressDlg.h"
 #include "BuildResult.h"
 #include "WinGlobalProperties.h"
-#include "WinString.h"
+#include "RttString.h"
 #include "BrowseDirDialog.h"
 #include "HtmlMessageDlg.h"
 #include "MessageDlg.h"
@@ -80,7 +80,7 @@ END_MESSAGE_MAP()
 // Check for trial users, who can only use installed debug.keystore
 BOOL CBuildAndroidDlg::OnInitDialog()
 {
-	WinString stringConverter;
+	RttString stringConverter;
 	CString stringBuffer;
 
 	// Initialize base class first.
@@ -97,7 +97,7 @@ BOOL CBuildAndroidDlg::OnInitDialog()
 	m_pProject->SetTargetPlatform(Rtt::TargetDevice::kAndroidPlatform);
 
 	// Initialize the Android validator.
-	WinString androidValidatorFilePath;
+	RttString androidValidatorFilePath;
 	androidValidatorFilePath.SetUTF8(GetWinProperties()->GetResourcesDir());
 	if ((androidValidatorFilePath.GetLength() > 0) && !androidValidatorFilePath.EndsWith("\\"))
 	{
@@ -461,7 +461,7 @@ bool CBuildAndroidDlg::ReadKeystore( CString sKeystorePath, CString sPassword, b
 	CComboBox *pAliasList = (CComboBox *)GetDlgItem( IDC_BUILD_KEYALIAS );
 
 	// Convert string arguments to UTF8
-	WinString strKeystorePath, strPassword;
+	RttString strKeystorePath, strPassword;
 	strKeystorePath.SetTCHAR( sKeystorePath );
 	strPassword.SetTCHAR( sPassword );
 
@@ -484,7 +484,7 @@ bool CBuildAndroidDlg::ReadKeystore( CString sKeystorePath, CString sPassword, b
 		else
 		{
 			// Succeeded and there is at least one alias - add aliases to alias dropdown
-			WinString strTitle;
+			RttString strTitle;
 			for ( int i = 0; i < listKeyStore.GetSize(); i++ )
 			{	
 				strTitle.SetUTF8( listKeyStore.GetAlias(i) );
@@ -584,7 +584,7 @@ void CBuildAndroidDlg::OnOK()  // OnBuild()
 {
 	Rtt::TargetAndroidAppStore *pTargetStore = NULL;
 	CComboBox *pComboBox;
-	WinString stringBuffer;
+	RttString stringBuffer;
     CString sValue;
 	CString sKeystore;
 	CString sBuildDir;

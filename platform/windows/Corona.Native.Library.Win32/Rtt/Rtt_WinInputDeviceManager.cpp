@@ -1036,7 +1036,7 @@ void WinInputDeviceManager::OnReceivedMessage(
 			wchar_t wParam = (wchar_t)arguments.GetWParam();
 			wchar_t wParamArray[2] = { wParam, 0 };
 
-			WinString stringConverter;
+			RttString stringConverter;
 			stringConverter.SetUTF16(wParamArray);
 			int utf8Length = strlen(stringConverter.GetUTF8()) + 1;
 			char * utf8Character = new char[utf8Length];

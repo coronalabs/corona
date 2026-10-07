@@ -15,7 +15,7 @@
 #include "Core/Rtt_Build.h"
 #include "Rtt_Lua.h"
 #include "Rtt_LuaContext.h"
-#include "WinString.h"
+#include "RttString.h"
 #include "BrowseDirDialog.h"
 
 Rtt_EXPORT int luaopen_lfs (lua_State *L);
@@ -213,7 +213,7 @@ void CNewProjectDlg::OnOK()
 	CStringA templateName;
 	CStringA defaultOrientationName;
 	CString stringBuffer;
-	WinString stringConverter;
+	RttString stringConverter;
 	int screenWidth;
 	int screenHeight;
 

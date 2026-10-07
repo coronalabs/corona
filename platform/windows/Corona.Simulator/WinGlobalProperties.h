@@ -49,7 +49,7 @@ namespace Rtt
 /// <summary>
 ///  <para>This class mirrors some members of CSimulatorApp for convenience of access.</para>
 ///  <para>Instead of AfxGetApp()->GetRegistryKey(), use GetWinProperties()->GetRegistryKey().</para>
-///  <para>Note that char * strings are expected to be in UTF8 format. Use WinString to convert.</para>
+///  <para>Note that char * strings are expected to be in UTF8 format. Use RttString to convert.</para>
 ///  <para>It also holds pointers to the four objects needed for authorization.</para>
 /// </summary>
 class WinGlobalProperties

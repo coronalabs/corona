@@ -41,7 +41,7 @@
 #include "NewProjectDlg.h"
 #include "SelectSampleProjectDlg.h"
 #include "RelaunchPrefDlg.h"
-#include "WinString.h"
+#include "RttString.h"
 #include "WinGlobalProperties.h"  // WMU_ message IDs
 #include "PreferencesDlg.h"
 #include "ProgressWnd.h"  // ActivityIndicator
@@ -340,7 +340,7 @@ bool CSimulatorView::HasApplicationChanged()
 				return false;
 			}
 
-			WinString tstr;
+			RttString tstr;
 			tstr.SetTCHAR(projectPath);
 
 			// fprintf(stderr, "Project: %s\n", tstr.GetUTF8());
@@ -826,7 +826,7 @@ void CSimulatorView::OnFileOpenSampleProject()
 		GetDocument()->GetDocTemplate()->OpenDocumentFile(filePath);
 	}
 
-	WinString projectName;
+	RttString projectName;
 	projectName.SetTCHAR(GetDocument()->GetTitle());
 	GetWinProperties()->GetAnalytics()->Log("open-sample", "sample", projectName.GetUTF8());
 }
@@ -1069,7 +1069,7 @@ void CSimulatorView::OnFileOpenInEditor()
 			else {
 				::ShellExecute(nullptr, _T("open"), GetDocument()->GetPath(), nullptr, nullptr, SW_SHOWNORMAL);
 			}
-			WinString appName;
+			RttString appName;
 			appName.SetTCHAR(fileAssociation);
 			GetWinProperties()->GetAnalytics()->Log( "open-in-editor", "editor", appName.GetUTF8() );
 		}
@@ -1213,7 +1213,7 @@ void CSimulatorView::OnClearProjectSandbox()
 		}
 	}
 
-	WinString clearPrompt;
+	RttString clearPrompt;
 
 	clearPrompt.Format(_T("Are you sure you want to delete the contents of the sandbox for '%s'?\n\nThis will also clear any app preferences and restart the project"), GetDocument()->GetTitle());
 
@@ -1330,9 +1330,9 @@ void CSimulatorView::OnWindowViewAs( UINT nID )
 		}
 
 		// Fetch the device settings entered into the above dialog.
-		WinString customDeviceTemplateName;
-		WinString customDeviceTemplate;
-		WinString customDeviceWidthStr, customDeviceHeightStr;
+		RttString customDeviceTemplateName;
+		RttString customDeviceTemplate;
+		RttString customDeviceWidthStr, customDeviceHeightStr;
 		customDeviceTemplateName.SetTCHAR( mSystemSkinsDir );
 		customDeviceTemplateName.Append( "CustomDevice.lua.template" );
 		customDeviceWidthStr.Format( "%d", cdDlg.GetCustomDeviceWidth() );
@@ -1351,16 +1351,16 @@ void CSimulatorView::OnWindowViewAs( UINT nID )
         customDeviceTemplate.Replace( "{customDeviceHeight}", customDeviceHeightStr );
 		customDeviceTemplate.Replace( "{customDeviceIsRotatable}", "true" );
 		{
-			WinString stringTranscoder(cdDlg.GetCustomDeviceName());
+			RttString stringTranscoder(cdDlg.GetCustomDeviceName());
 			customDeviceTemplate.Replace("{customDeviceName}", stringTranscoder.GetUTF8());
 		}
 		{
-			WinString stringTranscoder(cdDlg.GetCustomDevicePlatform());
+			RttString stringTranscoder(cdDlg.GetCustomDevicePlatform());
 			customDeviceTemplate.Replace("{customDevicePlatform}", stringTranscoder.GetUTF8());
 		}
 
 		// Save the custom skin's settings to file.
-		WinString customSkinFileNamePath( mCustomSkinFileName );
+		RttString customSkinFileNamePath( mCustomSkinFileName );
 		customDeviceTemplateName.SetTCHAR( mCustomSkinFileName.GetString() );
 		if ( ! customDeviceTemplate.WriteFileContents( customSkinFileNamePath.GetUTF8() ) )
 		{
@@ -1721,7 +1721,7 @@ LRESULT CSimulatorView::OnNativeAlert(WPARAM wParam, LPARAM lParam)
 		mMessageDlgPointer = new CMessageDlg(this);
 
 		// Set up parameters of message window
-		WinString string;
+		RttString string;
 		string.SetUTF8( pWAP->sTitle );
 		mMessageDlgPointer->SetTitle(string.GetTCHAR());
 		string.SetUTF8( pWAP->sMsg );
@@ -2123,11 +2123,11 @@ bool CSimulatorView::VerifyAllPluginsAcquired()
 			CStringW title;
 			CStringW message;
 			title.LoadStringW(IDS_WARNING);
-			WinString missingPluginsString(L"");
+			RttString missingPluginsString(L"");
 			if (!utf8MissingPluginsString.IsEmpty())
 			{
 				missingPluginsString.SetUTF16(L"Corona failed to acquire the following plugins:\n- ");
-				WinString stringBuffer(utf8MissingPluginsString.GetString());
+				RttString stringBuffer(utf8MissingPluginsString.GetString());
 				stringBuffer.Replace("\n", "\n- ");
 				missingPluginsString.Append(stringBuffer.GetUTF16());
 				missingPluginsString.Append(L"\n\n");
@@ -2434,7 +2434,7 @@ void CSimulatorView::ScaleRect( CRect& rect, float scale )
 // Only called from InitializeSimulation()
 bool CSimulatorView::InitSkin( Rtt::TargetDevice::Skin skinId )
 {
-	WinString skinFile;
+	RttString skinFile;
 
 	if (skinId == Rtt::TargetDevice::kCustomSkin)
 	{
@@ -2507,7 +2507,7 @@ bool CSimulatorView::ValidateOpenGL()
 	auto result = Interop::RuntimeEnvironment::ValidateRenderSurface(windowHandle);
 
 	// Fetch the renderer's version string.
-	WinString rendererVersionString;
+	RttString rendererVersionString;
 	rendererVersionString.SetUTF8(result.RendererVersion.GetString());
 	if (rendererVersionString.IsEmpty())
 	{
@@ -2596,7 +2596,7 @@ void CSimulatorView::GetRecentDocs(Rtt::LightPtrArray<Rtt::RecentProjectInfo> *l
 	}
 
 	// Copy information in this app's recents list to the given list.
-	WinString stringTranscoder;
+	RttString stringTranscoder;
 	int listCount = recentListPointer->GetSize();
 	if (listCount > 10)
 	{

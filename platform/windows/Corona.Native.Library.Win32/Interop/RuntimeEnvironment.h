@@ -26,7 +26,7 @@
 #include "Rtt_WinProjectSettings.h"
 #include "RuntimeState.h"
 #include "ScopedOleInitializer.h"
-#include "WinString.h"
+#include "RttString.h"
 #include <list>
 #include <Windows.h>
 extern "C"
@@ -959,7 +959,7 @@ class RuntimeEnvironment
 		///  Array storing paths of all sandboxed dirctories supported by Corona such as
 		///  kResourceDir, kDcoumentsDir, etc.
 		/// </summary>
-		WinString fDirectoryPaths[Rtt::MPlatform::kNumDirs];
+		RttString fDirectoryPaths[Rtt::MPlatform::kNumDirs];
 
 		/// <summary>Registry path used by the Corona project without the hive name prefix.</summary>
 		std::wstring fRegistryPathWithoutHive;
@@ -974,7 +974,7 @@ class RuntimeEnvironment
 		///  </para>
 		///  <para>These strings are assigned via the RuntimeEnvironment::CreationSettings::LaunchArguments field.</para>
 		/// </summary>
-		std::list<WinString> fLaunchArguments;
+		std::list<RttString> fLaunchArguments;
 
 		/// <summary>The last orientation reported to the Corona runtime while running.</summary>
 		Rtt::DeviceOrientation::Type fLastOrientation;

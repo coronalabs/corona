@@ -51,6 +51,7 @@
     <None Include="res\CoronaOutputViewer.rc2">
       <Filter>res</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Corona.OutputViewer.rc" />

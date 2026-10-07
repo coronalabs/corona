@@ -18,7 +18,7 @@
 #include "Rtt_MPlatform.h"
 #include "Rtt_MPlatformServices.h"
 #include "Rtt_Win32AppPackagerParams.h"
-#include "WinString.h"
+#include "RttString.h"
 #include <string>
 
 #if defined( Rtt_NO_GUI )
@@ -77,7 +77,7 @@ int Win32AppPackager::Build(
 	}
 
 	// Fetch the destination directory path. Ensure it does not end with a trailing slash.
-	WinString destinationDirectoryPath;
+	RttString destinationDirectoryPath;
 	destinationDirectoryPath.SetUTF8(paramsPointer->GetDstDir());
 	destinationDirectoryPath.TrimEnd(L"\\/");
 
@@ -86,8 +86,8 @@ int Win32AppPackager::Build(
 	{
 		// Before attempting to delete the destination directory, check if any of its files are currently locked.
 		// The simplest way to check is to see if we can rename/move the directory successfully.
-		WinString rootTempDirectoryPath(tempDirectoryPath);
-		WinString movedDestinationDirectoryPath;
+		RttString rootTempDirectoryPath(tempDirectoryPath);
+		RttString movedDestinationDirectoryPath;
 		if (ArePathsOnSameVolume(destinationDirectoryPath.GetUTF16(), rootTempDirectoryPath.GetUTF16()))
 		{
 			movedDestinationDirectoryPath.SetUTF16(rootTempDirectoryPath.GetUTF16());
@@ -119,7 +119,7 @@ int Win32AppPackager::Build(
 						(LPWSTR)&utf16Buffer, 0, nullptr);
 				if (utf16Buffer)
 				{
-					WinString stringConverter;
+					RttString stringConverter;
 					stringConverter.SetUTF16(utf16Buffer);
 					message.append("\r\n\r\nReason:\r\n   ");
 					message.append(stringConverter.GetUTF8());
@@ -156,19 +156,19 @@ int Win32AppPackager::Build(
 	}
 
 	// Create an intermediate directory to compile scripts to.
-	WinString objDirectoryPath;
+	RttString objDirectoryPath;
 	objDirectoryPath.SetUTF8(tempDirectoryPath);
 	objDirectoryPath.Append("\\obj");
 	::SHCreateDirectoryExW(nullptr, objDirectoryPath.GetUTF16(), nullptr);
 
 	// Create a "Bin" directory to copy the binaries to.
-	WinString binDirectoryPath;
+	RttString binDirectoryPath;
 	binDirectoryPath.SetUTF8(tempDirectoryPath);
 	binDirectoryPath.Append("\\Bin");
 	::SHCreateDirectoryExW(nullptr, binDirectoryPath.GetUTF16(), nullptr);
 
 	// Create a "Bin\Resources" directory to copy the Corona project's assets to.
-	WinString binResourcesDirectoryPath;
+	RttString binResourcesDirectoryPath;
 	binResourcesDirectoryPath.SetUTF16(binDirectoryPath.GetUTF16());
 	binResourcesDirectoryPath.Append("\\Resources");
 	::SHCreateDirectoryExW(nullptr, binResourcesDirectoryPath.GetUTF16(), nullptr);
@@ -199,7 +199,7 @@ int Win32AppPackager::Build(
 		// Replace invalid file system characters in the EXE file name.
 		Rtt::String utf8EscapedExeFileName;
 		PlatformAppPackager::EscapeFileName(win32ParamsPointer->GetExeFileName(), utf8EscapedExeFileName, false);
-		WinString exeFileName;
+		RttString exeFileName;
 		if (utf8EscapedExeFileName.IsEmpty())
 		{
 			exeFileName.SetUTF8(win32ParamsPointer->GetExeFileName());
@@ -242,7 +242,7 @@ int Win32AppPackager::Build(
 			return 2;
 		}
 		{
-			WinString appIconPath;
+			RttString appIconPath;
 			appIconPath.SetUTF8(paramsPointer->GetSrcDir());
 			appIconPath.Append("\\Icon-win32.ico");
 			if (::PathFileExistsW(appIconPath.GetUTF16()))
@@ -252,7 +252,7 @@ int Win32AppPackager::Build(
 		}
 		if (Rtt_StringIsEmpty(paramsPointer->GetVersion()) == false)
 		{
-			WinString versionString;
+			RttString versionString;
 			versionString.SetUTF8(paramsPointer->GetVersion());
 			exeUpdater.SetVersionString(L"ProductVersion", versionString.GetUTF16());
 			exeUpdater.SetVersionString(L"FileVersion", versionString.GetUTF16());
@@ -273,26 +273,26 @@ int Win32AppPackager::Build(
 			catch (...) {}
 		}
 		{
-			WinString appName;
+			RttString appName;
 			appName.SetUTF8(paramsPointer->GetAppName());
 			exeUpdater.SetVersionString(L"ProductName", appName.GetUTF16());
 			exeUpdater.SetVersionString(L"InternalName", appName.GetUTF16());
 		}
 		if (Rtt_StringIsEmpty(win32ParamsPointer->GetAppDescription()) == false)
 		{
-			WinString appDescription;
+			RttString appDescription;
 			appDescription.SetUTF8(win32ParamsPointer->GetAppDescription());
 			exeUpdater.SetVersionString(L"FileDescription", appDescription.GetUTF16());
 		}
 		if (Rtt_StringIsEmpty(win32ParamsPointer->GetCompanyName()) == false)
 		{
-			WinString companyName;
+			RttString companyName;
 			companyName.SetUTF8(win32ParamsPointer->GetCompanyName());
 			exeUpdater.SetVersionString(L"CompanyName", companyName.GetUTF16());
 		}
 		if (Rtt_StringIsEmpty(win32ParamsPointer->GetCopyrightString()) == false)
 		{
-			WinString copyrightString;
+			RttString copyrightString;
 			copyrightString.SetUTF8(win32ParamsPointer->GetCopyrightString());
 			exeUpdater.SetVersionString(L"LegalCopyright", copyrightString.GetUTF16());
 		}
@@ -381,7 +381,7 @@ int Win32AppPackager::DoLocalBuild(const Win32AppPackager::BuildSettings& buildS
 	}
 
 	// Get a UTF-16 path to the bin directory.
-	WinString binDirectoryPath;
+	RttString binDirectoryPath;
 	binDirectoryPath.SetUTF8(buildSettings.BinDirectoryPath);
 
 	// Extract the project's plugins to the "bin" directory.
@@ -391,7 +391,7 @@ int Win32AppPackager::DoLocalBuild(const Win32AppPackager::BuildSettings& buildS
 	// In headless (CoronaBuilder) builds we use DownloadPluginsHeadless() which drives
 	// BuilderPluginDownloader.lua + CoronaBuilderPluginCollector — the same infrastructure iOS uses.
 	{
-		WinString intermediatePluginDirectoryPath(buildSettings.IntermediateDirectoryPath);
+		RttString intermediatePluginDirectoryPath(buildSettings.IntermediateDirectoryPath);
 		intermediatePluginDirectoryPath.Append(L"\\..\\Plugins");
 		bool hasPlugins = false;
 
@@ -549,7 +549,7 @@ int Win32AppPackager::DoLocalBuild(const Win32AppPackager::BuildSettings& buildS
 								(LPWSTR)&utf16Buffer, 0, nullptr);
 							if (utf16Buffer)
 							{
-								WinString stringConverter;
+								RttString stringConverter;
 								stringConverter.SetUTF16(utf16Buffer);
 								message.append("\r\n\r\nReason:\r\n   ");
 								message.append(stringConverter.GetUTF8());

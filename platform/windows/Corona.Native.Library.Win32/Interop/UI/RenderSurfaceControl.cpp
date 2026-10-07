@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "RenderSurfaceControl.h"
 #include "Core\Rtt_Assert.h"
-#include "WinString.h"
+#include "RttString.h"
 #include <exception>
 #include <GL\glew.h>
 #include <GL\wglew.h>
@@ -95,7 +95,7 @@ void RenderSurfaceControl::SelectRenderingContext()
 					(LPWSTR)&utf16Buffer, 0, nullptr);
 			if (utf16Buffer && utf16Buffer[0])
 			{
-				WinString stringConverter;
+				RttString stringConverter;
 				stringConverter.SetUTF16(utf16Buffer);
 				Rtt_LogException(
 						"Failed to select OpenGL rendering context. Reason:\r\n  %s\r\n", stringConverter.GetUTF8());
@@ -245,7 +245,7 @@ void RenderSurfaceControl::CreateContext(const Params & params)
 					(LPWSTR)&utf16Buffer, 0, nullptr);
 			if (utf16Buffer && utf16Buffer[0])
 			{
-				WinString stringConverter;
+				RttString stringConverter;
 				stringConverter.SetUTF16(utf16Buffer);
 				Rtt_LogException("Failed to create OpenGL rendering context. Reason:\r\n  %s\r\n", stringConverter.GetUTF8());
 			}

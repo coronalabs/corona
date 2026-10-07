@@ -20,7 +20,7 @@
 #include <ctype.h>
 
 #if defined(Rtt_WIN_ENV)
-#include "WinString.h"
+#include "RttString.h"
 #endif
 
 // ----------------------------------------------------------------------------
@@ -237,7 +237,7 @@ AppPackagerFactory::CreatePackagerParamsAndroid(
 const char *
 AppPackagerFactory::GetResourceDirectoryWin() const
 {
-	static WinString resourceDir;
+	static RttString resourceDir;
 	if (resourceDir.GetLength() == 0)
 	{
 		resourceDir = _wgetenv(_T("CORONA_PATH"));
