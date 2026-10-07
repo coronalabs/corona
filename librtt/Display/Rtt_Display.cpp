@@ -253,6 +253,22 @@ InvalidateDisplay( void * display )
 	static_cast< Display * >( display )->GetScene().Invalidate();
 }
 
+void
+Display::SetDefaultPrograms()
+{
+    RenderData data;
+    Program* defaultPrograms[2];
+    const ShaderResource::ProgramMod mods[] = { ShaderResource::kDefault, ShaderResource::k25D };
+    for ( int i = 0; i < 2; i++ )
+    {
+        fShaderFactory->GetDefault().Prepare( data, 0, 0, mods[i] );
+    
+        defaultPrograms[i] = data.fProgram;
+    }
+    
+    fRenderer->SetDefaultPrograms( defaultPrograms );
+}
+
 bool
 Display::Initialize( lua_State *L, int configIndex, DeviceOrientation::Type orientation, const char * backend, void * backendContext )
 {
@@ -308,6 +324,8 @@ Display::Initialize( lua_State *L, int configIndex, DeviceOrientation::Type orie
         result = true;
 
 		fShaderFactory = Rtt_NEW( allocator, ShaderFactory( *this, programHeader, backend ) );
+  
+        SetDefaultPrograms();      
 	}
 
     return result;
@@ -1094,6 +1112,8 @@ Display::ReloadResources()
 {
     GetRenderer().ReleaseGPUResources();
     GetRenderer().Initialize();
+
+    SetDefaultPrograms();
 
     // Special case: Text objects use textures that are not backed by a file
 ///    TextObject::Reload( GetScene().CurrentStage() );
@@ -1935,11 +1955,16 @@ Display::GetViewProjectionMatrix(glm::mat4 &viewMatrix, glm::mat4 &projMatrix)
 #endif
 }
 
+uintptr_t
+Display::QueryBackendDetail( U32 detail, uintptr_t arg )
+{
+    return Renderer::QueryBackendDetail( (Renderer::BackendDetail)detail, arg );
+}
+
 U32
 Display::GetMaxTextureSize()
 {
-    U32 result = 1024;
-    result = Renderer::GetMaxTextureSize();
+    U32 result = (U32)QueryBackendDetail( Renderer::kMaxTextureSize );
     Rtt_ASSERT( result > 0 );
     return result;
 }
@@ -1947,37 +1972,50 @@ Display::GetMaxTextureSize()
 const char *
 Display::GetGlString( const char *s )
 {
-    return Renderer::GetGlString( s );
+    uintptr_t str = QueryBackendDetail( Renderer::kGlString, reinterpret_cast<uintptr_t>( s ) );
+    return reinterpret_cast<const char*>( str );
 }
 
 bool
 Display::GetGpuSupportsHighPrecisionFragmentShaders()
 {
-    return Renderer::GetGpuSupportsHighPrecisionFragmentShaders();
+    return ( 0 != QueryBackendDetail( Renderer::kSupportsHighPrecisionFragmentShaders ) );
 }
 
 U32
 Display::GetMaxUniformVectorsCount()
 {
-    return Renderer::GetMaxUniformVectorsCount();
+    return (U32)QueryBackendDetail( Renderer::kMaxUniformVectorsCount );
+}
+
+U32
+Display::GetMaxTextureUnits()
+{
+    return (U32)QueryBackendDetail( Renderer::kMaxImageUnits );
 }
 
 U32
 Display::GetMaxVertexTextureUnits()
 {
-    return Renderer::GetMaxVertexTextureUnits();
+    return (U32)QueryBackendDetail( Renderer::kMaxVertexTextureUnits );
 }
 
 bool
 Display::HasFramebufferBlit( bool * canScale ) const
 {
-    return fRenderer->HasFramebufferBlit( canScale );
+    U32 canScaleU32;
+    bool hasBlit = ( 0 != QueryBackendDetail( Renderer::kHasFramebufferBlit, reinterpret_cast<uintptr_t>( &canScaleU32 ) ) );
+    if ( NULL != canScale )
+    {
+        memset( canScale, canScaleU32 ? 1 : 0, sizeof(bool) ); // in case unaligned
+    }
+    return hasBlit;
 }
 
 void
 Display::GetVertexAttributes( VertexAttributeSupport & support ) const
 {
-    fRenderer->GetVertexAttributes( support );
+    QueryBackendDetail( Renderer::kVertexAttributes, reinterpret_cast<uintptr_t>( &support ) ); // assume aligned
 }
 
 void

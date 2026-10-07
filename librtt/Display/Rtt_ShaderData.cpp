@@ -49,8 +49,6 @@ ShaderData::ShaderData( const WeakPtr< ShaderResource >& resource )
         {
             fExtraSpace = Rtt_CALLOC( NULL, callbacks->extraSpace, 1 );
             fExtraCount = callbacks->extraSpace;
-
-            memset( fExtraSpace, 0, fExtraCount );
         }
     }
 }

@@ -48,6 +48,50 @@ class Geometry;
 
 // ----------------------------------------------------------------------------
 
+// This is mutable state related to RenderData that might possibly
+// be resolved via Renderer::Insert(), as an inout argument.
+struct RenderDataState {
+	RenderDataState() : fState( 0 ) {}
+
+	enum SyncState {
+		kUnsynced, // not yet able to check for consistency
+		kSyncConsistent, // sync attempt made and successful
+		kSyncInconsistent, // sync attempt failed
+	};
+	
+	enum {
+		kSyncBits = 2,
+		kOccupancyBits = 30,
+
+		kSyncShift = 0,
+		kOccupancyShift = kSyncBits,
+
+		kSyncMask = ( 1 << kSyncBits ) - 1,
+		kOccupancyMask = ( 1 << kOccupancyBits ) - 1,
+
+		kSyncWipeMask = ~( kSyncMask << kSyncShift ),
+		kOccupancyWipeMask = ~( kOccupancyMask << kOccupancyShift )
+	};
+
+	Rtt_STATIC_ASSERT( kOccupancyBits + kSyncBits <= sizeof(int) * 8 );
+
+	#define GET_BITS( NAME, TYPE ) (TYPE)( ( fState >> k##NAME##Shift ) & k##NAME##Mask )
+	#define SET_BITS( NAME, ARG ) fState = ( fState & ~( k##NAME##Mask << k##NAME##Shift ) ) | ( ( ARG & k##NAME##Mask ) << k##NAME##Shift )
+	
+	void SetSyncState( SyncState state ) { SET_BITS( Sync, state ); }
+	SyncState GetSyncState() const { return GET_BITS( Sync, SyncState ); }
+
+	void SetOccupancy( U32 occ ) { SET_BITS( Occupancy, occ ); }
+	U32 GetOccupancy() const { return GET_BITS( Occupancy, U32 ); }
+	
+	#undef GET_BITS
+	#undef SET_BITS
+	
+	int fState;
+};
+
+// ----------------------------------------------------------------------------
+
 // Shader instances are per-paint
 // Each shader:
 // * has a weak reference to a shared ShaderResource
@@ -123,7 +167,12 @@ class Shader
         void DoAnyAfterDraw( const DrawState & state, Renderer & renderer, const RenderData & objectData ) const;
 
     public:
-        bool IsCompatible( const Geometry* geometry );
+        bool IsCompatible( const Geometry* geometry ) const;
+		bool IsPaintConsistent( const Paint* paint ) const;
+		bool CanCheckConsistency() const;
+    
+    public:
+		RenderDataState& GetRenderDataState() const { return fRenderDataState; }
     
     protected:
         SharedPtr< ShaderResource > fResource;
@@ -134,6 +183,7 @@ class Shader
         FrameBufferObject *fFBO;
         Texture *fTexture;
         const Shader *fRoot; // Weak reference
+        mutable RenderDataState fRenderDataState; // state that may be modified by Renderer::Insert()
         
         
         // Cache for a shader's output

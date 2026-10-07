@@ -210,7 +210,7 @@ Geometry::ExtensionBlock::UpdateData( bool storedOnGPU, U32 count )
     
     if (count > 0)
     {
-        U32 extraCount = fList->ExtraVertexCount();
+        U32 extraCount = fList->ExtraVertexRateSizeInVertices();
         
         // For (vertex-rate) GPU data, we consolidate the original + extended
         // vertex data before uploading it. To avoid too much complexity, the

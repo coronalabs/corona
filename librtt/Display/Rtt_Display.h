@@ -127,6 +127,8 @@ class Display
 		virtual bool Initialize( lua_State *L, int configIndex, DeviceOrientation::Type orientation, const char * backend, void * backendContext );
 		virtual void Teardown();
 
+		void SetDefaultPrograms();
+
     protected:
         void ReadRenderingConfig( lua_State *L, int index, ProgramHeader& programHeader );
 
@@ -328,11 +330,16 @@ class Display
         TextureFactory& GetTextureFactory() const { return * fTextureFactory; }
 
         void GetViewProjectionMatrix( glm::mat4 &viewMatrix, glm::mat4 &projMatrix );
-                
+
+	public:
+		static uintptr_t QueryBackendDetail( U32 detail, uintptr_t arg = 0 );
+	
+	public:
         static U32 GetMaxTextureSize();
         static const char *GetGlString( const char *s );
         static bool GetGpuSupportsHighPrecisionFragmentShaders();
         static U32 GetMaxUniformVectorsCount();
+        static U32 GetMaxTextureUnits();
         static U32 GetMaxVertexTextureUnits();
 
         bool HasFramebufferBlit( bool * canScale ) const;

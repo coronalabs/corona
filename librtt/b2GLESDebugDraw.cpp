@@ -76,8 +76,8 @@ b2GLESDebugDraw::b2GLESDebugDraw( Display &display )
 		fShader = factory.FindOrLoad( ShaderTypes::kCategoryFilter, "color" );
 		fShader->Prepare( fData, 0, 0, ShaderResource::kDefault );
 
-		fData.fFillTexture0 = NULL;
-		fData.fFillTexture1 = NULL;
+		fData.fTextures = TextureList();
+		
 		fData.fMaskTexture = NULL;
 		fData.fMaskUniform = NULL;
 

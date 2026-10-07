@@ -57,7 +57,7 @@ TextureResourceCanvas* TextureResourceCanvas::Create(Rtt::TextureFactory &factor
 	Texture::Filter filter = RenderTypes::Convert( display.GetDefaults().GetMagTextureFilter() );
 	Texture::Wrap wrap = RenderTypes::Convert( display.GetDefaults().GetTextureWrapX() );
 
-	if (Texture::kLuminance == format)
+	if ( Texture::kLuminance == format.GetValue() && !factory.GetDisplay().GetRenderer().Has8BitRed() /* expressly a color-renderable format */ )
 	{
 		format = Texture::kRGBA;
 	}

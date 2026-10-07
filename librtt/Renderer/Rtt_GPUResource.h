@@ -18,6 +18,7 @@ namespace Rtt
 {
 
 class CPUResource;
+struct TextureFormatDescription;
 
 // ----------------------------------------------------------------------------
 
@@ -38,15 +39,24 @@ class GPUResource
         GPUResource();
         virtual ~GPUResource();
 
+		struct RenderContext
+		{
+			const void* fBackendInfo; // e.g. could be Vulkan context
+			const TextureFormatDescription* fCustomFormats;
+			S32 fCustomFormatCount;
+			bool fHasRed;
+			bool fIsES2;
+		};
+
         // Allocate GPU resources appropriate for the given data. It is the
         // responsibility of the caller to ensure that Create() is not called
         // multiple times unless it is safe to do so (e.g. Destroy() had been 
         // called or the context was lost and all GPU resources destroyed).
-        virtual void Create( CPUResource* resource ) = 0;
+        virtual void Create( CPUResource* resource, const RenderContext* context ) = 0;
         
         // Called when the source data for this GPUResource is manipulated. 
         // Derived classes should update their internal resources to match.
-        virtual void Update( CPUResource* resource ) = 0;
+        virtual void Update( CPUResource* resource, const RenderContext* context ) = 0;
         
         // Destroy any allocated internal resources. It is the responsibility
         // of the caller to ensure that this function is not invoked on a 

@@ -434,8 +434,8 @@ TRACE_CALL;
 		ShaderFactory &factory = display.GetShaderFactory();
 		fShader = &factory.GetDefault();
 
-		fData.fFillTexture0 = NULL;
-		fData.fFillTexture1 = NULL;
+		fData.fTextures = TextureList();
+		
 		fData.fMaskTexture = NULL;
 		fData.fMaskUniform = NULL;
 
@@ -451,7 +451,7 @@ TRACE_CALL;
 
 	// Shader.
 	{
-		fData.fFillTexture0 = &fTextureResource->GetTexture();
+		fData.fTextures.SetFill0( &fTextureResource->GetTexture() );
 
 		ShaderData *d = ( fShader ? fShader->GetData() : NULL );
 		if( d )

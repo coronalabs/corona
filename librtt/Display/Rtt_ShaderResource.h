@@ -31,7 +31,123 @@ namespace Rtt
 
 class Program;
 class ShaderData;
+class Texture;
+class TextureList;
 class FormatExtensionList;
+struct RenderDataState;
+
+// ----------------------------------------------------------------------------
+
+struct SamplerTypeDetails {
+	bool IsDefault() const { return ( 0 == family ) && ( 0 == target ) && !isImage && !isArray; }
+	bool Matches( const SamplerTypeDetails& rhs) const { return 0 == memcmp( this, &rhs, sizeof(*this) ); }
+
+	U8 family : 2;
+	U8 target : 3;
+	U8 isImage : 1;
+	U8 isArray : 1;
+};
+
+// ----------------------------------------------------------------------------
+
+struct ExtraTextureInfo
+{
+	// The info is a big blob of bytes, used by shaders and paints in
+	// slightly different ways. Both cases include a list of names.
+
+	// Counts are 6-bit values, per the details that follow, and can
+	// be stored in a byte. One of the leftover bits is reserved as
+	// a behavior flag, e.g. "uses compression", to be interpreted
+	// in the same way by both shaders and paints; the high bit is
+	// intended for "local" use.
+
+	// At the moment, counts are interspersed between names. While
+	// slightly wasteful in the general case, owing to padding, it
+	// does make for a simpler decoding process.
+
+	enum {
+		// Names are basically "identifiers" as in C89 or GLSL, i.e.
+		// some combination of underscores, ASCII letters, and non-
+		// leading digits with a terminating NUL byte, which lends
+		// itself perfectly to a Base64-style, 6-bits-per-element
+		// encoding. Every three bytes can thus hold four of these
+		// elements, and we can eke out longer names by storing the
+		// count in terms of triples instead. (For purposes of this
+		// length, the terminating NUL is not included. Also, NULs
+		// will be added to pad any shortfall in the final triple.)
+		kMaxPackedNameCount = 64,
+		kMaxPackedNameLength = kMaxPackedNameCount * 3,
+	
+		// Longest length of raw name that may be packed.
+		kMaxNameLength = kMaxPackedNameCount * 4,
+	};
+
+	Rtt_STATIC_ASSERT( ( kMaxPackedNameLength % 3 == 0 ) && ( kMaxNameLength % 4 == 0 ) );
+
+	static int FindNameInList( const U8* name, const U8* listOfNames, int n );
+	static U32 NamesSize( const U8* listOfNames, int n );
+	static int EncodeName( U8* buf, const char* name );
+
+	// N.B. name must have a terminating NUL (when encoding) or an
+	// extra slot to receive the same (when decoding).
+
+	U8 fData[1];
+};
+
+class NamesReader {
+public:
+	NamesReader( const U8* stream );
+
+	NamesReader Clone() const { return NamesReader( fStream ); }
+		
+	void PullNext();
+	const U8* Current() const;
+		
+public:
+	int FindCurrentNameInList( NamesReader& headOfList, int n ) const;
+	bool MatchesList( const NamesReader& headOfOtherList, int n ) const;
+	U32 SizeOfList( int n ) const;
+	
+public:
+	void Decode( char* name ) const;
+	int GetPullCount() const { return fPulls; } // times PullNext() has been called / number of "count" bytes
+	int GetTotalBytes() const { return GetNameBytes() + fPulls; } // all counts
+	int GetNameBytes() const { return fTally + fCount; } // current count plus previous results
+
+private:
+	const U8* fStream;
+	int fCount;
+	int fPulls;
+	int fTally;
+};
+
+class LengthAccumulator {
+public:
+	LengthAccumulator() : fTotalTriples( 0 ), fCount( 0 ) {}
+
+	int GetTotalBytes() const;
+	int GetCount() const { return fCount; }
+	void AddLength( int length );
+
+private:
+	int fTotalTriples;
+	int fCount;
+};
+
+class NamesEncoder {
+public:
+	NamesEncoder( U8* stream, const LengthAccumulator& acc );
+
+	bool Encode( const char* name, int length );
+	void CheckTotalCount();
+
+private:
+	LengthAccumulator fRef;
+	U8* fStream;
+	int fPos;
+};
+
+// ----------------------------------------------------------------------------
 
 struct TimeTransform
 {
@@ -146,6 +262,34 @@ class ShaderResource
     public:
         void SetProgramMod(ProgramMod mod, Program *program);
         Program *GetProgramMod(ProgramMod mod) const;
+
+	public:
+		void SetTextureInfo( const U8* info, U8 count, SamplerTypeDetails fillInfo[2] );
+
+		static bool DetailsAgree( U32 formatBackingValue, const SamplerTypeDetails& details );
+
+		bool HasTextureInfo() const { return fTextureInfoIsSet; }
+        U32 GetExtraTextureCount() const { return fExtraTextureCount; }
+        SamplerTypeDetails GetFillInfo(int index) const { return fFillTextureInfo[index]; }
+        const SamplerTypeDetails* GetExtraTextureDetails() const;
+        const U8* GetExtraTextureNames() const;
+
+	public:
+		bool AreFormatsConsistent( U32 fillBackingValues[], U32 extraTextureBackingValues[], U32 extraCount, const U8* paintNames, RenderDataState* renderDataState = NULL ) const;
+		bool AreTexturesConsistent( const TextureList& list, const U8* paintNames, RenderDataState* renderDataState = NULL ) const;
+
+	public:
+		const Program* GetFirstBoundProgram() const;
+
+		bool IsSyncPending() const { return fSyncPending; }
+		bool IsFirstBoundMod25D() const { return fIsFirstMod25D; }
+		int GetFirstBoundVersion() const { return fFirstVersion; }
+		void PrepareFirstBind( const Program* program, int version );
+		void SyncBinding();
+        
+	public:
+		void SetExtensionPrelude( const char* prelude );
+		const char* GetExtensionPrelude() const { return fExtensionPrelude; }
         
     private:
         void Init(Program *defaultProgram);
@@ -163,9 +307,19 @@ class ShaderResource
         SharedPtr<FormatExtensionList> fExtensionList;
         std::vector< std::string > fDetailNames;
         std::vector< std::string > fDetailValues;
+        char* fExtensionPrelude;
+        const ExtraTextureInfo *fExtraTextureInfo;
         U32 fDetailsCount;
         TimeTransform fTimeTransform;
+        SamplerTypeDetails fFillTextureInfo[2];
+        U8 fExtraTextureCount;
+        U8 fFirstVersion : 2;
+        U8 fIsFirstMod25D : 1;
+        U8 fAnyVersionBound : 1;
+        U8 fSyncPending : 1;
         bool fUsesUniforms;
+        bool fUsesTime;
+        bool fTextureInfoIsSet;
 };
 
 // ----------------------------------------------------------------------------

@@ -129,7 +129,7 @@ namespace Rtt
 			SetValid(kBlendFlag);
 		}
 
-		data.fFillTexture0 = GetTexture();
+		data.fTextures.SetFill0( GetTexture() );
 
 		if (!IsValid(kShaderUniformDataFlag))
 		{

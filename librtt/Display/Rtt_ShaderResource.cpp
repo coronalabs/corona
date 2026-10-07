@@ -11,6 +11,7 @@
 
 #include "Display/Rtt_ShaderResource.h"
 
+#include "Display/Rtt_Shader.h"
 #include "Display/Rtt_ShaderData.h"
 #include "Renderer/Rtt_Program.h"
 
@@ -25,6 +26,172 @@
 namespace Rtt
 {
 
+// ----------------------------------------------------------------------------
+
+int
+ExtraTextureInfo::FindNameInList( const U8* name, const U8* listOfNames, int n )
+{
+	NamesReader reader( name ), listReader( listOfNames );
+	
+	reader.PullNext();
+	
+	return reader.FindCurrentNameInList( listReader, n );
+}
+
+U32
+ExtraTextureInfo::NamesSize( const U8* listOfNames, int n )
+{
+	NamesReader reader( listOfNames );
+	
+	return reader.SizeOfList( n );
+}
+
+int
+ExtraTextureInfo::EncodeName( U8* buf, const char* name )
+{
+	return String::EncodeIdentifier( buf, name, kMaxPackedNameCount );
+}
+
+// ----------------------------------------------------------------------------
+
+NamesReader::NamesReader( const U8* stream )
+:	fCount( 0 ),
+	fPulls( 0 ),
+	fTally( 0 ),
+	fStream( stream )
+{
+}
+			
+void
+NamesReader::PullNext()
+{
+	Rtt_ASSERT( fStream );
+
+	fTally += fCount;
+
+	fCount = ( *Current() ) * 3;
+
+	fPulls++;
+}
+
+const U8*
+NamesReader::Current() const
+{
+	return fStream + ( fTally + fPulls );
+}
+
+int
+NamesReader::FindCurrentNameInList( NamesReader& headOfList, int n ) const
+{
+	Rtt_ASSERT( fStream );
+
+	for ( int i = 0; i < n; i++ )
+	{
+		headOfList.PullNext();
+		
+		bool isMatch = ( fCount == headOfList.fCount ) && 0 == memcmp( Current(), headOfList.Current(), fCount );
+		if ( isMatch )
+		{
+			return i;
+		}
+	}
+	
+	return -1;
+}
+
+bool
+NamesReader::MatchesList( const NamesReader& headOfOtherList, int n ) const
+{
+	Rtt_ASSERT( fStream );
+
+	NamesReader list1 = Clone(), list2 = headOfOtherList.Clone();
+
+	for ( int i = 0; i < n; ++i )
+	{
+		list1.PullNext();
+		list2.PullNext();
+	}
+	
+	int total1 = list1.GetTotalBytes();
+	
+	return ( total1 == list2.GetTotalBytes() ) && 0 == memcmp( fStream, headOfOtherList.fStream, total1 );
+}
+
+U32
+NamesReader::SizeOfList( int n ) const
+{
+	Rtt_ASSERT( fStream );
+
+	NamesReader dup = Clone();
+	
+	for ( int i = 0; i < n; ++i )
+	{
+		dup.PullNext();
+	}
+	
+	return dup.GetTotalBytes();
+}
+
+void
+NamesReader::Decode( char* name ) const
+{
+	Rtt_ASSERT( fStream );
+
+	String::DecodeIdentifier( name, Current(), String::IdentifierLengthToTriples( fCount ) );
+}
+	
+// ----------------------------------------------------------------------------
+
+int
+LengthAccumulator::GetTotalBytes() const
+{
+	return fTotalTriples * 3;
+}
+
+void
+LengthAccumulator::AddLength( int length )
+{
+	fTotalTriples += String::IdentifierLengthToTriples( length );
+	
+	fCount++;
+}
+
+// ----------------------------------------------------------------------------
+
+NamesEncoder::NamesEncoder( U8* stream, const LengthAccumulator& acc )
+:	fStream( stream ),
+	fPos( 0 ),
+	fRef( acc )
+{
+}
+
+bool
+NamesEncoder::Encode( const char* name, int length )
+{
+	int encoded = ExtraTextureInfo::EncodeName( fStream + fPos + 1, name );
+	if ( encoded > 0 )
+	{
+		U32 triples = String::IdentifierLengthToTriples( length );
+		
+		Rtt_ASSERT( triples * 3 == (U32)encoded );
+		
+		fStream[fPos] = triples;
+		fPos += encoded + 1;
+	
+		return true;
+	}
+	else
+	{
+		return false;
+	}	
+}
+
+void
+NamesEncoder::CheckTotalCount()
+{
+	Rtt_ASSERT( fPos == fRef.GetTotalBytes() + fRef.GetCount() );
+}
+	
 // ----------------------------------------------------------------------------
 
 static Real
@@ -354,9 +521,18 @@ ShaderResource::ShaderResource( Program *program, ShaderTypes::Category category
     fDetailNames( NULL ),
     fDetailValues( NULL ),
     fDetailsCount( 0U ),
+    fExtensionPrelude( NULL ),
+    fExtraTextureInfo( NULL ),
     fShellTransform( NULL ),
 	fTimeTransform(),
-	fUsesUniforms( false )
+	fExtraTextureCount( 0 ),
+    fFirstVersion( 0 ),
+	fIsFirstMod25D( false ),
+	fAnyVersionBound( false ),
+	fSyncPending( false ),
+	fUsesUniforms( false ),
+	fUsesTime( false ),
+	fTextureInfoIsSet( false )
 {
 	Init(program);
 }
@@ -371,9 +547,18 @@ ShaderResource::ShaderResource( Program *program, ShaderTypes::Category category
     fDetailNames( NULL ),
     fDetailValues( NULL ),
     fDetailsCount( 0U ),
+    fExtensionPrelude( NULL ),
+    fExtraTextureInfo( NULL ),
     fShellTransform( NULL ),
 	fTimeTransform(),
-	fUsesUniforms( false )
+	fExtraTextureCount( 0 ),
+    fFirstVersion( 0 ),
+	fIsFirstMod25D( false ),
+	fAnyVersionBound( false ),
+    fSyncPending( false ),
+	fUsesUniforms( false ),
+	fUsesTime( false ),
+	fTextureInfoIsSet( false )
 {
 	Init(program);
 }
@@ -386,6 +571,9 @@ ShaderResource::Init(Program *defaultProgram)
 		fPrograms[i] = NULL;
 	}
 	fPrograms[ShaderResource::kDefault] = defaultProgram;
+
+	fFillTextureInfo[0] = {};
+	fFillTextureInfo[1] = {};
 
 	defaultProgram->SetShaderResource( this );
 }
@@ -403,8 +591,11 @@ ShaderResource::~ShaderResource()
 		Rtt_DELETE( fDefaultData );
     }
 
+	Rtt_FREE( const_cast<ExtraTextureInfo*>( fExtraTextureInfo ) );
+
     SetEffectCallbacks( NULL );
     SetShellTransform( NULL );
+	SetExtensionPrelude( NULL );
 }
 
 void
@@ -444,6 +635,206 @@ Program *
 ShaderResource::GetProgramMod(ProgramMod mod) const
 {
 	return fPrograms[mod];
+}
+
+void
+ShaderResource::SetTextureInfo( const U8* info, U8 count, SamplerTypeDetails fillInfo[2] )
+{
+	Rtt_FREE( const_cast<ExtraTextureInfo*>( fExtraTextureInfo ) );
+	
+	Rtt_ASSERT( ( NULL == info ) == ( 0 == count ) );
+	
+	fExtraTextureInfo = (const ExtraTextureInfo*)info;
+	fExtraTextureCount = count;
+
+	fFillTextureInfo[0] = fillInfo[0];
+	fFillTextureInfo[1] = fillInfo[1];
+
+	fTextureInfoIsSet = true;
+}
+
+const SamplerTypeDetails*
+ShaderResource::GetExtraTextureDetails() const
+{
+	return ( fExtraTextureCount > 0 ) ? (SamplerTypeDetails*)fExtraTextureInfo->fData : NULL;
+}
+
+const U8*
+ShaderResource::GetExtraTextureNames() const
+{
+	int detailsSize = fExtraTextureCount * sizeof(SamplerTypeDetails);
+
+	return ( fExtraTextureCount > 0 ) ? fExtraTextureInfo->fData + detailsSize : NULL;
+}	
+
+static bool
+ReportError( const NamesReader& reader, const char* message )
+{
+	char rawName[ExtraTextureInfo::kMaxNameLength + 1];
+
+	reader.Decode( rawName );
+			
+	Rtt_LogException( message, rawName );
+
+	return false;
+}
+
+bool
+ShaderResource::DetailsAgree( U32 formatBackingValue, const SamplerTypeDetails& details )
+{
+	if ( !FormatDetails::IsCore( formatBackingValue ) )
+	{
+		bool targetsAgree = FormatDetails::GetTarget( formatBackingValue ) == details.target;
+		bool familiesAgree = FormatDetails::GetFamily( formatBackingValue ) == details.family;
+		
+		return targetsAgree && familiesAgree && ( FormatDetails::HasArrayFlag( formatBackingValue ) == details.isArray );
+	}
+	else
+	{
+		return details.IsDefault();
+	}
+}
+
+static bool
+DetailsAgreeWithFormat( U32 backingValue, const SamplerTypeDetails& details )
+{
+	return ShaderResource::DetailsAgree( backingValue, details );
+}
+
+bool
+ShaderResource::AreFormatsConsistent( U32 fillBackingValues[], U32 extraTextureBackingValues[], U32 extraCount, const U8* paintNames, RenderDataState* renderDataState ) const
+{
+	Rtt_ASSERT( HasTextureInfo() );
+
+	if ( !DetailsAgreeWithFormat( fillBackingValues[0], GetFillInfo( 0 ) ) )
+	{
+		Rtt_LogException( "`CoronaSampler0` inconsistent with image in paint1" );
+		return false;
+	}
+	
+	if ( !DetailsAgreeWithFormat( fillBackingValues[1], GetFillInfo( 1 ) ) )
+	{
+		Rtt_LogException( "`CoronaSampler1` inconsistent with image in paint2" );
+		return false;
+	}
+
+	U32 iMax = GetExtraTextureCount();
+	const SamplerTypeDetails* shaderDetails = GetExtraTextureDetails();
+	const U8* shaderNames = GetExtraTextureNames();
+
+	Rtt_ASSERT( ( NULL != extraTextureBackingValues ) == ( NULL != paintNames ) );
+
+	if ( iMax > extraCount )
+	{
+		char buf[32] = "no";
+		
+		if ( extraCount )
+		{
+			snprintf( buf, sizeof(buf), "only %u", extraCount );
+		}
+
+		Rtt_LogException( "WARNING: shader has %i samplers to bind, but %s textures provided in `extraPaints`", iMax, buf );
+		return false;
+	}
+
+	Rtt_ASSERT( iMax == 0 || ( NULL != extraTextureBackingValues ) );
+
+	U32 occupancyMask = 0;
+	int basePaintIndex = 0; // both name lists are sorted, so avoid searching entire list each iteration
+	
+	NamesReader shaderNamesIter( shaderNames ), paintNamesIter( paintNames );
+	for ( U32 i = 0; i < iMax; i++, basePaintIndex++ )
+	{
+		shaderNamesIter.PullNext();
+	
+		int index = shaderNamesIter.FindCurrentNameInList( paintNamesIter, extraCount - basePaintIndex );
+		
+		basePaintIndex += index;
+				
+		if ( index < 0 )
+		{
+			return ReportError( shaderNamesIter, "WARNING: unable to match sampler `%s` with a corresponding texture from the paints" );
+		}
+		else if ( !DetailsAgreeWithFormat( extraTextureBackingValues[basePaintIndex], shaderDetails[i] ) )
+		{
+			return ReportError( shaderNamesIter, "WARNING: sampler `%s` inconsistent with image provided in `extraPaints`" );
+		}
+
+		occupancyMask |= 1U << basePaintIndex;
+	}
+	
+	if ( NULL != renderDataState )
+	{
+		renderDataState->SetOccupancy( occupancyMask );
+	}
+	
+	return true;
+}
+
+bool
+ShaderResource::AreTexturesConsistent( const TextureList& list, const U8* paintNames, RenderDataState* renderDataState ) const
+{
+	Rtt_ASSERT( HasTextureInfo() );
+
+	const Texture* fill0 = list.GetFill0();
+	const Texture* fill1 = list.GetFill1();
+
+	U32 fillBackingValues[2] = {
+		fill0 ? fill0->GetFormat().GetBackingValue() : 0,
+		fill1 ? fill1->GetFormat().GetBackingValue() : 0
+	}, extraTextureBackingValues[ RenderDataState::kOccupancyBits ] = {};
+	
+	U32 extraCount = list.GetCountAfterFills();
+	for ( U32 i = 0; i < extraCount; i++ )
+	{
+		extraTextureBackingValues[i] = list.GetPositionAfterFills()[i]->GetFormat().GetBackingValue();
+	}
+	
+	return AreFormatsConsistent( fillBackingValues, extraCount > 0 ? extraTextureBackingValues : NULL, extraCount, paintNames, renderDataState );
+}
+
+void
+ShaderResource::PrepareFirstBind( const Program* program, int version )
+{
+	Rtt_ASSERT( !fAnyVersionBound );
+	Rtt_ASSERT( !fSyncPending );
+	Rtt_ASSERT( version < Program::Version::kWireframe );
+	Rtt_ASSERT( program == fPrograms[kDefault] || program == fPrograms[k25D] );
+
+	fSyncPending = true;
+	fFirstVersion = version;
+	fIsFirstMod25D = program == fPrograms[k25D];
+}
+
+void
+ShaderResource::SyncBinding()
+{
+	fAnyVersionBound = true;
+	fSyncPending = false;
+}
+
+const Program*
+ShaderResource::GetFirstBoundProgram() const
+{
+	if ( fAnyVersionBound )
+	{
+		return GetProgramMod( fIsFirstMod25D ? k25D : kDefault );
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+void
+ShaderResource::SetExtensionPrelude( const char* prelude )
+{
+	if ( NULL != fExtensionPrelude )
+	{
+		Rtt_FREE( fExtensionPrelude );
+	}
+	
+	fExtensionPrelude = ( NULL != prelude ) ? strdup( prelude ) : NULL;
 }
 
 void

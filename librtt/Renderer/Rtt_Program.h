@@ -92,6 +92,9 @@ class Program : public CPUResource
 		bool IsCompilerVerbose() const { return fCompilerVerbose; }
 		void SetCompilerVerbose( bool newValue ) { fCompilerVerbose = newValue; }
 
+	public:
+		void SetMightHaveNonDefaultDetails( bool newValue ) { fMightHaveNonDefaultDetails = newValue; }
+		bool GetMightHaveNonDefaultDetails() const { return fMightHaveNonDefaultDetails; }
 
 	private:
 		char *fVertexShaderSource;
@@ -102,8 +105,11 @@ class Program : public CPUResource
 #endif
 		int fVertexShellNumLines;
 		int fFragmentShellNumLines;
+
 		ShaderResource *fResource;
+		
 		bool fCompilerVerbose;
+		bool fMightHaveNonDefaultDetails;
 };
 
 // ----------------------------------------------------------------------------

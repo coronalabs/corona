@@ -35,8 +35,8 @@ class VulkanGeometry : public GPUResource
 		VulkanGeometry( VulkanContext * context );
 		virtual ~VulkanGeometry();
 
-		virtual void Create( CPUResource* resource );
-		virtual void Update( CPUResource* resource );
+		virtual void Create( CPUResource* resource, const RenderContext* context );
+		virtual void Update( CPUResource* resource, const RenderContext* context );
 		virtual void Destroy();
 
 		void Bind( VulkanRenderer & renderer, VkCommandBuffer commandBuffer );

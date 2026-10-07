@@ -68,6 +68,8 @@ class GLCommandBuffer : public CommandBuffer
         virtual void Clear( Real r, Real g, Real b, Real a );
         virtual void Draw( U32 offset, U32 count, Geometry::PrimitiveType type );
         virtual void DrawIndexed( U32 offset, U32 count, Geometry::PrimitiveType type );
+		virtual void CheckTextureConsistency( ShaderResource* shaderResource, Program* defaultProgram, const TextureList* list, const U8* extraNames );
+        virtual void RestoreConsistency( Program* previous );
         virtual S32 GetCachedParam( CommandBuffer::QueryableParams param );
 
 		virtual bool HasProgramVersion( Program* program, Program::Version version ) const;
@@ -82,6 +84,24 @@ class GLCommandBuffer : public CommandBuffer
 
         // Execute all buffered commands. A valid OpenGL context must be active.
         virtual Real Execute( bool measureGPU );
+    
+    public:
+		struct SkipInfo {
+			U16 byteCount;
+			U16 commandCount;
+		};
+    
+		struct Label {
+			int byteCount;
+			int commandCount;
+			bool hasSkipInfo;
+		};
+		
+		Label EmitLabel();
+		Label EmitLabelWithSkipInfo();
+    
+		void BridgeLabels( const Label& from, const Label& to );
+		void ApplySkipInfo( const SkipInfo& info );
     
     private:
         virtual void InitializeFBO();
@@ -105,6 +125,7 @@ class GLCommandBuffer : public CommandBuffer
 			U32 timestamp;
 		};
 		
+		virtual void LoadUniforms(); // TODO: just a silly wrapper
 		void ApplyUniforms( GPUResource* resource );
 		void ApplyUniform( GPUResource* resource, U32 index );
 		void WriteUniform( Uniform* uniform );

@@ -82,7 +82,8 @@ Program::Program( Rtt_Allocator* allocator )
 	fHeaderSource( NULL ),
 	fVertexShellNumLines( 0 ),
 	fFragmentShellNumLines( 0 ),
-	fCompilerVerbose( false )
+	fCompilerVerbose( false ),
+	fMightHaveNonDefaultDetails( false )
 {
 #if defined( Rtt_USE_PRECOMPILED_SHADERS )
 	fCompiledShaders = NULL;
@@ -314,12 +315,14 @@ ProgramHeader::ProgramHeader()
 static const char kOpenGL_2_1_Header[] =
 	#ifdef Rtt_MAC_ENV
 		"#version 120\n"
+		"%s"
 	#else
 		// On Windows we allow GLSL 110, to allow users on older hardware to get
 		// by with GL 2.0.  The rest of the header stays the same.  This isn't
 		// technically "correct" since some shaders won't work, but it is better
 		// than before (i.e. blank screens)
 		"#version 110\n"
+		"%s"
 	#endif
 
 		"\n"

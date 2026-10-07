@@ -45,7 +45,8 @@ TextureFactory::TextureFactory( Display& display )
 	fVideo(),
 	fVideoSource(kCamera),
 	fTextureMemoryUsed( 0 ),
-	fCreateQueue( display.GetAllocator() )
+	fCreateQueue( display.GetAllocator() ),
+	fCustomFormats( display.GetAllocator() )
 {
 }
 
@@ -685,7 +686,23 @@ void TextureFactory::RemoveFromTeardownList( const std::string &key )
 {
 	fTeardownList.erase( key );
 }
-	
+
+bool TextureFactory::AddCustomFormat( const TextureFormatDescription &format )
+{
+	const int maxValueWithBits = ( 1 << FormatDetails::GetFormatIndexBitCount() ) - 1;
+	const int maxCount = maxValueWithBits - 1; // one value set aside for 0, which is not a custom format
+
+	if ( fCustomFormats.Length() < maxCount )
+	{
+		fCustomFormats.Append( format );
+		
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
 	
 void TextureFactory::AddTextureToUpdateList( const std::string &key )
 {

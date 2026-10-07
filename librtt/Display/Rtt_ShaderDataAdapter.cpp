@@ -72,33 +72,32 @@ ShaderDataAdapter::ValueForKey(
 	bool usesUniforms = shaderResource->UsesUniforms();
 
 	int index = shaderResource->GetDataIndex( key );
-	if ( index >= 0 )
+
+	if (index >= ShaderData::kNumData)
 	{
-        if (index >= ShaderData::kNumData)
-        {
-            const CoronaEffectCallbacks * callbacks = shaderResource->GetEffectCallbacks();
+		const CoronaEffectCallbacks * callbacks = shaderResource->GetEffectCallbacks();
 
-            if (callbacks && callbacks->getData)
-            {
-                int hadError = 0, top = lua_gettop( L );
+		if (callbacks && callbacks->getData)
+		{
+			int hadError = 0, top = lua_gettop( L );
 
-                result = callbacks->getData( L, index - ShaderData::kNumData, object->GetExtraSpace(), &hadError ); // ...[, object / err]
+			result = callbacks->getData( L, index - ShaderData::kNumData, object->GetExtraSpace(), &hadError ); // ...[, object / err]
 
-                if (hadError)
-                {
-                    bool isString = result && lua_isstring( L, -1 );
+			if (hadError)
+			{
+				bool isString = result && lua_isstring( L, -1 );
 
-                    CoronaLuaWarning( L, "Error in 'getData()'%s%s", isString ? ": " : "", isString ? lua_tostring( L, -1 ) : "" );
+				CoronaLuaWarning( L, "Error in 'getData()'%s%s", isString ? ": " : "", isString ? lua_tostring( L, -1 ) : "" );
 
-                    lua_settop( L, top ); // ...
+				lua_settop( L, top ); // ...
 
-                    result = 0;
-                }
+				result = 0;
+			}
+		}
+	}
 
-                return result;
-            }
-        }
-
+	else if ( index >= 0 )
+	{
 		ShaderData::DataIndex dataIndex = (ShaderData::DataIndex)index;
 		if ( usesUniforms )
 		{
@@ -135,38 +134,37 @@ ShaderDataAdapter::SetValueForKey(
 	bool usesUniforms = shaderResource->UsesUniforms();
 
 	int index = (ShaderData::DataIndex)shaderResource->GetDataIndex( key );
-	if ( index >= 0 )
+
+	if (index >= ShaderData::kNumData)
 	{
-        if (index >= ShaderData::kNumData)
-        {
-            const CoronaEffectCallbacks * callbacks = shaderResource->GetEffectCallbacks();
+		const CoronaEffectCallbacks * callbacks = shaderResource->GetEffectCallbacks();
 
-            if (callbacks && callbacks->setData)
-            {
-                int hadError = 0, shouldInvalidate = 1, top = lua_gettop( L );
+		if (callbacks && callbacks->setData)
+		{
+			int hadError = 0, shouldInvalidate = 1, top = lua_gettop( L );
 
-                result = callbacks->setData( L, index - ShaderData::kNumData, valueIndex, object->GetExtraSpace(), &shouldInvalidate, &hadError ); // ...[, err]
+			result = callbacks->setData( L, index - ShaderData::kNumData, valueIndex, object->GetExtraSpace(), &shouldInvalidate, &hadError ); // ...[, err]
 
-                if (hadError)
-                {
-                    bool isString = result && lua_isstring( L, -1 );
+			if (hadError)
+			{
+				bool isString = result && lua_isstring( L, -1 );
 
-                    CoronaLuaWarning( L, "Error in 'setData()'%s%s", isString ? ": " : "", isString ? lua_tostring( L, -1 ) : "" );
+				CoronaLuaWarning( L, "Error in 'setData()'%s%s", isString ? ": " : "", isString ? lua_tostring( L, -1 ) : "" );
 
-                    lua_settop( L, top ); // ...
+				lua_settop( L, top ); // ...
 
-                    result = false;
-                }
-                
-                else if (shouldInvalidate)
-                {
-                    object->Invalidate();
-                }
+				result = false;
+			}
+			
+			else if (result && shouldInvalidate)
+			{
+				object->Invalidate();
+			}
+		}
+	}
 
-                return result;
-            }
-        }
-
+	else if ( index >= 0 )
+	{
 		ShaderData::DataIndex dataIndex = (ShaderData::DataIndex)index;
 		if ( usesUniforms )
 		{

@@ -94,7 +94,8 @@ ShaderFactory::ShaderFactory( Display& owner, const ProgramHeader& programHeader
 	fDefaultShell( NULL ),
 	fDefaultKernel( NULL ),
 	fProgramHeader( Rtt_NEW( fAllocator, ProgramHeader( programHeader ) ) ),
-	fBackend( backend )
+	fBackend( backend ),
+	fReplaceFuncRef( LUA_NOREF )
 {
     lua_State *L = fL;
 
@@ -114,6 +115,14 @@ ShaderFactory::~ShaderFactory()
     Rtt_DELETE( fDefaultShader );
 }
 
+static void
+SetDefaultTextureInfo( ShaderResource& resource )
+{
+	SamplerTypeDetails fillDefaults[2] = {};
+
+	resource.SetTextureInfo( NULL, 0, fillDefaults );
+}
+
 bool
 ShaderFactory::Initialize()
 {
@@ -123,7 +132,7 @@ ShaderFactory::Initialize()
 
     int top = lua_gettop( L );
 
-    lua_checkstack( L, 6 );
+    lua_checkstack( L, 7 );
 
 #if defined( Rtt_USE_PRECOMPILED_SHADERS )
     // Load precompiled shaders from the default kernel Lua script.
@@ -146,6 +155,8 @@ ShaderFactory::Initialize()
                     resource->SetProgramMod(ShaderResource::k25D, program25D);
                     fDefaultShader = Rtt_NEW(fAllocator, Shader(fAllocator, resource, NULL));
                     result = true;
+                    
+                    SetDefaultTextureInfo( *resource );
                 }
             }
         }
@@ -161,6 +172,9 @@ ShaderFactory::Initialize()
 
         lua_getfield( L, tableIndex, "fragment" );
         const char *shellFrag = lua_tostring( L, -1 );
+
+		lua_getfield( L, tableIndex, "replace" );
+		fReplaceFuncRef = lua_ref( L, 1 );
 
         if ( ShaderBuiltin::PushDefaultKernel( L ) )
         {
@@ -185,13 +199,15 @@ ShaderFactory::Initialize()
                 result = true;
 
                 Rtt_Allocator *allocator = fOwner.GetRuntime().Allocator();
-                fDefaultShell = Rtt_NEW( allocator, Program( allocator ) );
+                fDefaultShell = Rtt_NEW( allocantor, Program( allocator ) );
                 fDefaultShell->SetVertexShaderSource( shellVert );
                 fDefaultShell->SetFragmentShaderSource( shellFrag );
 
                 fDefaultKernel = Rtt_NEW( allocator, Program( allocator ) );
                 fDefaultKernel->SetVertexShaderSource( kernelVert );
                 fDefaultKernel->SetFragmentShaderSource( kernelFrag );
+                
+                SetDefaultTextureInfo( *resource );
             }
         }
     }
@@ -252,6 +268,60 @@ ShaderFactory::NewShaderResource(
 }
 
 #else
+
+static bool
+MightHaveImagesOrNonDefaultSamplers( const char* source )
+{
+	Rtt_ASSERT( source );
+
+	while ( true )
+	{
+		const char* pos = strstr( source, "uniform" );
+		if ( NULL == pos )
+		{
+			return false;
+		}
+		else
+		{
+			const size_t kUniformLength = sizeof("uniform") - 1;
+			bool foundUniformKeyword = isspace( pos[-1] ) && isspace( pos[kUniformLength] );
+			
+			source = pos + kUniformLength;
+			
+			if ( foundUniformKeyword ) // might have found word, but not isolated
+			{
+				while ( isspace( *source ) )
+				{
+					source++;
+				}
+				
+				if ( ( 'i' == *source ) || ( 'u' == *source ) ) // prefix if integer sampler
+				{
+					source++;
+				}
+				
+				// If one of these is satisfied, we MIGHT have an image or sampler. More
+				// importantly, if this is actual code, we either do or there's an error
+				// that will trip anyway.
+				// The proviso about "actual code" is the only sticking point: it would
+				// take a bit more work to detect that the usage is not in a comment or
+				// preprocessed out. But barring pathological shader authorship habits,
+				// this should keep most effects on the fast "already default" path.
+				const size_t kSamplerLength = sizeof("sampler") - 1;
+				const size_t kImageLength = sizeof("image") - 1;
+				if ( 0 == strncmp( source, "sampler", kSamplerLength ) || 0 == strncmp( source, "image", kImageLength ) )
+				{
+					return true; // we could delve deeper (valid type, valid identifier declaration, not in comment)
+								// but more importantly, if we never find even the above, we definitely do not have
+								// extra textures and can do a fast path
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
 Program *
 ShaderFactory::NewProgram(
         const char *shellVert,
@@ -270,6 +340,11 @@ ShaderFactory::NewProgram(
     Rtt_Allocator *allocator = fOwner.GetRuntime().Allocator();
 
     Program *program = Rtt_NEW( allocator, Program( allocator ) );
+ 
+	if ( ShaderResource::kDefault == mod && MightHaveImagesOrNonDefaultSamplers( kernelFrag ) )
+	{
+		program->SetMightHaveNonDefaultDetails( true );
+	}
     
     bool isCompilerVerbose = fOwner.GetDefaults().IsShaderCompilerVerbose();
     program->SetCompilerVerbose( isCompilerVerbose );
@@ -352,13 +427,26 @@ ShaderFactory::NewShaderResource(
 	const char *name,
 	const char *kernelVert,
 	const char *kernelFrag,
-    int localStubsIndex )
+    int localStubsIndex,
+    const TweakDetails* tweaks )
 {
     // Cannot create default
     if ( ShaderTypes::kCategoryDefault == category )
     {
         return SharedPtr< ShaderResource >();
     }
+
+	const char *shellVert, *shellFrag;
+	if ( NULL != tweaks )
+	{
+		shellVert = tweaks->fVert;
+		shellFrag = tweaks->fFrag;
+	}
+	else
+	{
+        shellVert = fDefaultShell->GetVertexShaderSource();
+        shellFrag = fDefaultShell->GetFragmentShaderSource();
+	}
 
 	// Caller should check for existence
 	Rtt_ASSERT( NULL == FindPrototype( category, name, localStubsIndex ) );
@@ -367,6 +455,13 @@ ShaderFactory::NewShaderResource(
     {
         // Fallback to default
         kernelVert = fDefaultKernel->GetVertexShaderSource();
+        
+        if ( ( NULL != tweaks ) && ( 0 != tweaks->fHasZFlagPos ) )
+        {
+			kernelVert = luaL_gsub( fL, kernelVert, "vec2", "vec3" );
+			
+			lua_replace( fL, tweaks->fHasZFlagPos ); // replace the hasZ boolean; will get popped
+        }
     }
 
     if ( ! kernelFrag )
@@ -376,15 +471,22 @@ ShaderFactory::NewShaderResource(
     }
 
     Program *program = NewProgram(
-        fDefaultShell->GetVertexShaderSource(),
-        fDefaultShell->GetFragmentShaderSource(),
+        shellVert,
+        shellFrag,
         kernelVert,
         kernelFrag,
         ShaderResource::kDefault );
 
+	if ( ( NULL != tweaks ) && !program->GetMightHaveNonDefaultDetails() && tweaks->fSamplerTypes )
+	{
+		program->SetMightHaveNonDefaultDetails( true );
+	}
+
     SharedPtr< ShaderResource > result( Rtt_NEW( fAllocator, ShaderResource( program, category, name ) ) );
+
+    // result.
     
-    Program *program25D = NewProgram( fDefaultShell->GetVertexShaderSource(), fDefaultShell->GetFragmentShaderSource(), kernelVert, kernelFrag, ShaderResource::k25D );
+    Program *program25D = NewProgram( shellVert, shellFrag, kernelVert, kernelFrag, ShaderResource::k25D );
     result->SetProgramMod( ShaderResource::k25D, program25D );
 
     return result;
@@ -752,6 +854,137 @@ ShaderFactory::BindVertexExtension( lua_State *L, int index, const SharedPtr< Sh
     lua_pop( L, 1 ); // ...
 }
 
+static const char*
+CheckExtensionName( lua_State *L, int* colonPos )
+{
+	if ( !lua_isstring( L, -1 ) )
+	{
+		CoronaLuaWarning( L, "Expected string name in `languageExtensions`, got '%s'", luaL_typename( L, -1 ) );
+		return NULL;
+	}
+
+	const char* ext = lua_tostring( L, -1 );
+	const char* colonAndRest = strchr( ext, ':' );
+
+	if ( NULL == colonAndRest )
+	{
+		return ext;
+	}
+	else if ( NULL != strchr( colonAndRest + 1, ':' ) )
+	{
+		CoronaLuaWarning( L, "Multiple colons in name found in `languageExtensions`" );
+		return NULL;
+	}
+	else
+	{
+		const char* behavior = colonAndRest + 1;
+		const char* choices[] = { "require", "enable", "warn", "disable" };
+		for ( const char* what : choices )
+		{
+			if ( 0 == strcmp( what, behavior ) )
+			{
+				*colonPos = (int)( colonAndRest - ext );
+			
+				return ext;
+			}
+		}
+
+		CoronaLuaWarning( L, "Unknown behavior found in `languageExtensions` name: '%s'", behavior );
+		return NULL;
+	}
+}
+
+void
+ShaderFactory::BindLanguageExtensions( lua_State *L, int index, const SharedPtr< ShaderResource >& resource )
+{
+    Rtt_LUA_STACK_GUARD(L);
+
+    lua_getfield( L, index, "languageExtensions" ); // ..., extensions?
+
+    if (lua_istable( L, -1 ))
+    {
+		bool ok = true;
+		std::vector<std::string> require, enable, warn, disable;
+		
+		for ( size_t i = 1, len = lua_objlen( L, -1 ); i <= len && ok; i++ )
+		{
+			lua_rawgeti( L, -1, (int)i );
+			
+			int colonPos = -1;
+			const char* ext = CheckExtensionName( L, &colonPos );
+			
+			lua_pop( L, 1 );
+			
+			const char* rest = NULL;
+			std::string s = "#extension ";
+			if ( colonPos > 0 )
+			{
+				Rtt_ASSERT ( NULL != ext );
+					
+				s.append( ext, colonPos );
+				
+				rest = ext + colonPos + 1;
+			}
+			else if ( NULL != ext )
+			{
+				s.append( ext );
+				
+				rest = "require";
+			}
+			
+			if ( NULL != rest )
+			{			
+				s += " : ";
+				s += rest;
+				s += '\n';
+				
+				switch ( *rest )
+				{
+				case 'r':
+					require.push_back( s );
+					break;
+				case 'e':
+					enable.push_back( s );
+					break;
+				case 'w':
+					warn.push_back( s );
+					break;
+				case 'd':
+					disable.push_back( s );
+					break;
+				default:
+					Rtt_ASSERT_NOT_REACHED();
+				}
+			}
+			else
+			{
+				ok = false;
+			}
+		}
+		 
+		if ( ok )
+		{
+			std::string full;
+			std::vector<std::string> *stringVecs[] = { &require, &enable, &warn, &disable };
+			for ( auto *list : stringVecs )
+			{
+				for ( const std::string& s : *list )
+				{
+					full += s;
+				}
+			}
+			
+			resource->SetExtensionPrelude( full.c_str() );
+		}
+		else
+		{
+			lua_pop( L, 1 );
+		}
+    }
+
+    lua_pop( L, 1 ); // ...
+}
+
 // shaderIndex is the index into the Lua table that defines the shader
 void
 ShaderFactory::InitializeBindings( lua_State *L, int shaderIndex, const SharedPtr< ShaderResource >& resource )
@@ -767,6 +1000,13 @@ ShaderFactory::InitializeBindings( lua_State *L, int shaderIndex, const SharedPt
     BindShellTransform( L, shaderIndex, resource );
     BindVertexExtension( L, shaderIndex, resource );
 	BindTimeTransform( L, shaderIndex, resource );
+	BindLanguageExtensions( L, shaderIndex, resource );
+
+	Program* program = resource->GetProgramMod( ShaderResource::kDefault );
+	if ( NULL == resource->GetShellTransform() && !program->GetMightHaveNonDefaultDetails() )
+	{
+		SetDefaultTextureInfo( *resource );
+	}
 
     bool has_vertex_data = BindVertexDataMap( L, shaderIndex, resource );
     if( has_vertex_data )
@@ -1006,14 +1246,59 @@ ShaderFactory::NewShaderBuiltin( ShaderTypes::Category category, const char *nam
 							lua_pop( L, 1 );
 
 #else
+							int top = lua_gettop( L );
+
                             lua_getfield( L, tableIndex, "vertex" );
                             const char *kernelVert = lua_tostring( L, -1 );
 
                             lua_getfield( L, tableIndex, "fragment" );
                             const char *kernelFrag = lua_tostring( L, -1 );
+							
+							lua_getfield( L, tableIndex, "shellTweaks" );
+							TweakDetails tweaks = {}, *tweaksPtr = NULL;
+							if ( lua_istable( L, -1 ) )
+							{
+								lua_getfield( L, tableIndex, "shellTransform" );
+								bool hasTransform = lua_isstring( L, -1 );
+								lua_pop( L, 1 );
+								
+								if ( !hasTransform )
+								{
+									Rtt_ASSERT( LUA_NOREF != fReplaceFuncRef );
+									if ( LUA_REFNIL != fReplaceFuncRef )
+									{
+										lua_getref( L, fReplaceFuncRef );
+										lua_insert( L, -2 );
+										lua_getfield( L, tableIndex, "uniformData" );
+										
+										if ( 0 == Corona::Lua::DoCall( L, 2, 4 ) )
+										{
+											tweaks.fSamplerTypes = lua_toboolean( L, -3 );
+											tweaks.fVert = lua_tostring( L, -2 );
+											tweaks.fFrag = lua_tostring( L, -1 );
+										
+											if ( lua_toboolean( L, -4 ) ) // has z?
+											{
+												// temp slot in case 3D default vertex kernel needed
+												tweaks.fHasZFlagPos = CoronaLuaNormalize( L, -4 );
+											}
+											
+											tweaksPtr = &tweaks; // good to go!
+										}
+									}
+									else
+									{
+										CoronaLuaWarning( L, "Backend does not support tweaks" );
+									}
+								}
+								else
+								{
+									CoronaLuaWarning( L, "Both `shellTweaks` and `shellTransfor` found" );
+								}
+							}
 
-							resource = NewShaderResource( category, name, kernelVert, kernelFrag, localStubsIndex );
-							lua_pop( L, 2 ); // pop 2 strings
+							resource = NewShaderResource( category, name, kernelVert, kernelFrag, localStubsIndex, tweaksPtr );
+							lua_settop( L, top ); // pop 2 strings and any tweaks
 #endif
 
                             if (resource.NotNull())
@@ -1622,78 +1907,24 @@ ShaderFactory::RegisterVertexExtension( const char * name, const CoronaVertexExt
     
     else
     {
-        VertexAttributeSupport support;
-        
-        fOwner.GetVertexAttributes( support );
-
-        U32 n = extension.count, count = n;
-        bool ok = true;
-        
-		if (extension.instanceByID && NULL == support.suffix)
-		{
-			ok = false;
-			n = 0;
-		}
+// TODO: Unless there's actually any use case still for the C API (doubtful),
+// should be safe to assume this comes from graphics.defineVertexExtension()
+		using SharedExtensionListPtr = SharedPtr<FormatExtensionList>;
 		
-        for (unsigned int i = 0; i < n; ++i)
-        {
-            const CoronaVertexExtensionAttribute & attribute = extension.attributes[i];
-            
-            if (0 == attribute.components || attribute.components > 4)
-            {
-                ok = false;
-                
-                break;
-            }
-            
-            else if (attribute.instancesToReplicate || attribute.windowSize)
-            {
-                if (!support.hasPerInstance)
-                {
-                    ok = false;
-                    
-                    break;
-                }
-
-                else if (attribute.instancesToReplicate > 1 && !support.hasDivisors)
-                {
-                    ok = false;
-                    
-                    break;
-                }
-            }
-                    
-            else if (attribute.windowSize)
-            {
-                count += attribute.windowSize - 1;
-            }
-        }
-        
-        if (0 == count || count > support.maxCount)
-        {
-            ok = false;
-        }
-        
-        if (ok)
-        {
-            using SharedExtensionListPtr = SharedPtr<FormatExtensionList>;
-            
-            SharedExtensionListPtr * sharedList = (SharedExtensionListPtr*)lua_newuserdata( L, sizeof(SharedExtensionListPtr) ); // ..., vertexExtensions, nil, sharedList
-            FormatExtensionList* list = Rtt_NEW( fAllocator, FormatExtensionList );
-            
-            new (sharedList) SharedExtensionListPtr( list );
-            
-            list->Build( fAllocator, &extension );
-            
-            lua_pushlightuserdata( L, &sVertexExtensionCookie ); // ..., vertexExtensions, nil, sharedList, cookie
-            lua_rawget( L, -4 ); // ..., vertexExtensions, nil, sharedList, sharedListMT
-            lua_setmetatable( L, -2 ); // ..., vertexExtensions, nil, sharedList; sharedList.metatable = sharedListMT
-            lua_setfield( L, -3, name ); // ..., vertexExtensions = { ..., [name] = sharedList, nil }, nil
-        }
-        
+		SharedExtensionListPtr * sharedList = (SharedExtensionListPtr*)lua_newuserdata( L, sizeof(SharedExtensionListPtr) ); // ..., vertexExtensions, nil, sharedList
+		FormatExtensionList* list = Rtt_NEW( fAllocator, FormatExtensionList );
+		
+		new (sharedList) SharedExtensionListPtr( list );
+		
+		list->Build( fAllocator, &extension );
+		
+		lua_pushlightuserdata( L, &sVertexExtensionCookie ); // ..., vertexExtensions, nil, sharedList, cookie
+		lua_rawget( L, -4 ); // ..., vertexExtensions, nil, sharedList, sharedListMT
+		lua_setmetatable( L, -2 ); // ..., vertexExtensions, nil, sharedList; sharedList.metatable = sharedListMT
+		lua_setfield( L, -3, name ); // ..., vertexExtensions = { ..., [name] = sharedList, nil }, nil
         lua_pop( L, 2 ); // ...
         
-        return ok;
+        return true;
     }
 }
 
@@ -1784,7 +2015,7 @@ SetExternalInfo( lua_State * L, const char * name, const char * type )
 	
 	char key[BUFSIZ];
 	
-	sprintf( key, "coronashaderexternalinfo:%s:%s", type, name );
+	snprintf( key, sizeof(key), "coronashaderexternalinfo:%s:%s", type, name );
 	
 	lua_insert( L, -2 ); // ..., ei, object
 	lua_setfield( L, -2, key ); // ..., ei = { ..., key = object }

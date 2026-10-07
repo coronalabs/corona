@@ -153,6 +153,144 @@ typedef struct CoronaExternalTextureCallbacks
     int (*onGetField)(lua_State *L, const char *field, void* userData);   // optional; called Lua texture property lookup
 } CoronaExternalTextureCallbacks;
 
+// ----------------------------------------------------------------------------
+
+/**
+*/
+typedef enum {
+	/**
+	*/
+	kExternalTextureExtension_TextureTarget,
+	
+	/**
+	*/
+	kExternalTextureExtension_CustomFormat, // must be registered, but thus can change what component count, etc. are
+} CoronaExternalTextureExtensionType;
+
+// TODO: future possibilities... kAllowSubimage, e.g. some "window" method, picked up by invalidate(); kNoPremultiply
+
+/**
+*/
+typedef struct CoronaExternalTextureExtensionBase {
+	/**
+	*/
+	struct CoronaExternalTextureExtensionBase * next;
+	
+	/**
+	*/
+	CoronaExternalTextureExtensionType type;
+} CoronaExternalTextureExtensionBase;
+
+/**
+	TODO: what sort of sampler / texture data
+*/
+typedef enum {
+	/**
+		"standard", floating point
+	*/
+	kTextureFamily_Float,
+	
+	/**
+		unsigned integral
+	*/
+	kTextureFamily_Uint,
+	
+	/**
+		signed integral
+	*/
+	kTextureFamily_Sint,
+	
+	/**
+		other: shadow, etc.
+	*/
+	kTextureFamily_Other
+} CoronaTextureFamily;
+
+/**
+	TODO: dimensions and such of sampler / texture data
+*/
+typedef enum {
+	/**
+	*/
+	kTextureShape_2D,
+
+	/**
+	*/
+	kTextureShape_1D,
+
+	/**
+	*/
+	kTextureShape_3D,
+
+	/**
+	*/
+	kTextureShape_Cube,
+
+	/**
+		non-normalized
+	*/
+	kTextureShape_Rectangle
+	
+// TODO? seems like buffer and ms probably would use an extension?
+	// latter is target only, I think, and former wants potentially large buffers?
+	// maybe some indirection thing?
+} CoronaTextureShape;
+
+/**
+	TODO: non-sampler2D target
+*/
+typedef struct CoronaExternalTextureExtension_TextureTarget {
+	/**
+		inherited
+	*/
+	CoronaExternalTextureExtensionBase common;
+
+	/**
+	*/
+	CoronaTextureFamily family;
+
+	/**
+	*/
+	CoronaTextureShape shape;
+	
+	/**
+	*/
+	int isArray;
+	// TODO: these actually describe the samplers; family and array-ness is more or less right
+		// TODO: want some way to specify layers (and levels, with mipmaps)...
+		// any way to do so that doesn't just blow up combinatorically?
+	// there are some target + array-ness combinations to work out
+} CoronaExternalTextureExtension_TextureTarget;
+
+/**
+	TODO: non-builtin format
+*/
+typedef struct CoronaExternalTextureExtension_CustomFormat {
+	/**
+	*/
+	CoronaExternalTextureExtensionBase common;
+
+	/**
+		as returned by CoronaDefine??Format
+	*/
+	unsigned int formatIndex;
+} CoronaExternalTextureExtension_CustomFormat;
+
+/**
+	TODO: extended
+*/
+typedef struct CoronaExternalTextureCallbacks2 {
+	/**
+		inherited
+	*/
+	CoronaExternalTextureCallbacks base;
+	
+	/**
+		linked list of textensiosn
+	*/
+	CoronaExternalTextureExtensionBase * firstExtension;
+} CoronaExternalTextureCallbacks2;
+
 // C API
 // ----------------------------------------------------------------------------
 
@@ -184,6 +322,190 @@ void* CoronaExternalGetUserData( lua_State *L, int index ) CORONA_PUBLIC_SUFFIX;
 */
 CORONA_API
 int CoronaExternalFormatBPP(CoronaExternalBitmapFormat format) CORONA_PUBLIC_SUFFIX;
+
+// ----------------------------------------------------------------------------
+
+/**
+	TODO: information flags
+*/
+typedef enum {
+	/**
+		should test for renderabliity? else use defaults
+	*/
+	kTextureFormatFlag_ProbeRenderability = 1 << 0,
+	
+	/**
+		assert "#1" is renderable? (mut. ex. with probe); else default is false
+	*/
+	kTextureFormatFlag_IsRenderable1 = 1 << 1,
+	
+	/**
+		ditto, "#2" (viz. 1 = depth, 2 = stencil)
+	*/
+	kTextureFormatFlag_IsRenderable2 = 1 << 2,
+	
+	/**
+		does this format support linear filtering?
+	*/
+	kTextureFormatFlag_HasLinearFiltering = 1 << 3,
+	
+	/**
+		if word packed, is a REV format?
+	*/
+	kTextureFormatFlag_IsTypeReversed = 1 << 4
+} CoronaTextureFormatFlags;
+
+/**
+	TODO: what kind of data is the bitmap
+*/
+typedef enum {
+	/**
+		unsigned integers, normalized to [0, 1]
+	*/
+	kTextureInputKind_Unorms,
+	
+	/**
+		signed integers, normalized to [-1, +1]
+	*/
+	kTextureInputKind_Snorms,
+	
+	/**
+		floating point
+	*/
+	kTextureInputKind_Floats,
+
+	/**
+		unsigned integers
+	*/
+	kTextureInputKind_Uints,
+	
+	/**
+		signed integers
+	*/	
+	kTextureInputKind_Sints,
+
+	/**
+		how many kinds?
+	*/
+	kTextureInputKind_NumKinds
+} CoronaTextureInputKind;
+
+/**
+	TODO: Color format details
+*/
+typedef struct
+CoronaTextureFormatDetails
+{
+	/**
+	*/
+	CoronaTextureFamily family;
+		
+	/**
+	*/
+	CoronaTextureInputKind inputKind;
+	
+	/**
+	*/
+	int flags;
+	
+	/**
+		e.g. GL format
+	*/
+	int format;
+	
+	/**
+		e.g. GL internalFormat
+	*/
+	int internalFormat;
+	
+	/**
+		e.g. GL type
+	*/
+	int type;
+} CoronaTextureFormatDetails;
+
+/**
+	TODO: ditto, for compressed
+*/
+typedef struct
+CoronaCompressedTextureFormatDetails
+{
+	/**
+	*/
+	CoronaTextureFamily family;
+	
+	/**
+	*/
+	int internalFormat;
+
+	/**
+		if true, 16 byte format (used to allow defaults of 0 for 4x4)
+	*/
+	int has16Bytes;
+
+	/**
+		if 0, assumed to be 4; if non-0, type is assumed 16 bytes
+	*/
+	unsigned int width;
+
+	/**
+		ditto; if one specificed, both must be
+	*/
+	unsigned int height;
+
+	/**
+		NYI: for 3D ASTC
+	*/
+	unsigned int depth;
+} CoronaCompressedTextureFormatDetails;
+
+#if 0 /* TODO! */
+typedef struct
+CoronaDepthStencilTextureFormat
+{
+	/**
+	*/
+		// do we want to use format details from above and have the next couple as arguments?
+		// anything special to do for 32F? (maybe a flag?)
+		// (only needs to service a tiny number of formats, so can hash it out)
+	
+	/**
+	*/
+	int depthBits;
+	
+	/**
+	*/
+	int stencilBits; 
+} CoronaDepthStencilTextureFormat;
+#endif
+/**
+ @param L
+ @param details
+ @param componentCount
+ @param bytesPerComponent
+*/
+CORONA_API
+int CoronaDefineStandardTextureFormat( lua_State * L, const CoronaTextureFormatDetails * details, unsigned int componentCount, unsigned int bytesPerComponent ) CORONA_PUBLIC_SUFFIX;
+
+/**
+ @param L
+ @param details
+ @param bitCounts
+*/
+CORONA_API
+int CoronaDefineWordPackedTextureFormat( lua_State * L, const CoronaTextureFormatDetails * details, unsigned int bitCounts[4] ) CORONA_PUBLIC_SUFFIX;
+
+/**
+ @param L
+ @param details
+*/
+CORONA_API
+int CoronaDefineCompressedTextureFormat( lua_State * L, const CoronaCompressedTextureFormatDetails * details, unsigned int componentCount ) CORONA_PUBLIC_SUFFIX;
+
+#if 0 /* TODO! */
+CORONA_API
+int CoronaDefineDepthStencilTextureFormat( lua_State * L, const CoronaTextureDefinitionBase * texDef ) CORONA_PUBLIC_SUFFIX;
+#endif
 
 // ----------------------------------------------------------------------------
 
@@ -480,6 +802,15 @@ typedef void (*CoronaGeometryComponentWriter)( void * dest, const void * context
 CORONA_API
 int CoronaGeometrySetComponentWriter ( const CoronaRenderer * renderer, const char * name, CoronaGeometryComponentWriter writer, const void * context, int update ) CORONA_PUBLIC_SUFFIX;
 
+// !!!!!!!!!!
+// Aside from the inability to unregister (which ought to be easy enough), none of these
+// vertex extension features seem to be lacking from the graphics.defineVertexExtension()
+// API. Even possible "native" needs like adding memory-based attribute assignment for
+// PathExtensions should be amenable to CoronaMemory's policies, as with meshes. The types
+// are also a bit brittle now and probably easier to address from Lua.
+// This swath of APIs seems basically deprecated, although the internals remain solid.
+// !!!!!!!!!!
+
 /**
  Primitive types that may be used by extended attributes; these extend the set used by Solar's vertices.
 */
@@ -597,6 +928,15 @@ int CoronaGeometryUnregisterVertexExtension( lua_State * L, const char * name ) 
 
 // ----------------------------------------------------------------------------
 
+// !!!!!!!!!!
+// "Details" are kind of weird to use--basically being environment variables.
+// With shell transforms pretty much defunct, only effect data types really have
+// access to them, and the idea of "shared" state is already used in some tests,
+// without need for this mechanism.
+// Thus these really don't bring anything worthwhile and seem worth deprecating;
+// outside this API they also have no use, so this would also mean full removal.
+// !!!!!!!!!!
+
 /**
  Read-only details that may be provided to `graphics.defineEffect()`. These are made available
  to shell transform and data type callbacks in particular, in order to allow user-defined tuning.
@@ -624,6 +964,18 @@ CORONA_API
 int CoronaShaderGetEffectDetail( const CoronaShader * shader, int index, CoronaEffectDetail * detail ) CORONA_PUBLIC_SUFFIX;
 
 // ----------------------------------------------------------------------------
+
+// !!!!!!!!!!
+// Shell transforms are a tremendous sort of internal complexity and are unfriendly to use
+// as well. This applies to the current Lua API, and that was a difficult implementation;
+// writing a "custom" one with these native bits would be just as onerous if meant to be
+// complete.
+// Over time it's also become clear that the use cases are rather clear and a better way to
+// go is a template of the shell that, by default, can reproduce the default. This feature
+// is now available as "shellTweaks" (and was a MUCH simpler process, and in pure Lua) in
+// our graphics.defineEffect params, and seems to be better in every way.
+// Shell transforms therefore seem very worth deprecating and removing internally.
+// !!!!!!!!!!
 
 /**
  Any structure that extends `CoronaShellTransformParams` will take this as its first member, to effect C-style inheritance.
