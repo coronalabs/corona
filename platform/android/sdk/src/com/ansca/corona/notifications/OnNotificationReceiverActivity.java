@@ -55,6 +55,14 @@ public class OnNotificationReceiverActivity extends Activity {
 	{
 		android.content.Intent intent = createDeleteIntentFrom(context, settings);
 		intent.setAction(android.content.Intent.ACTION_VIEW);
+		// Embed the full notification payload in the tap intent so that, when the
+		// user taps, the delivered launchArgs reflect exactly what was posted -
+		// independent of the id-keyed NotificationSettings.xml lookup, which a
+		// reused notification id can overwrite or a purged cache can erase
+		// (see https://github.com/coronalabs/corona/issues/915).
+		intent.putExtra(
+				com.ansca.corona.events.NotificationReceivedTask.NAME,
+				new com.ansca.corona.events.NotificationReceivedTask("inactive", settings).toBundle());
 		return intent;
 	}
 
@@ -100,31 +108,42 @@ public class OnNotificationReceiverActivity extends Activity {
 		}
 		int notificationId = intent.getIntExtra(INTENT_EXTRA_ID_NAME, -1);
 
-		// Fetch the notification object by ID.
+		// Prefer the full payload embedded in this intent at post time. It reflects
+		// exactly what was shown to the user and is immune to the id-keyed
+		// NotificationSettings.xml entry being overwritten by a reused id or purged
+		// from the cache (see https://github.com/coronalabs/corona/issues/915).
+		// The by-id lookup below is kept as a fallback for notifications posted by
+		// an older runtime that did not embed the payload.
+		android.os.Bundle embeddedPayload =
+				intent.getBundleExtra(com.ansca.corona.events.NotificationReceivedTask.NAME);
+
+		// Fetch the notification object by ID (used for cleanup and as a fallback).
 		StatusBarNotificationSettings notificationSettings;
 		NotificationServices notificationServices = new NotificationServices(context);
 		notificationSettings = notificationServices.fetchStatusBarNotificationById(notificationId);
-		if (notificationSettings == null) {
+		if ((notificationSettings == null) && (embeddedPayload == null)) {
 			return;
 		}
 
-		// Remove the notification settings from Corona.
-		// This way the status bar item will not reappear when restarting this application.
-		notificationServices.removeById(notificationSettings.getId());
+		// Remove the notification settings from Corona, if still present, so the
+		// status bar item will not reappear when restarting this application.
+		if (notificationSettings != null) {
+			notificationServices.removeById(notificationSettings.getId());
+		}
 
 		// If the notification was tapped on, then display the Corona activity and send a notification event.
 		if (android.content.Intent.ACTION_VIEW.equals(intent.getAction())) {
-			String applicationStateName = "inactive";
-
-			// Create the notification event.
-			com.ansca.corona.events.NotificationReceivedTask event = new com.ansca.corona.events.NotificationReceivedTask(
-					applicationStateName, notificationSettings);
-
-			for (com.ansca.corona.CoronaRuntime runtime : com.ansca.corona.CoronaRuntimeProvider.getAllCoronaRuntimes()) {
-				applicationStateName = runtime.isRunning() ? "active" : "inactive";
-				event = new com.ansca.corona.events.NotificationReceivedTask(
-						applicationStateName, notificationSettings);
-				runtime.getTaskDispatcher().send(event);
+			// Notify any already-running Corona runtime (app was backgrounded). The
+			// cold-start case has no running runtime and is served by the relaunch
+			// payload below. Requires the stored record; harmless to skip when only
+			// the embedded payload survived.
+			if (notificationSettings != null) {
+				for (com.ansca.corona.CoronaRuntime runtime : com.ansca.corona.CoronaRuntimeProvider.getAllCoronaRuntimes()) {
+					String applicationStateName = runtime.isRunning() ? "active" : "inactive";
+					com.ansca.corona.events.NotificationReceivedTask event = new com.ansca.corona.events.NotificationReceivedTask(
+							applicationStateName, notificationSettings);
+					runtime.getTaskDispatcher().send(event);
+				}
 			}
 
 			// Display the Corona activity window if not already visible.
@@ -144,10 +163,17 @@ public class OnNotificationReceiverActivity extends Activity {
 			}
 			catch (Throwable ignore) {
 			}
+			// Choose the payload handed to the (re)launched activity: the embedded
+			// post-time payload if present, otherwise rebuild from the looked-up record.
+			android.os.Bundle launchPayload = embeddedPayload;
+			if (launchPayload == null) {
+				launchPayload = new com.ansca.corona.events.NotificationReceivedTask(
+						"inactive", notificationSettings).toBundle();
+			}
 			intent = new android.content.Intent(context, activityClass);
 			intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
 			intent.addFlags(android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-			intent.putExtra(com.ansca.corona.events.NotificationReceivedTask.NAME, event.toBundle());
+			intent.putExtra(com.ansca.corona.events.NotificationReceivedTask.NAME, launchPayload);
 			context.startActivity(intent);
 	}
 }
