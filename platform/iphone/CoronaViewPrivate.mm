@@ -1433,6 +1433,20 @@ PrintTouches( NSSet *touches, const char *header )
 - (void)layoutSubviews
 {
 	[super layoutSubviews];
+
+	// While rotating, the bounds can pass through sizes that aren't a new device size. Check once the rotation ends instead.
+	id delegate = self.delegate;
+	id< UIViewControllerTransitionCoordinator > coordinator =
+		( [delegate isKindOfClass:[UIViewController class]] ? ((UIViewController *)delegate).transitionCoordinator : nil );
+	if ( coordinator )
+	{
+		[coordinator animateAlongsideTransition:nil completion:^( id< UIViewControllerTransitionCoordinatorContext > context )
+		{
+			[self checkForDeviceSizeChange];
+		}];
+		return;
+	}
+
 	[self checkForDeviceSizeChange];
 }
 

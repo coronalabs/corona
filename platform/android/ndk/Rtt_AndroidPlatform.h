@@ -26,6 +26,7 @@ namespace Rtt
 {
 
 class AndroidAudioPlayer;
+class AndroidScreenSurface;
 class AndroidImageProvider;
 class AndroidStoreProvider;
 class AndroidVideoPlayer;
@@ -192,6 +193,9 @@ class AndroidPlatform : public MPlatform
 		void Suspend( ) const;
 		void Resume( ) const;
 
+		// Reads the screen DPI again into the screen surface, for scale = "adaptive" after a fold or unfold
+		void UpdateScreenSurfaceDpi() const;
+
 	protected:
         Rtt_Allocator* fAllocator;
         mutable AndroidAudioPlayer* fAudioPlayer;
@@ -205,6 +209,7 @@ class AndroidPlatform : public MPlatform
 		mutable AndroidVideoProvider* fVideoProvider;
 //		AlertViewDelegate *fDelegate;
 		mutable AndroidWebPopup *fWebPopup;
+		mutable AndroidScreenSurface *fScreenSurface;
 		String fPackage;
 		String fDocumentsDir;
 		String fApplicationSupportDir;

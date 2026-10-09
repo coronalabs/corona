@@ -114,21 +114,24 @@ JavaToNativeBridge::Init(
 		Rtt::RenderingStream& stream = display.GetStream();
 		// TEMPORARY_HACK (end)
 
-		if (!isCoronaKit &&
-			Rtt::DeviceOrientation::IsSideways(lastOrientation) !=
-		    Rtt::DeviceOrientation::IsSideways(fView->GetOrientation()))
-		{
-			stream.SwapContentSize();
-			stream.SwapContentAlign();
-		}
-
 		if ( display.HasDeviceSizeChanged() )
 		{
-			// A new screen size (fold, multi-window), not a rotation: recompute the content size and scale
-			display.WindowSizeChanged();
+			// A new screen size (fold, multi-window), not a rotation: set the stream up for it, like iOS and the Simulator.
+			// The DPI can change with the screen, and scale = "adaptive" reads it. DeviceSizeChanged() applies the
+			// orientation itself, so don't swap the content size and align here too.
+			fPlatform->UpdateScreenSurfaceDpi();
+			display.DeviceSizeChanged();
 		}
 		else
 		{
+			if (!isCoronaKit &&
+				Rtt::DeviceOrientation::IsSideways(lastOrientation) !=
+			    Rtt::DeviceOrientation::IsSideways(fView->GetOrientation()))
+			{
+				stream.SwapContentSize();
+				stream.SwapContentAlign();
+			}
+
 			stream.UpdateContentScale(width, height);
 		}
 
