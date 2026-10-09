@@ -1650,7 +1650,7 @@ TestMask( Rtt_Allocator *allocator, DisplayObject& child, const Matrix& srcToDst
 
 	// Map dstX, dstY to src (mask's, not child's) coordinates
   	Matrix maskToDstSpace( srcToDstSpace );
-  	maskToDstSpace.Concat( mask->GetTransform().GetMatrix( NULL ) );
+  	maskToDstSpace.Concat( mask->GetTransform().GetMatrix( Transform::kV2, NULL ) );
   	Matrix inverse;
   	Matrix::Invert( maskToDstSpace, inverse );
 
@@ -1713,7 +1713,7 @@ HitEvent::Test( HitTestObject& hitParent, const Matrix& srcToDstSpace ) const
 		// Only add visible/hitTestable objects
 		// and in the multitouch case, do not have per object focus id set
 		// since we dispatch focused events outside of hit testing.
-		if ( child.ShouldHitTest() && ! child.GetFocusId() && ( !child.SkipsHitTest() && child.CanHitTest()) )
+		if ( child.ShouldHitTest() && ! child.GetHasFocusId()/*GetFocusId()*/ && ( !child.SkipsHitTest() && child.CanHitTest()) )
 		{
 			GroupObject* childAsGroup = child.AsGroupObject();
 			if ( ! childAsGroup )
