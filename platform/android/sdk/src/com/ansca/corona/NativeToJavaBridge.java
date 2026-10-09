@@ -3300,23 +3300,10 @@ public class NativeToJavaBridge {
 			);
 
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) { // Android 15+
-				Window window = activity.getWindow();
-				View decorView = window.getDecorView();
-				// Add bottom insert
-				decorView.setOnApplyWindowInsetsListener((view, insets) -> {
-					Insets navBarInsets = insets.getInsets(WindowInsets.Type.navigationBars());
-					view.setBackgroundColor(color);
-					view.setPadding(0, 0, 0, navBarInsets.bottom);
-					return insets;
-				});
-
-				window.setNavigationBarColor(color);
-				// Update Insert
-				decorView.post(() -> {
-					decorView.requestApplyInsets();
-				});
+				// setNavigationBarColor is ignored. Pad the navigation bar inset instead.
+				activity.setNavigationBarInsetColor(color);
 			} else {
-				CoronaEnvironment.getCoronaActivity().setNavigationBarColor(red, green, blue);
+				activity.setNavigationBarColor(red, green, blue);
 			}
 		}
 	}

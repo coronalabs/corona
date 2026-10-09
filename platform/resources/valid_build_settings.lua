@@ -79,6 +79,7 @@ settings =
 		CoronaWindowMovesWhenKeyboardAppears = false,  -- Both camel case and pascal case are accepted.
 		coronaWindowMovesWhenKeyboardAppears = false,
 		initialSystemUiVisibility = "",
+		edgeToEdge = false,
 		facebookAppId = "",  -- Both camel case and pascal case are accepted.
 		FacebookAppID = "",
 
