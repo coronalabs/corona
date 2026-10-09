@@ -2140,12 +2140,12 @@ void MacPlatform::GetSafeAreaInsetsPixels(Rtt_Real &top, Rtt_Real &left, Rtt_Rea
 			left = [[properties valueForKey:@"safeLandscapeScreenInsetLeft"] floatValue];
 			bottom = [[properties valueForKey:@"safeLandscapeScreenInsetBottom"] floatValue];
 			right = [[properties valueForKey:@"safeLandscapeScreenInsetRight"] floatValue];
-		}
 
-		// Skins give the landscape insets for landscapeRight. Turned the other way, left and right trade places.
-		if (DeviceOrientation::kSidewaysLeft == GetDevice().GetOrientation())
-		{
-			Swap(left, right);
+			// Skins give the landscape insets for landscapeRight. Turned the other way, left and right trade places.
+			if (isLandscapeLeft)
+			{
+				Swap(left, right);
+			}
 		}
 
 		top += statusBarMult * [[properties valueForKey:@"safeLandscapeScreenInsetStatusBar"] floatValue];

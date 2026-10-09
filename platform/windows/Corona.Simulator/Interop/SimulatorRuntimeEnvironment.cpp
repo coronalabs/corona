@@ -794,14 +794,14 @@ void SimulatorRuntimeEnvironment::DeviceSimulatorServices::GetSafeAreaInsetsPixe
 			left = fDeviceConfigPointer->safeLandscapeScreenInsetLeft;
 			bottom = fDeviceConfigPointer->safeLandscapeScreenInsetBottom;
 			right = fDeviceConfigPointer->safeLandscapeScreenInsetRight;
-		}
 
-		// Skins give the landscape insets for landscapeRight. Turned the other way, left and right trade places.
-		if (Rtt::DeviceOrientation::kSidewaysLeft == fCurrentOrientation)
-		{
-			Rtt_Real swapValue = left;
-			left = right;
-			right = swapValue;
+			// Skins give the landscape insets for landscapeRight. Turned the other way, left and right trade places.
+			if (isLandscapeLeft)
+			{
+				Rtt_Real swapValue = left;
+				left = right;
+				right = swapValue;
+			}
 		}
 
 		top += multiplier * fDeviceConfigPointer->safeLandscapeScreenInsetStatusBar;
