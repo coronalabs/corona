@@ -131,7 +131,7 @@ val parsedBuildProperties: JsonObject = run {
 }
 
 extra["minSdkVersion"] = parsedBuildProperties.lookup<Any?>("buildSettings.android.minSdkVersion").firstOrNull()?.toString()?.toIntOrNull()
-        ?: 15
+        ?: 21
 
 val coronaAndroidResourcesDir = file(coronaSrcDir).resolve(
         parsedBuildProperties.lookup<Any?>("buildSettings.android.resources").firstOrNull()?.toString()
@@ -1155,4 +1155,5 @@ dependencies {
         implementation(project(":plugin"))
     }
     implementation("androidx.multidex:multidex:2.0.1")
+    implementation("androidx.core:core:1.17.0")
 }
