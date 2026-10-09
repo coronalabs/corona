@@ -24,6 +24,7 @@
 #include "librtt/Display/Rtt_StageObject.h"
 #include "librtt/Rtt_Runtime.h"	
 #include "librtt/Rtt_Event.h"
+#include "librtt/Rtt_MPlatformDevice.h"
 #include "librtt/Rtt_DeviceOrientation.h"
 #include "librtt/Rtt_LuaContext.h"
 #include "librtt/Rtt_LuaResource.h"
@@ -120,7 +121,16 @@ JavaToNativeBridge::Init(
 			stream.SwapContentSize();
 			stream.SwapContentAlign();
 		}
-		stream.UpdateContentScale(width, height);
+
+		if ( display.HasDeviceSizeChanged() )
+		{
+			// A new screen size (fold, multi-window), not a rotation: recompute the content size and scale
+			display.WindowSizeChanged();
+		}
+		else
+		{
+			stream.UpdateContentScale(width, height);
+		}
 
 		fRuntime->RestartRenderer((Rtt::DeviceOrientation::Type)orientation);
 		display.GetScene().Invalidate();
@@ -1116,6 +1126,26 @@ JavaToNativeBridge::ResizeEvent()
 	}
 	
 	Rtt::ResizeEvent event;
+	fRuntime->DispatchEvent( event );
+}
+
+void 
+JavaToNativeBridge::FoldEvent(int state, int orientation, bool hasBounds, float x, float y, float width, float height)
+{
+	NativeTrace trace( "JavaToNativeBridge::FoldEvent" );
+	
+	// Java always tracks the fold (it also backs system.getInfo("foldState")); only tell Lua when it listens.
+	if ( NULL == fRuntime || NULL == fPlatform || ! fPlatform->GetDevice().DoesNotify( Rtt::MPlatformDevice::kFoldEvent )
+	     || state <= Rtt::FoldEvent::kUnknownState || state >= Rtt::FoldEvent::kNumStates )
+	{
+		return;
+	}
+
+	Rtt::FoldEvent event( (Rtt::FoldEvent::State)state, (Rtt::FoldEvent::Orientation)orientation );
+	if ( hasBounds )
+	{
+		event.SetBounds( x, y, width, height );
+	}
 	fRuntime->DispatchEvent( event );
 }
 

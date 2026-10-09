@@ -783,6 +783,9 @@ PropertyMaskForEventType( MPlatformDevice::EventType type )
 		case MPlatformDevice::kMouseEvent:
 			mask = PlatformSimulator::kMouseEventMask;
 			break;
+		case MPlatformDevice::kFoldEvent:
+			mask = PlatformSimulator::kFoldEventMask;
+			break;
 		default:
 			Rtt_ASSERT_NOT_REACHED();
 			break;

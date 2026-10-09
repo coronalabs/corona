@@ -81,6 +81,7 @@ public class JavaToNativeShim {
     private static native void nativeLocationEvent( long bridgeAddress, double latitude, double longitude, double altitude, double accuracy, double speed, double bearing, double time );
     private static native void nativeOrientationChanged( long bridgeAddress, int newOrientation, int oldOrientation );
     private static native void nativeResizeEvent( long bridgeAddress );
+    private static native void nativeFoldEvent( long bridgeAddress, int state, int orientation, boolean hasBounds, float x, float y, float width, float height );
     private static native void nativeAlertCallback( long bridgeAddress, int buttonIndex, boolean cancelled );
     private static native void nativeSoundEndCallback( long bridgeAddress, long id );
     private static native void nativeVideoEndCallback( long bridgeAddress, long id );
@@ -542,6 +543,14 @@ public class JavaToNativeShim {
 			return;
 		}
 		nativeResizeEvent(runtime.getJavaToNativeBridgeAddress());
+	}
+
+	/** Raises the Lua "fold" event. Values are FoldStateMonitor constants; bounds are window pixels. */
+	public static void foldEvent( CoronaRuntime runtime, int state, int orientation, boolean hasBounds, float x, float y, float width, float height ) {
+		if (runtime == null || runtime.wasDisposed()) {
+			return;
+		}
+		nativeFoldEvent(runtime.getJavaToNativeBridgeAddress(), state, orientation, hasBounds, x, y, width, height);
 	}
 
 	public static void alertCallback( CoronaRuntime runtime, int buttonIndex, boolean cancelled ) {

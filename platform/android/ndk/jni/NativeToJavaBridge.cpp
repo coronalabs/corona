@@ -980,6 +980,25 @@ NativeToJavaBridge::GetSafeAreaInsetsPixels(Rtt::Real &top, Rtt::Real &left, Rtt
 }
 
 bool
+NativeToJavaBridge::IsFoldStateAvailable()
+{
+	NativeTrace trace( "NativeToJavaBridge::IsFoldStateAvailable" );
+	bool result = false;
+	jclassInstance bridge( GetJNIEnv(), kNativeToJavaBridge );
+	if ( bridge.isValid() ) 
+	{
+		jmethodID methodId = bridge.getEnv()->GetStaticMethodID( bridge.getClass(), 
+								"callIsFoldStateAvailable", "(Lcom/ansca/corona/CoronaRuntime;)Z" );
+		if (methodId)
+		{
+			result = bridge.getEnv()->CallStaticBooleanMethod( bridge.getClass(), methodId, fCoronaRuntime );
+			HandleJavaException();
+		}
+	}
+	return result;
+}
+
+bool
 NativeToJavaBridge::LoadImage(
 	const char *filePath, AndroidImageData &imageData, bool convertToGrayscale,
 	int maxWidth, int maxHeight, bool loadImageInfoOnly)

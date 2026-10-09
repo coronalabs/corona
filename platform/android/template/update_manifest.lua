@@ -88,6 +88,7 @@ local intentFilters = {}
 local usesExpansionFile = false
 local largeHeap = false
 local isGame = false
+local supportsFoldables = false
 local installLocation = "auto"
 local targetedAppStore = "none"
 local manifestChildXmlElements = {}
@@ -473,6 +474,17 @@ if "table" == type(buildSettings) then
 		-- Fetch the "isGame" flag.
 		if type(buildSettings.android.isGame) == "boolean" then
 			isGame = buildSettings.android.isGame
+		end
+
+		-- Fetch the "supportsFoldables" flag. It links Jetpack WindowManager (androidx.window) into the app,
+		-- which backs the Lua "fold" event and system.getInfo("foldState").
+		if type(buildSettings.android.supportsFoldables) == "boolean" then
+			supportsFoldables = buildSettings.android.supportsFoldables
+		end
+		-- Jetpack WindowManager needs Android 6.0 (API 23).
+		if supportsFoldables and (tonumber(minSdkVersion) or 0) < 23 then
+			print("WARNING: android.supportsFoldables requires minSdkVersion 23 or higher. Raising minSdkVersion to 23.")
+			minSdkVersion = "23"
 		end
 
 		-- Fetch install location.

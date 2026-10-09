@@ -325,6 +325,14 @@ JNIEXPORT void JNICALL Java_com_ansca_corona_JavaToNativeShim_nativeResizeEvent
 
 /*
  * Class:     com_ansca_corona_JavaToNativeShim
+ * Method:    nativeFoldEvent
+ * Signature: (JIIZFFFF)V
+ */
+JNIEXPORT void JNICALL Java_com_ansca_corona_JavaToNativeShim_nativeFoldEvent
+  (JNIEnv *, jclass, jlong, jint, jint, jboolean, jfloat, jfloat, jfloat, jfloat);
+
+/*
+ * Class:     com_ansca_corona_JavaToNativeShim
  * Method:    nativeAlertCallback
  * Signature: (I)V
  */

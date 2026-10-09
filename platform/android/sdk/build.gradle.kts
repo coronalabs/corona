@@ -27,6 +27,13 @@ android {
 
 }
 
+dependencies {
+    // Only for compiling FoldStateMonitor. Apps link the library themselves when build.settings sets
+    // android.supportsFoldables = true; without it the monitor reports an unknown fold state.
+    compileOnly("androidx.window:window-java:1.5.1")
+    compileOnly("androidx.core:core:1.8.0") // androidx.core.util.Consumer, a runtime dependency of androidx.window
+}
+
 tasks.create<Copy>("updateWidgetResources") {
     group = "Corona"
     val widgetResLocation = "$buildDirectory/generated/widgetResources"
