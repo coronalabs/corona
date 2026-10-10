@@ -51,6 +51,7 @@ simulator =
 		screenOriginY = 62,
 		screenWidth = 2076,
 		screenHeight = 2152,
+		hingeOrientation = "vertical", -- the fold runs top to bottom in the art; "fold" events report it turned with the app
 		-- The inner screen is slightly taller than wide, so it keeps the usual portrait rules.
 		-- The camera's reserved rect is 136px tall at the top right; 24dp gesture bar at the bottom.
 		safeScreenInsetTop = 136,

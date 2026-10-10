@@ -54,6 +54,9 @@ class AndroidScreenSurface : public PlatformSurface
 		virtual S32 AdaptiveWidth() const;
 		virtual S32 AdaptiveHeight() const;
 
+		// The DPI can change without a new surface, e.g. when a foldable opens or closes
+		void SetApproximateScreenDpi( S32 approximateScreenDpi ) { fApproximateScreenDPI = approximateScreenDpi; }
+
 	private:
 		AndroidGLView* fView;
 		GLuint fFramebuffer; // FBO id

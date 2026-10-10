@@ -433,6 +433,11 @@ MacDevice::HasEventSource( EventType type ) const
 		case MPlatformDevice::kOrientationEvent:
 			hasEventSource = true;	// The Simulator can simulate these events
 			break;
+		case MPlatformDevice::kFoldEvent:
+#ifdef Rtt_AUTHORING_SIMULATOR
+			hasEventSource = fSimulator.IsFoldable();	// Hardware > Unfold on a foldable skin
+#endif
+			break;
 		default:
 			// Rtt_ASSERT_NOT_REACHED();
 			break;

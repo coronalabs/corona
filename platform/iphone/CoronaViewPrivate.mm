@@ -229,6 +229,12 @@ CoronaViewListenerAdapter( lua_State *L )
 	bool fShouldInvalidate;
 	bool fBeganRunLoop;
 
+	// Foldable devices (iOS 27.1+). The UIHingeInteraction is created through the ObjC runtime so
+	// this file also builds with older SDKs; it stays nil when the OS has no hinge support.
+	id fHingeInteraction;
+	int fHingeState; // Rtt::FoldEvent::State
+	CGFloat fHingeAngle; // radians; negative when unknown
+
 	// Gyroscope
 	BOOL gyroscopeEnabled;
 	U64 gyroscopePreviousTimestampCorona;
@@ -331,6 +337,9 @@ CoronaViewListenerAdapter( lua_State *L )
 	_observeSuspendResume = YES;
 	fLastContentHeight = -1;
 	fShouldInvalidate = false;
+	fHingeInteraction = nil;
+	fHingeState = Rtt::FoldEvent::kUnknownState;
+	fHingeAngle = -1;
 	fLoadOrientation = Rtt::DeviceOrientation::kUpright;
 	fParams = nil;
 
@@ -400,6 +409,8 @@ CoronaViewListenerAdapter( lua_State *L )
 // Bottleneck for teardown
 - (void)deallocCommon
 {
+	[self stopHingeMonitoring];
+
 	// TextField/TextBox
 	{
 #ifndef Rtt_TVOS_ENV
@@ -1415,13 +1426,27 @@ PrintTouches( NSSet *touches, const char *header )
 	fShouldInvalidate = true;
 }
 
-// Live view resizing (foldable devices)
+// Foldable devices and live view resizing
 // ----------------------------------------------------------------------------
-#pragma mark # Live view resizing
+#pragma mark # Foldable devices
 
 - (void)layoutSubviews
 {
 	[super layoutSubviews];
+
+	// While rotating, the bounds can pass through sizes that aren't a new device size. Check once the rotation ends instead.
+	id delegate = self.delegate;
+	id< UIViewControllerTransitionCoordinator > coordinator =
+		( [delegate isKindOfClass:[UIViewController class]] ? ((UIViewController *)delegate).transitionCoordinator : nil );
+	if ( coordinator )
+	{
+		[coordinator animateAlongsideTransition:nil completion:^( id< UIViewControllerTransitionCoordinatorContext > context )
+		{
+			[self checkForDeviceSizeChange];
+		}];
+		return;
+	}
+
 	[self checkForDeviceSizeChange];
 }
 
@@ -1436,6 +1461,121 @@ PrintTouches( NSSet *touches, const char *header )
 		runtime->DispatchEvent( Rtt::ResizeEvent() );
 		fLastContentHeight = (int)runtime->GetDisplay().ContentHeight(); // so didOrientationChange: doesn't raise a second "resize"
 	}
+}
+
+- (BOOL)startHingeMonitoring
+{
+	if ( fHingeInteraction )
+	{
+		return YES;
+	}
+
+	Class interactionClass = NSClassFromString( @"UIHingeInteraction" );
+	if ( ! interactionClass )
+	{
+		return NO; // iOS older than 27.1, tvOS, or a device without a hinge
+	}
+
+	CoronaView *view = self; // Not retained: the interaction is removed in deallocCommon.
+	void (^handler)(id, id) = ^( id interaction, id update )
+	{
+		[view hingeDidUpdate:update];
+	};
+
+	id interaction = [[interactionClass alloc] performSelector:NSSelectorFromString( @"initWithUpdateHandler:" ) withObject:handler];
+	if ( ! interaction )
+	{
+		return NO;
+	}
+
+	fHingeInteraction = interaction; // owned (alloc/init)
+	[self addInteraction:(id< UIInteraction >)interaction];
+	return YES;
+}
+
+- (void)stopHingeMonitoring
+{
+	if ( fHingeInteraction )
+	{
+		[self removeInteraction:(id< UIInteraction >)fHingeInteraction];
+		[fHingeInteraction release];
+		fHingeInteraction = nil;
+	}
+}
+
+// Called by UIKit whenever the hinge angle or status changes; "update.hinge" is nil without hinge state.
+- (void)hingeDidUpdate:(id)update
+{
+	using namespace Rtt;
+
+	int state = FoldEvent::kUnknownState;
+	CGFloat angle = -1;
+
+	id hinge = [update valueForKey:@"hinge"];
+	if ( hinge )
+	{
+		angle = [[hinge valueForKey:@"angle"] doubleValue];
+		// UIHingeStatus (unknown, closed, partiallyOpen, fullyOpen) is numbered like FoldEvent::State
+		NSInteger status = [[hinge valueForKey:@"status"] integerValue];
+		if ( status > FoldEvent::kUnknownState && status < FoldEvent::kNumStates )
+		{
+			state = (int)status;
+		}
+	}
+
+	bool changed = ( state != fHingeState ) || ( fabs( angle - fHingeAngle ) > 0.001 );
+	fHingeState = state;
+	fHingeAngle = angle;
+	if ( ! changed || FoldEvent::kUnknownState == state )
+	{
+		return;
+	}
+
+	Runtime *runtime = self.runtime;
+	if ( runtime && runtime->Platform().GetDevice().DoesNotify( MPlatformDevice::kFoldEvent ) )
+	{
+		FoldEvent::Orientation orientation = FoldEvent::kUnknownOrientation;
+		CGRect region;
+		bool hasFoldRegion = [self getFoldRegionPixels:&region];
+		if ( hasFoldRegion )
+		{
+			orientation = ( region.size.width < region.size.height ) ? FoldEvent::kVertical : FoldEvent::kHorizontal;
+		}
+
+		FoldEvent event( (FoldEvent::State)state, orientation, angle );
+		if ( hasFoldRegion )
+		{
+			event.SetBounds( region.origin.x, region.origin.y, region.size.width, region.size.height );
+		}
+		runtime->DispatchEvent( event );
+	}
+}
+
+- (int)foldState
+{
+	return fHingeState;
+}
+
+// The fold's reserved region (UIKit's "division" kind) in pixels of this view; NO when there is none.
+- (BOOL)getFoldRegionPixels:(CGRect *)outRect
+{
+	Class kindClass = NSClassFromString( @"UIViewReservedRegionKind" );
+	SEL querySel = NSSelectorFromString( @"reservedRegionsOfKind:" );
+	SEL kindSel = NSSelectorFromString( @"divisionRegionKind" );
+	if ( ! kindClass || ! [self respondsToSelector:querySel] || ! [kindClass respondsToSelector:kindSel] || ! outRect )
+	{
+		return NO;
+	}
+
+	NSArray *regions = [self performSelector:querySel withObject:[kindClass performSelector:kindSel]];
+	if ( 0 == [regions count] )
+	{
+		return NO;
+	}
+	CGRect frame = [[[regions firstObject] valueForKey:@"frame"] CGRectValue];
+	CGFloat scale = self.contentScaleFactor;
+	*outRect = CGRectMake( frame.origin.x * scale, frame.origin.y * scale, frame.size.width * scale, frame.size.height * scale );
+	return YES;
 }
 
 // CoronaOrientationObserver

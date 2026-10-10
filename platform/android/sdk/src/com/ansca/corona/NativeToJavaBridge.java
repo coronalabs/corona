@@ -1696,6 +1696,14 @@ public class NativeToJavaBridge {
 		return result;
 	}
 	
+	/** True when this device and build can report the posture of a foldable (Jetpack WindowManager present, Android 6+). */
+	protected static boolean callIsFoldStateAvailable(CoronaRuntime runtime)
+	{
+		CoronaActivity activity = CoronaEnvironment.getCoronaActivity();
+		FoldStateMonitor monitor = (activity != null) ? activity.getFoldStateMonitor() : null;
+		return (monitor != null) && monitor.isAvailable();
+	}
+
 	protected static void callShowNativeAlert( CoronaRuntime runtime, String title, String msg, String[] buttonLabels )
 	{
 		runtime.getController().showNativeAlert( title, msg, buttonLabels );
@@ -2152,6 +2160,16 @@ public class NativeToJavaBridge {
 		else if (key.equals("hasSoftwareKeys")) {
 			luaState.pushBoolean(CoronaEnvironment.getCoronaActivity().HasSoftwareKeys());
 			valuesPushed = 1;
+		}
+		else if (key.equals("foldState")) {
+			// "closed", "halfOpen" or "open" on a foldable; nil on other devices or without Jetpack WindowManager.
+			CoronaActivity activity = CoronaEnvironment.getCoronaActivity();
+			FoldStateMonitor monitor = (activity != null) ? activity.getFoldStateMonitor() : null;
+			String state = (monitor != null) ? monitor.getStateName() : null;
+			if (state != null) {
+				luaState.pushString(state);
+				valuesPushed = 1;
+			}
 		}
 
 		// Push nil if failed to fetch the requested value.

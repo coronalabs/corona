@@ -342,7 +342,7 @@ Runtime._proxy =
 	__newindex = system.__proxynewindex
 }
 
-local needsHardwareSupport = { orientation=true, accelerometer=true, gyroscope=true, location=true, heading=true }
+local needsHardwareSupport = { orientation=true, accelerometer=true, gyroscope=true, location=true, heading=true, fold=true }
 
 function Runtime:addEventListener( eventName, listener )
 	local super = self._super
