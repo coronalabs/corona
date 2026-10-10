@@ -292,9 +292,17 @@ class Display
         // Implicitly calls UpdateContentScale()
         virtual void WindowSizeChanged();
 
+        // Call when the device size of the surface changes, e.g. when the Simulator folds or unfolds
+        // a foldable device. Sets the stream up for the new size as at launch, keeping the current
+        // content orientation and rotation.
+        virtual void DeviceSizeChanged();
+
         // Detects if the device width/height of the surface has changed compared to the stream's device width/height.
         // Returns true if they defer, meaning that the caller should then call WindowSizeChanged() to update content scales.
         virtual bool HasWindowSizeChanged() const;
+
+        // Like HasWindowSizeChanged(), but ignores the width/height swap of a rotation.
+        virtual bool HasDeviceSizeChanged() const;
 
     public:
         virtual DeviceOrientation::Type GetRelativeOrientation() const;

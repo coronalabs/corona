@@ -52,6 +52,8 @@ namespace Rtt
 MacSimulator::MacSimulator( bool headless )
 :	Super( Super::Finalizer< MacGUIPlatform > ),
 //	fPool( [[NSAutoreleasePool alloc] init] ),
+	fDeviceConfigFile( nil ),
+	fMacPlatform( NULL ),
 	fWindow( nil ),
 	fWindowController( nil ),
 	fProperties( [[NSMutableDictionary alloc] init] ),
@@ -101,6 +103,7 @@ MacSimulator::~MacSimulator()
 
 	[fDeviceSkinIdentifier release];
 	[fDeviceName release];
+	[fDeviceConfigFile release];
 	[fProperties release];
 	[fWindow release];
 	// Fix case 20368: Setting focus on native keyboard crashes simulator (http://bugs.coronalabs.com/default.asp?20368)
@@ -135,16 +138,22 @@ MacSimulator::Initialize(
     NSString *skinDir = [[NSString stringWithExternalString:deviceConfigFile] stringByDeletingLastPathComponent];
 	platform->SetResourcePath( resourcePath );
 	Super::Config config( platform->GetAllocator() );
-	Super::LoadConfig( deviceConfigFile, *platform, config );
+	Super::LoadConfig( deviceConfigFile, *platform, config, IsUnfolded() );
 
-	platform->SetAdaptiveWidth( config.GetAdaptiveWidth() );
-	platform->SetAdaptiveHeight( config.GetAdaptiveHeight() );
-    
     if (! config.configLoaded)
     {
         return;
     }
-    
+
+	fDeviceConfigFile = [[NSString stringWithExternalString:deviceConfigFile] copy];
+	fMacPlatform = platform;
+	DeviceOrientation::Type naturalOrientation = ApplyScreenSize( config, nil );
+	SetIsFoldable( config.isFoldable );
+	if ( ! config.isFoldable )
+	{
+		SetUnfolded( false );
+	}
+
 	LoadBuildSettings( *platform );
 
 	fScreenWidth = config.screenWidth;
@@ -156,19 +165,10 @@ MacSimulator::Initialize(
 
 	// -------------
 
-	// Only add if default is available
-	if ( AddValueForKey( fProperties, config.statusBarDefaultFile.GetString(), @"statusBarDefaultFile" ) )
+	SetScreenProperties( config );
+	if ( [fProperties valueForKey:@"statusBarDefaultFile"] )
 	{
-		Rtt_VERIFY( AddValueForKey( fProperties, config.statusBarTranslucentFile.GetString(), @"statusBarTranslucentFile" ) );
-		Rtt_VERIFY( AddValueForKey( fProperties, config.statusBarBlackFile.GetString(), @"statusBarBlackFile" ) );
-		Rtt_VERIFY( AddValueForKey( fProperties, config.statusBarLightTransparentFile.GetString(), @"statusBarLightTransparentFile" ) );
-		Rtt_VERIFY( AddValueForKey( fProperties, config.statusBarDarkTransparentFile.GetString(), @"statusBarDarkTransparentFile" ) );
 		[fProperties setValue:[NSNumber numberWithInt:MPlatform::kTranslucentStatusBar] forKey:@"statusBarCurrent"];
-	}
-
-	if (config.screenDressingFile.GetString() != NULL)
-	{
-		AddValueForKey(fProperties, config.screenDressingFile.GetString(), @"screenDressingFile");
 	}
 
 	AppDelegate *delegate = (AppDelegate*)[[NSApplication sharedApplication] delegate];
@@ -183,18 +183,6 @@ MacSimulator::Initialize(
 	[fProperties setValue:[NSNumber numberWithBool:config.supportsKeyEvents] forKey:@"supportsKeyEvents"];
 	[fProperties setValue:[NSNumber numberWithBool:config.supportsMouse] forKey:@"supportsMouse"];
 	[fProperties setValue:[NSString stringWithExternalString:config.osName] forKey:@"osName"];
-
-	// Store the simulated device's safe screen area
-	[fProperties setValue:[NSNumber numberWithFloat:config.safeScreenInsetStatusBar] forKey:@"safeScreenInsetStatusBar"];
-	[fProperties setValue:[NSNumber numberWithFloat:config.safeScreenInsetTop] forKey:@"safeScreenInsetTop"];
-	[fProperties setValue:[NSNumber numberWithFloat:config.safeScreenInsetLeft] forKey:@"safeScreenInsetLeft"];
-	[fProperties setValue:[NSNumber numberWithFloat:config.safeScreenInsetBottom] forKey:@"safeScreenInsetBottom"];
-	[fProperties setValue:[NSNumber numberWithFloat:config.safeScreenInsetRight] forKey:@"safeScreenInsetRight"];
-	[fProperties setValue:[NSNumber numberWithFloat:config.safeLandscapeScreenInsetStatusBar] forKey:@"safeLandscapeScreenInsetStatusBar"];
-	[fProperties setValue:[NSNumber numberWithFloat:config.safeLandscapeScreenInsetTop] forKey:@"safeLandscapeScreenInsetTop"];
-	[fProperties setValue:[NSNumber numberWithFloat:config.safeLandscapeScreenInsetLeft] forKey:@"safeLandscapeScreenInsetLeft"];
-	[fProperties setValue:[NSNumber numberWithFloat:config.safeLandscapeScreenInsetBottom] forKey:@"safeLandscapeScreenInsetBottom"];
-	[fProperties setValue:[NSNumber numberWithFloat:config.safeLandscapeScreenInsetRight] forKey:@"safeLandscapeScreenInsetRight"];
 
 	// -------------
 
@@ -256,6 +244,10 @@ MacSimulator::Initialize(
 	[screenView autorelease];
 	[screenView setOrientation:GetOrientation()];
 	[screenView setDelegate:delegate];
+	if ( DeviceOrientation::kUpright != naturalOrientation )
+	{
+		ApplyScreenSize( config, screenView ); // the engine gets the wide screen as its portrait size
+	}
 
 	SimulatorDeviceWindow* instanceWindow = nil;
 	void (^window_close_handler)(id) = ^(id sender)
@@ -341,6 +333,13 @@ MacSimulator::Initialize(
 														isTransparent:GetIsTransparent()];
         
 		[(SkinnableWindow*)instanceWindow setPerformCloseBlock:window_close_handler];
+
+		if ( DeviceOrientation::kUpright != naturalOrientation )
+		{
+			// Landscape art (relaunched unfolded): lay the window out again relative to it
+			instanceWindow.skinNaturalOrientation = naturalOrientation;
+			[(SkinnableWindow*)instanceWindow setOrientation:GetOrientation()];
+		}
 	}
 
 	NSWindowController *windowController = [[NSWindowController alloc] initWithWindow:instanceWindow];
@@ -439,6 +438,128 @@ MacSimulator::DidRotate( bool clockwise, DeviceOrientation::Type start, DeviceOr
 //	S32 absoluteAngle = -DeviceOrientation::CalculateRotation( DeviceOrientation::kUpright, end );
 
 	[(SkinnableWindow *)fWindow rotate:clockwise];
+}
+
+void
+MacSimulator::SetScreenProperties( const Config& config )
+{
+	// Only add if default is available
+	if ( AddValueForKey( fProperties, config.statusBarDefaultFile.GetString(), @"statusBarDefaultFile" ) )
+	{
+		Rtt_VERIFY( AddValueForKey( fProperties, config.statusBarTranslucentFile.GetString(), @"statusBarTranslucentFile" ) );
+		Rtt_VERIFY( AddValueForKey( fProperties, config.statusBarBlackFile.GetString(), @"statusBarBlackFile" ) );
+		Rtt_VERIFY( AddValueForKey( fProperties, config.statusBarLightTransparentFile.GetString(), @"statusBarLightTransparentFile" ) );
+		Rtt_VERIFY( AddValueForKey( fProperties, config.statusBarDarkTransparentFile.GetString(), @"statusBarDarkTransparentFile" ) );
+	}
+
+	if (config.screenDressingFile.GetString() != NULL)
+	{
+		AddValueForKey(fProperties, config.screenDressingFile.GetString(), @"screenDressingFile");
+	}
+
+	[fProperties setValue:( config.statusBarHeight > 0 ? [NSNumber numberWithFloat:config.statusBarHeight] : nil ) forKey:@"statusBarHeight"];
+
+	// Store the simulated device's safe screen area
+	[fProperties setValue:[NSNumber numberWithFloat:config.safeScreenInsetStatusBar] forKey:@"safeScreenInsetStatusBar"];
+	[fProperties setValue:[NSNumber numberWithFloat:config.safeScreenInsetTop] forKey:@"safeScreenInsetTop"];
+	[fProperties setValue:[NSNumber numberWithFloat:config.safeScreenInsetLeft] forKey:@"safeScreenInsetLeft"];
+	[fProperties setValue:[NSNumber numberWithFloat:config.safeScreenInsetBottom] forKey:@"safeScreenInsetBottom"];
+	[fProperties setValue:[NSNumber numberWithFloat:config.safeScreenInsetRight] forKey:@"safeScreenInsetRight"];
+	[fProperties setValue:[NSNumber numberWithFloat:config.safeLandscapeScreenInsetStatusBar] forKey:@"safeLandscapeScreenInsetStatusBar"];
+	[fProperties setValue:[NSNumber numberWithFloat:config.safeLandscapeScreenInsetTop] forKey:@"safeLandscapeScreenInsetTop"];
+	[fProperties setValue:[NSNumber numberWithFloat:config.safeLandscapeScreenInsetLeft] forKey:@"safeLandscapeScreenInsetLeft"];
+	[fProperties setValue:[NSNumber numberWithFloat:config.safeLandscapeScreenInsetBottom] forKey:@"safeLandscapeScreenInsetBottom"];
+	[fProperties setValue:[NSNumber numberWithFloat:config.safeLandscapeScreenInsetRight] forKey:@"safeLandscapeScreenInsetRight"];
+
+	// Only skins whose landscapeLeft insets aren't the landscape ones mirrored give these
+	bool hasLandscapeLeftInsets = ( config.safeLandscapeLeftScreenInsetTop >= 0 );
+	[fProperties setValue:( hasLandscapeLeftInsets ? [NSNumber numberWithFloat:config.safeLandscapeLeftScreenInsetTop] : nil ) forKey:@"safeLandscapeLeftScreenInsetTop"];
+	[fProperties setValue:( hasLandscapeLeftInsets ? [NSNumber numberWithFloat:Max( config.safeLandscapeLeftScreenInsetLeft, 0.0f )] : nil ) forKey:@"safeLandscapeLeftScreenInsetLeft"];
+	[fProperties setValue:( hasLandscapeLeftInsets ? [NSNumber numberWithFloat:Max( config.safeLandscapeLeftScreenInsetBottom, 0.0f )] : nil ) forKey:@"safeLandscapeLeftScreenInsetBottom"];
+	[fProperties setValue:( hasLandscapeLeftInsets ? [NSNumber numberWithFloat:Max( config.safeLandscapeLeftScreenInsetRight, 0.0f )] : nil ) forKey:@"safeLandscapeLeftScreenInsetRight"];
+}
+
+// The app orientation a skin's art is drawn for: portrait (kUpright) for phones; a foldable's wide
+// inner screen is landscapeLeft (camera column on the right, like the folded screen). TV skins give
+// portrait numbers with isUprightOrientationPortrait=false, so only a foldable's wide rect counts.
+DeviceOrientation::Type
+MacSimulator::SkinNaturalOrientation( const Config& config ) const
+{
+	bool isWide = ( config.isFoldable && config.screenWidth > config.screenHeight );
+	return ( isWide ? DeviceOrientation::kSidewaysLeft : DeviceOrientation::kUpright );
+}
+
+// Corona takes a device's upright size as portrait and swaps it for a sideways app, so a landscape
+// device's wide screen is handed over as its portrait size.
+NSSize
+MacSimulator::ScreenSizeForEngine( float width, float height, const Config& config ) const
+{
+	if ( DeviceOrientation::kUpright != SkinNaturalOrientation( config ) )
+	{
+		return NSMakeSize( height, width );
+	}
+	return NSMakeSize( width, height );
+}
+
+// Hands the engine the screen and adaptive sizes for the skin's natural orientation (a wide inner screen
+// as its portrait size), tells shell.lua (MPlatform::kScreenNaturalOrientation) which orientation the
+// status bar and dressing art are drawn for, and resizes the GL view when one is given.
+DeviceOrientation::Type
+MacSimulator::ApplyScreenSize( const Config& config, GLView *view )
+{
+	DeviceOrientation::Type naturalOrientation = SkinNaturalOrientation( config );
+	NSSize deviceSize = ScreenSizeForEngine( config.screenWidth, config.screenHeight, config );
+	NSSize adaptiveSize = ScreenSizeForEngine( config.GetAdaptiveWidth(), config.GetAdaptiveHeight(), config );
+	fMacPlatform->SetAdaptiveWidth( adaptiveSize.width );
+	fMacPlatform->SetAdaptiveHeight( adaptiveSize.height );
+
+	const char *name = ( DeviceOrientation::kUpright != naturalOrientation ? DeviceOrientation::StringForType( naturalOrientation ) : NULL );
+	[fProperties setValue:( name ? [NSString stringWithUTF8String:name] : nil ) forKey:@"screenNaturalOrientation"];
+
+	if ( view )
+	{
+		[view setDeviceSize:deviceSize];
+		view.adaptiveWidth = adaptiveSize.width;
+		view.adaptiveHeight = adaptiveSize.height;
+	}
+	return naturalOrientation;
+}
+
+bool
+MacSimulator::DidChangeFold( bool unfolded )
+{
+	if ( nil == fDeviceConfigFile || NULL == fMacPlatform || ! [fWindow isKindOfClass:[SkinnableWindow class]] )
+	{
+		return false;
+	}
+
+	Super::Config config( fMacPlatform->GetAllocator() );
+	Super::LoadConfig( [fDeviceConfigFile UTF8String], config, unfolded );
+	if ( ! config.configLoaded || NULL == config.deviceImageFile.GetString() )
+	{
+		return false;
+	}
+
+	fScreenWidth = config.screenWidth;
+	fScreenHeight = config.screenHeight;
+	SetScreenProperties( config );
+
+	GLView *view = GetScreenView();
+	DeviceOrientation::Type naturalOrientation = ApplyScreenSize( config, view );
+
+	NSString *skinDir = [fDeviceConfigFile stringByDeletingLastPathComponent];
+	NSString *deviceImageFile = [skinDir stringByAppendingPathComponent:[NSString stringWithExternalString:config.deviceImageFile.GetString()]];
+	NSRect screenRect = NSMakeRect( config.screenOriginX, config.screenOriginY, config.screenWidth, config.screenHeight );
+	[(SkinnableWindow *)fWindow setSkinImage:deviceImageFile screenRect:screenRect naturalOrientation:naturalOrientation];
+
+	NSString *title = [NSString stringWithFormat:@"%s - %.0fx%.0f", config.windowTitleBarName.GetString(), config.screenWidth, config.screenHeight];
+	[fWindow setTitle:title];
+	[[NSApplication sharedApplication] changeWindowsItem:fWindow title:title filename:NO];
+
+	GetPlayer()->GetRuntime().GetDisplay().DeviceSizeChanged();
+	[view invalidate];
+
+	return true;
 }
 
 

@@ -160,6 +160,8 @@
 @synthesize allowOverlay;
 @synthesize cursorHidden;
 @synthesize initialLocation;
+@synthesize adaptiveWidth;
+@synthesize adaptiveHeight;
 
 // pixel format definition
 + (NSOpenGLPixelFormat*) basicPixelFormat
@@ -901,6 +903,11 @@ static U32 *sTouchId = (U32*)(& kTapTolerance); // any arbitrary pointer value w
 {
 	// Rtt_TRACE(("deviceHeight: %g\n", nativeFrameRect.size.height ));
     return nativeFrameRect.size.height;
+}
+
+- (void)setDeviceSize:(NSSize)size
+{
+	nativeFrameRect.size = size;
 }
 
 - (BOOL) acceptsFirstResponder

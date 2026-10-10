@@ -23,7 +23,7 @@
 
         <activity
             android:name="com.ansca.corona.CoronaActivity"
-            android:configChanges="keyboard|keyboardHidden|navigation|screenSize|orientation"
+            android:configChanges="keyboard|keyboardHidden|navigation|screenSize|smallestScreenSize|screenLayout|density|orientation"
             android:exported="true"
             android:icon="@mipmap/ic_launcher">
             <intent-filter>

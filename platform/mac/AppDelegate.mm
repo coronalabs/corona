@@ -1036,6 +1036,7 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
 
 	
     [self loadExtensionMenu];
+    [self addFoldMenuItem];
 
     NSMenu *appMenu = [[NSApplication sharedApplication] mainMenu];
     NSMenuItem *windowMenuItem = [appMenu itemWithTitle:kWindowMenuItemName];
@@ -2752,6 +2753,9 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
         skinFile = Rtt::TargetDevice::LuaObjectFileFromSkin( Rtt::TargetDevice::kDefaultSkin );
     }
 
+	// A relaunch keeps a foldable device unfolded
+	fSimulator->SetUnfolded( fUnfolded && fUnfoldedSkin == fSkin );
+
 	// [1] Somewhere in Initialize (or its sub-calls), GLView's prepareOpenGL is invoked, and Runtime is instantiated
 	fSimulator->Initialize( skinFile, resourcePath );
 
@@ -2842,6 +2846,43 @@ Rtt_EXPORT const luaL_Reg* Rtt_GetCustomModulesList()
 
 		fAnalytics->Log("shake", NULL);
 	}
+}
+
+-(IBAction)toggleFold:(id)sender
+{
+	if (fSimulator != NULL && fSimulator->IsFoldable())
+	{
+		fSimulator->ToggleFold();
+		fUnfolded = fSimulator->IsUnfolded();
+		fUnfoldedSkin = fSkin;
+
+		fAnalytics->Log("fold", "state", (fUnfolded ? "unfolded" : "folded"));
+	}
+}
+
+// Adds Hardware > Unfold (⇧⌘F) below Shake; validateMenuItem: enables it for foldable skins
+- (void) addFoldMenuItem
+{
+	NSMenu *hardwareMenu = [[[NSApp mainMenu] itemWithTitle:@"Hardware"] submenu];
+	NSInteger shakeIndex = [hardwareMenu indexOfItemWithTarget:nil andAction:@selector(shake:)];
+	if (hardwareMenu != nil && shakeIndex >= 0)
+	{
+		NSMenuItem *item = [[[NSMenuItem alloc] initWithTitle:@"Unfold" action:@selector(toggleFold:) keyEquivalent:@"f"] autorelease];
+		[item setKeyEquivalentModifierMask:(NSEventModifierFlagCommand | NSEventModifierFlagShift)];
+		[item setTarget:self];
+		[hardwareMenu insertItem:item atIndex:shakeIndex + 1];
+	}
+}
+
+- (BOOL) validateMenuItem:(NSMenuItem *)menuItem
+{
+	if ([menuItem action] == @selector(toggleFold:))
+	{
+		BOOL foldable = (fSimulator != NULL && fSimulator->IsFoldable());
+		[menuItem setTitle:(foldable && fSimulator->IsUnfolded() ? @"Fold" : @"Unfold")];
+		return foldable;
+	}
+	return YES;
 }
 
 -(IBAction)back:(id)sender

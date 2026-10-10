@@ -133,10 +133,12 @@ val parsedBuildProperties: JsonObject = run {
 extra["minSdkVersion"] = parsedBuildProperties.lookup<Any?>("buildSettings.android.minSdkVersion").firstOrNull()?.toString()?.toIntOrNull()
         ?: 15
 
+
 val coronaAndroidResourcesDir = file(coronaSrcDir).resolve(
         parsedBuildProperties.lookup<Any?>("buildSettings.android.resources").firstOrNull()?.toString()
                 ?.takeIf { it.isNotBlank() }?.replace('\\', '/') ?: "AndroidResources"
 ).normalize()
+
 
 val coronaBuilder = if (windows) {
     "$nativeDir/Corona/win/bin/CoronaBuilder.exe"
