@@ -53,6 +53,7 @@ simulator =
 		screenOriginY = 84,
 		screenWidth = 2853,
 		screenHeight = 2007,
+		hingeOrientation = "vertical", -- the fold runs top to bottom in the art; "fold" events report it turned with the app
 		-- The wide inner screen is a landscape device: the art above is its landscapeLeft, with the
 		-- status column beside the camera on the right and the home indicator at the bottom. The
 		-- Simulator turns it for the other orientations, so each table below is that art turned.

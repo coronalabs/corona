@@ -1265,6 +1265,16 @@ MacPlatform::PushSystemInfo( lua_State *L, const char *key ) const
         lua_pushboolean(L, res);
         pushedValues = 1;
     }
+#if Rtt_AUTHORING_SIMULATOR
+	else if ( Rtt_StringCompare( key, "foldState" ) == 0 )
+	{
+		// "open" or "closed" on a foldable skin (Hardware > Unfold); nil on other skins, as on devices without a hinge
+		MacSimulator *simulator = ((AppDelegate*)[NSApp delegate]).simulator;
+		const char *state = ( simulator ? simulator->FoldStateName() : NULL );
+		state ? lua_pushstring( L, state ) : lua_pushnil( L ); // an explicit nil keeps tostring() happy
+		pushedValues = 1;
+	}
+#endif
 	else
 	{
 		// Attempt to fetch the requested system info from the base class.
