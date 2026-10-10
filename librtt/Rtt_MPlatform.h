@@ -154,6 +154,8 @@ class MPlatform
 				, kLightTransparentStatusBarFile = -104
 				, kDarkTransparentStatusBarFile = -105
 				, kScreenDressingFile = -106
+				, kStatusBarHeight = -107
+				, kScreenNaturalOrientation = -108 // "landscapeLeft" etc. when the simulated screen's art is drawn for that orientation (a foldable's wide inner screen); empty for portrait
 		}
 		Category;
 

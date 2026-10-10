@@ -32,7 +32,15 @@
 	void (^performCloseBlock)(id);
 	int fExponent;
 	NSRect fScreenRect; // Original, upright rect
+	Rtt::DeviceOrientation::Type fSkinNaturalOrientation; // The app orientation the art is drawn for; kUpright for phones, a landscape for a foldable's wide inner screen
 }
+
+// The orientation the art is drawn for. fCurrentSkinOrientation always tracks the app's orientation
+// (the GL view gets it, so the content runs the right way); the art is shown turned relative to this.
+@property(nonatomic, assign) Rtt::DeviceOrientation::Type skinNaturalOrientation;
+
+// How the art and screen are currently turned on screen: the app's orientation relative to the natural one.
+- (Rtt::DeviceOrientation::Type) skinDisplayOrientation;
 
 @property(nonatomic, readwrite, copy) NSString *saveFrameName;
 

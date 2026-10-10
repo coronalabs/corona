@@ -443,6 +443,54 @@ restrictLibs( lua_State *L )
 	return 0;
 }
 
+// Pushes the table of status bar and screen dressing files that shell.lua draws over the app.
+static void
+pushStatusBarFiles( lua_State* L, const MPlatform& platform, Rtt::String& value )
+{
+	static const struct { MPlatform::Category category; const char *key; } kFiles[] =
+	{
+		{ MPlatform::kDefaultStatusBarFile, "default" },
+		{ MPlatform::kDarkStatusBarFile, "dark" },
+		{ MPlatform::kTranslucentStatusBarFile, "translucent" },
+		{ MPlatform::kLightTransparentStatusBarFile, "lightTransparent" },
+		{ MPlatform::kDarkTransparentStatusBarFile, "darkTransparent" },
+		{ MPlatform::kScreenDressingFile, "screenDressing" },
+		// The orientation the art is drawn for when it isn't portrait, e.g. "landscapeLeft" for a
+		// foldable's wide inner screen; shell.lua turns the art relative to it.
+		{ MPlatform::kScreenNaturalOrientation, "screenNaturalOrientation" },
+	};
+
+	lua_newtable( L );
+	for ( size_t i = 0; i < sizeof( kFiles ) / sizeof( kFiles[0] ); i++ )
+	{
+		platform.GetPreference( kFiles[i].category, &value );
+		if ( ! value.IsEmpty() )
+		{
+			lua_pushstring( L, value.GetString() );
+			lua_setfield( L, -2, kFiles[i].key );
+		}
+	}
+
+	// Status bar height (pixels) for skins whose status bar art is taller than the bar
+	platform.GetPreference( MPlatform::kStatusBarHeight, &value );
+	if ( ! value.IsEmpty() )
+	{
+		lua_pushnumber( L, atof( value.GetString() ) );
+		lua_setfield( L, -2, "height" );
+	}
+}
+
+// params.getStatusBarFiles(): the current files, so shell.lua can reload them when the simulated
+// screen changes (e.g. a foldable device is unfolded).
+static int
+getStatusBarFiles( lua_State* L )
+{
+	Runtime* runtime = LuaContext::GetRuntime( L );
+	Rtt::String value( runtime->GetAllocator() );
+	pushStatusBarFiles( L, runtime->Platform(), value );
+	return 1;
+}
+
 static int
 pushShellArgs( lua_State* L )
 {
@@ -463,51 +511,11 @@ pushShellArgs( lua_State* L )
 		lua_setfield( L, -2, "onShellComplete" ); // params.onShellComplete
 
 		// Pass table of status bar file names
-		lua_newtable( L );
-		{
-			platform.GetPreference( MPlatform::kDefaultStatusBarFile, &value );
-			if ( ! value.IsEmpty() )
-			{
-				lua_pushstring( L, value.GetString() );
-				lua_setfield( L, -2, "default" );
-			}
-
-			platform.GetPreference( MPlatform::kDarkStatusBarFile, &value );
-			if ( ! value.IsEmpty() )
-			{
-				lua_pushstring( L, value.GetString() );
-				lua_setfield( L, -2, "dark" );
-			}
-
-			platform.GetPreference( MPlatform::kTranslucentStatusBarFile, &value );
-			if ( ! value.IsEmpty() )
-			{
-				lua_pushstring( L, value.GetString() );
-				lua_setfield( L, -2, "translucent" );
-			}
-
-			platform.GetPreference( MPlatform::kLightTransparentStatusBarFile, &value );
-			if ( ! value.IsEmpty() )
-			{
-				lua_pushstring( L, value.GetString() );
-				lua_setfield( L, -2, "lightTransparent" );
-			}
-
-			platform.GetPreference( MPlatform::kDarkTransparentStatusBarFile, &value );
-			if ( ! value.IsEmpty() )
-			{
-				lua_pushstring( L, value.GetString() );
-				lua_setfield( L, -2, "darkTransparent" );
-			}
-
-			platform.GetPreference( MPlatform::kScreenDressingFile, &value );
-			if ( ! value.IsEmpty() )
-			{
-				lua_pushstring( L, value.GetString() );
-				lua_setfield( L, -2, "screenDressing" );
-			}
-		}
+		pushStatusBarFiles( L, platform, value );
 		lua_setfield( L, -2, "statusBarFiles" ); // params.statusBarFiles
+
+		lua_pushcfunction( L, getStatusBarFiles );
+		lua_setfield( L, -2, "getStatusBarFiles" ); // params.getStatusBarFiles
 
 		lua_pushboolean( L, runtime->IsProperty( Runtime::kIsDebuggerConnected ) );
 		lua_setfield( L, -2, "isDebuggerConnected" ); // params.isDebuggerConnected

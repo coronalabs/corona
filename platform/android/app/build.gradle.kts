@@ -140,10 +140,12 @@ if (supportsFoldables && (extra["minSdkVersion"] as Int) < 23) {
     extra["minSdkVersion"] = 23
 }
 
+
 val coronaAndroidResourcesDir = file(coronaSrcDir).resolve(
         parsedBuildProperties.lookup<Any?>("buildSettings.android.resources").firstOrNull()?.toString()
                 ?.takeIf { it.isNotBlank() }?.replace('\\', '/') ?: "AndroidResources"
 ).normalize()
+
 
 val coronaBuilder = if (windows) {
     "$nativeDir/Corona/win/bin/CoronaBuilder.exe"

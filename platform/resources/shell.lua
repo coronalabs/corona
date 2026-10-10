@@ -33,19 +33,50 @@ local isSimulatorExtension = params.isSimulatorExtension
 local appOrientation = nil
 local screenDressingMask = nil
 
-local statusBarNames = {
-	[display.DefaultStatusBar]=statusBarFiles.default,
-	[display.DarkStatusBar]=statusBarFiles.dark,
-	[display.TranslucentStatusBar]=statusBarFiles.translucent,
-	[display.LightTransparentStatusBar]=statusBarFiles.lightTransparent,
-	[display.DarkTransparentStatusBar]=statusBarFiles.darkTransparent,
-}
+-- The orientation to draw the status bar and screen dressing in. Their art is made for the
+-- screen's natural orientation (portrait for phones); a wide screen such as a foldable's inner
+-- screen is drawn for a landscape, so the art is turned by the app's orientation relative to it.
+local orientationAngles = { portrait = 0, landscapeLeft = 90, portraitUpsideDown = 180, landscapeRight = 270 }
+local orientationNames = { [0] = "portrait", [90] = "landscapeLeft", [180] = "portraitUpsideDown", [270] = "landscapeRight" }
+local function overlayOrientation()
+	local natural = statusBarFiles.screenNaturalOrientation
+	if natural and orientationAngles[natural] and appOrientation and orientationAngles[appOrientation] then
+		return orientationNames[ ( orientationAngles[appOrientation] - orientationAngles[natural] ) % 360 ]
+	end
+	return appOrientation
+end
 
-if statusBarFiles and statusBarFiles.default and not isSimulatorExtension then
-	-- Status bar
+local function isOverlayLandscape()
+	local orientation = overlayOrientation()
+	return ( "landscapeLeft" == orientation ) or ( "landscapeRight" == orientation )
+end
 
-	appOrientation = system.orientation
-	local isLandscape = ("landscapeLeft" == appOrientation) or ("landscapeRight" == appOrientation)
+local statusBarNames = {}
+
+local function setStatusBarNames()
+	statusBarNames = {
+		[display.DefaultStatusBar]=statusBarFiles.default,
+		[display.DarkStatusBar]=statusBarFiles.dark,
+		[display.TranslucentStatusBar]=statusBarFiles.translucent,
+		[display.LightTransparentStatusBar]=statusBarFiles.lightTransparent,
+		[display.DarkTransparentStatusBar]=statusBarFiles.darkTransparent,
+	}
+end
+setStatusBarNames()
+
+-- The status bar height the simulated device reports. A skin whose status bar art is taller
+-- than the bar itself gives the bar's height in pixels.
+local function statusBarContentHeight( img )
+	local height = img.height
+	if statusBarFiles.height and statusBarFiles.height < height then
+		height = statusBarFiles.height
+	end
+	return height*display.contentScaleY
+end
+
+-- Loads the hidden portrait and landscape image of every status bar mode
+local function loadStatusBars()
+	local isLandscape = isOverlayLandscape()
 
 	local x = display.screenOriginX
 	local y = display.screenOriginY
@@ -89,6 +120,14 @@ if statusBarFiles and statusBarFiles.default and not isSimulatorExtension then
 
 	-- add unique string value after creating status bar image objects
 	statusBarNames[display.HiddenStatusBar] = "none"
+end
+
+if statusBarFiles and statusBarFiles.default and not isSimulatorExtension then
+	-- Status bar
+
+	appOrientation = system.orientation
+	local isLandscape = isOverlayLandscape()
+	loadStatusBars()
 
 	function overlay:showScreenDressing( )
 		local dressing = self["_screenDressing"]
@@ -103,7 +142,7 @@ if statusBarFiles and statusBarFiles.default and not isSimulatorExtension then
 				if not appOrientation then
 					appOrientation = system.orientation
 				end
-				if appOrientation == "landscapeLeft" or appOrientation == "landscapeRight" then
+				if isOverlayLandscape() then
 					cx, cy = cy, cx
 				end
 
@@ -137,13 +176,14 @@ if statusBarFiles and statusBarFiles.default and not isSimulatorExtension then
 
 			local rotation = 0
 
-			if appOrientation == "portrait" then
+			local dressingOrientation = overlayOrientation()
+			if dressingOrientation == "portrait" then
 				rotation = 0
-			elseif appOrientation == "landscapeLeft" then
+			elseif dressingOrientation == "landscapeLeft" then
 				rotation = 90
-			elseif appOrientation == "portraitUpsideDown" then
+			elseif dressingOrientation == "portraitUpsideDown" then
 				rotation = 180
-			elseif appOrientation == "landscapeRight" then
+			elseif dressingOrientation == "landscapeRight" then
 				rotation = 270
 			end
 
@@ -168,7 +208,7 @@ if statusBarFiles and statusBarFiles.default and not isSimulatorExtension then
 		if not appOrientation then
 			appOrientation = system.orientation
 		end
-		isLandscape = ("landscapeLeft" == appOrientation) or ("landscapeRight" == appOrientation)
+		isLandscape = isOverlayLandscape()
 		if isLandscape then
 			name = string.gsub( name, "(.*)%.png", "%1.landscape.png" )
 		end
@@ -176,6 +216,7 @@ if statusBarFiles and statusBarFiles.default and not isSimulatorExtension then
 		if not name then
 			print( "WARNING: invalid parameter passed to display.setStatusBarMode() (expected userdata, got "..type(mode)..")" )
 		else
+			self.currentMode = mode
 			local current = self.current
 			if current ~= name then
 				local hiddenKey = statusBarNames[display.HiddenStatusBar]
@@ -195,13 +236,50 @@ if statusBarFiles and statusBarFiles.default and not isSimulatorExtension then
 					--knows the actual status bar height based on the loaded image size and contentScaleY
 					--Note: statusBarHeight is deprecated and reverts to defaults
 
-					rawset(display,"topStatusBarContentHeight",dst.height*display.contentScaleY)
+					rawset(display,"topStatusBarContentHeight",statusBarContentHeight(dst))
 
 				end
 
 				self.current = name
 			end
 		end
+	end
+
+	-- A foldable device changes screens when it folds, and with it the status bars and screen dressing
+	function overlay:reloadStatusBars( files )
+		local changed = false
+		for _, key in ipairs( { "default", "dark", "translucent", "lightTransparent", "darkTransparent", "screenDressing", "height" } ) do
+			if files[key] ~= statusBarFiles[key] then
+				changed = true
+			end
+		end
+		if not changed or not files.default then
+			return
+		end
+
+		for _, name in pairs( statusBarNames ) do
+			for _, key in ipairs( { name, string.gsub( name, "(.*)%.png", "%1.landscape.png" ) } ) do
+				if self[key] then
+					self[key]:removeSelf()
+					self[key] = nil
+				end
+			end
+		end
+		if self._screenDressing then
+			self._screenDressing:removeSelf()
+			self._screenDressing = nil
+		end
+		screenDressingMask = nil
+
+		statusBarFiles = files
+		setStatusBarNames()
+		appOrientation = system.orientation
+		isLandscape = isOverlayLandscape()
+		loadStatusBars()
+
+		self.current = nil
+		self:setStatusBarMode( self.currentMode or display.TranslucentStatusBar )
+		self:showScreenDressing( )
 	end
 
 	overlay:setStatusBarMode(display.TranslucentStatusBar)
@@ -225,11 +303,18 @@ else
 	function overlay:showScreenDressing( )
 	end
 
+	function overlay:reloadStatusBars( files )
+	end
+
 	-- luacheck: pop
 end
 
 
 local function _on_resize( _ )
+	if params.getStatusBarFiles then
+		overlay:reloadStatusBars( params.getStatusBarFiles() )
+	end
+
 	appOrientation =  system.orientation
 	local fileName = overlay.current
 	local hiddenKey = statusBarNames[display.HiddenStatusBar]
@@ -240,7 +325,7 @@ local function _on_resize( _ )
 		local landscapeName    = string.gsub( portraitFileName, "(.*)%.png", "%1.landscape.png" )
 		local newFileName = portraitFileName
 
-		local isLandscape = ("landscapeLeft" == appOrientation) or ("landscapeRight" == appOrientation)
+		local isLandscape = isOverlayLandscape()
 
 		if isLandscape then
 			newFileName = landscapeName
