@@ -75,6 +75,11 @@ const char* GetStartupPath(string* exeFileName)
 {
 	static char buf[PATH_MAX + 1];
 	ssize_t count = readlink("/proc/self/exe", buf, PATH_MAX);
+	if (count < 0)
+	{
+		// readlink() failed
+		count = 0;
+	}
 	buf[count] = 0;
 
 	// remove file name

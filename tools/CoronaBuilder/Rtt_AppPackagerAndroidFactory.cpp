@@ -138,6 +138,8 @@ AppPackagerFactory::CreatePackagerParamsAndroid(
 				scriptPathStr.Set(GetResourceDirectory());
 #if defined(Rtt_MAC_ENV)
 				scriptPathStr.Append("/AndroidValidation.lu");
+#elif defined(Rtt_LINUX_ENV)
+				scriptPathStr.Append("/AndroidValidation.lua");
 #elif defined(Rtt_WIN_ENV)
 				scriptPathStr.Append("/AndroidValidation.lua");
 #endif
