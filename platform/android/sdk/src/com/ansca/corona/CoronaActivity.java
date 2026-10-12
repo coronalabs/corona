@@ -1221,7 +1221,7 @@ public class CoronaActivity extends Activity {
 				if (Build.VERSION.SDK_INT >= 35 && fNavigationBarColor != null) {
 					Insets navBarInsets = insets.getInsets(WindowInsets.Type.navigationBars());
 					v.setBackgroundColor(fNavigationBarColor.intValue());
-					v.setPadding(0, 0, 0, navBarInsets.bottom);
+					v.setPadding(navBarInsets.left, v.getPaddingTop(), navBarInsets.right, navBarInsets.bottom);
 				}
 				return insets;
 			}
@@ -3600,7 +3600,7 @@ public class CoronaActivity extends Activity {
 		myHandler.post(new Runnable() {
 			public void run() {
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-					getWindow().setNavigationBarColor(Color.rgb(((int) red*255), ((int) green*255), ((int) blue*255)));
+					getWindow().setNavigationBarColor(Color.rgb((int)(red*255), (int)(green*255), (int)(blue*255)));
 				}
 			}
 		});
