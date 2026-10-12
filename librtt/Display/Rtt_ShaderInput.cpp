@@ -56,11 +56,11 @@ ShaderInput::UpdateCache( const TextureInfo& textureInfo, const RenderData& obje
 	{
 		if (fPaintInput == "paint1")
 		{
-			fPaint = objectData.fFillTexture0;
+			fPaint = objectData.fTextures.GetFill0();
 		}
 		else
 		{
-			fPaint = objectData.fFillTexture1;
+			fPaint = objectData.fTextures.GetFill1();
 		}
 	}
 
@@ -68,11 +68,11 @@ ShaderInput::UpdateCache( const TextureInfo& textureInfo, const RenderData& obje
 	{
 		if (fPaintInput == "paint1")
 		{
-			fPaint = objectData.fFillTexture0;
+			fPaint = objectData.fTextures.GetFill0();
 		}
 		else
 		{
-			fPaint = objectData.fFillTexture1;
+			fPaint = objectData.fTextures.GetFill1();
 		}
 	}
 }

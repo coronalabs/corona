@@ -574,7 +574,7 @@ MacPlatform::SaveBitmap( PlatformBitmap* bitmap, NSURL* url ) const
 //	const size_t kBitsPerComponent = 8;
 
 	// TODO: Should this depend on bitmap->GetFormat()
-	Rtt_ASSERT( bitmap->GetFormat() == PlatformBitmap::kBGRA );
+	Rtt_ASSERT( bitmap->GetFormat().GetValue() == PlatformBitmap::kBGRA );
 	// Bug 4921: I don't understand this, but changing kCGImageAlphaPremultipliedFirst to kCGImageAlphaNoneSkipFirst fixes the white box issue.
 
 	//Preserve previous jpeg save functionality (black background)

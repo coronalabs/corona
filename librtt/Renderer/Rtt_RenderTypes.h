@@ -211,6 +211,34 @@ struct BlendMode
 
 // ----------------------------------------------------------------------------
 
+namespace FormatDetails {
+	enum {
+		kStockFormatBits = 3 // bits alloted to built-in formats, for Texture::FormatValue and bitmap counterpart
+	};
+
+	int GetFormatIndexBitCount();
+
+	U32 GetStockFormat( U32 backingValue );
+	U32 GetFormatIndex( U32 backingValue );
+	U32 GetFamily( U32 backingValue );
+	U32 GetTarget( U32 backingValue );
+	bool HasArrayFlag( U32 backingValue );
+	bool IsCore( U32 backingValue );
+
+	void AddMaskBit( U32& backingValue );
+	bool HasMaskBit( U32 backingValue );
+
+	U32 BuildFromDescription( const TextureFormatDescription* desc, U32 formatIndex );
+	U32 GatherFamilyInfo( U32 family, U32 target, bool isArray );
+
+	size_t GetSize( U16 w, U16 h, U32 backingValue );
+	bool IsCompressed( U32 backingValue );
+	bool HasAlphaChannel( U32 backingValue );
+	void GetComponentIndices( U32 backingValue, int& redIndex, int& greenIndex, int& blueIndex, int& alphaIndex );
+};
+
+// ----------------------------------------------------------------------------
+
 } // namespace Rtt
 
 // ----------------------------------------------------------------------------

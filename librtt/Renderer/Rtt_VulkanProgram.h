@@ -45,8 +45,8 @@ class VulkanProgram : public GPUResource
 	public:
 		VulkanProgram( VulkanContext * context );
 
-		virtual void Create( CPUResource* resource );
-		virtual void Update( CPUResource* resource );
+		virtual void Create( CPUResource* resource, const RenderContext* context );
+		virtual void Update( CPUResource* resource, const RenderContext* context );
 		virtual void Destroy();
 		
 		void Bind( VulkanRenderer & renderer, Program::Version version );

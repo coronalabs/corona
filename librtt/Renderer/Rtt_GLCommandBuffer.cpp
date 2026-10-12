@@ -20,6 +20,7 @@
 #include "Renderer/Rtt_Program.h"
 #include "Renderer/Rtt_Texture.h"
 #include "Renderer/Rtt_Uniform.h"
+#include "Display/Rtt_Shader.h"
 #include "Display/Rtt_ShaderData.h"
 #include "Display/Rtt_ShaderResource.h"
 #include "Display/Rtt_ObjectHandle.h"
@@ -32,6 +33,7 @@
 #include "Core/Rtt_String.h"
 
 #include "Corona/CoronaGraphics.h"
+#include "Renderer/Rtt_Renderer.h"
 
 #define ENABLE_DEBUG_PRINT    0
 
@@ -81,6 +83,9 @@ namespace /*anonymous*/
         kCommandClear,
         kCommandDraw,
         kCommandDrawIndexed,
+        kCommandCheckConsistency,
+        kCommandRestoreConsistency,
+        kCommandJump,
         kNumCommands
     };
 
@@ -143,8 +148,8 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
-size_t
-CommandBuffer::GetMaxUniformVectorsCount()
+static size_t
+GetMaxUniformVectorsCount()
 {
     GLint count;
 
@@ -168,8 +173,8 @@ CommandBuffer::GetMaxUniformVectorsCount()
     return count;
 }
 
-size_t
-CommandBuffer::GetMaxVertexTextureUnits()
+static size_t
+GetMaxVertexTextureUnits()
 {
     static size_t sMaxUnits = ~0; // 0 would be valid result
     
@@ -177,7 +182,7 @@ CommandBuffer::GetMaxVertexTextureUnits()
     {
         GLint maxUnits = 0;
 
-        glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS, &maxUnits ); // TODO: check if this is same on Android, etc.
+        glGetIntegerv( GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &maxUnits ); // TODO: check if this is same on Android, etc.
         sMaxUnits = maxUnits;
         GL_CHECK_ERROR();
     }
@@ -185,8 +190,25 @@ CommandBuffer::GetMaxVertexTextureUnits()
     return sMaxUnits;
 }
 
-size_t
-CommandBuffer::GetMaxTextureSize()
+static size_t
+GetMaxTextureUnits()
+{
+    static size_t sMaxUnits;
+    
+    if ( 0 == sMaxUnits )
+    {
+        GLint maxUnits = 0;
+
+        glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS, &maxUnits );
+        sMaxUnits = maxUnits;
+        GL_CHECK_ERROR();
+    }
+
+    return sMaxUnits;
+}
+
+static size_t
+GetMaxTextureSize()
 {
     static size_t sMaxSize = 0;
     
@@ -200,8 +222,8 @@ CommandBuffer::GetMaxTextureSize()
     return sMaxSize;
 }
 
-const char *
-CommandBuffer::GetGlString( const char *s )
+static const char *
+GetGlString( const char *s )
 {
     if( Rtt_StringCompare( s, "GL_VENDOR" ) == 0 )
     {
@@ -229,8 +251,8 @@ CommandBuffer::GetGlString( const char *s )
     }
 }
 
-bool
-CommandBuffer::GetGpuSupportsHighPrecisionFragmentShaders()
+static bool
+GetGpuSupportsHighPrecisionFragmentShaders()
 {
 #if defined( Rtt_MAC_ENV ) || defined( Rtt_WIN_DESKTOP_ENV ) || defined( Rtt_EMSCRIPTEN_ENV )|| defined( Rtt_LINUX_ENV )
 
@@ -323,14 +345,15 @@ CommandBuffer::GetGpuSupportsHighPrecisionFragmentShaders()
 #endif
 }
 
-bool
-GLCommandBuffer::HasFramebufferBlit( bool * canScale ) const
+static bool
+HasFramebufferBlit( U32 * )
 {
-	return GLFrameBufferObject::HasFramebufferBlit( canScale );
+	// TODO: no scaling yet
+	return GLFrameBufferObject::HasFramebufferBlit( NULL );
 }
 
-void
-GLCommandBuffer::GetVertexAttributes( VertexAttributeSupport & support ) const
+static void
+GetVertexAttributes( VertexAttributeSupport & support )
 {
     static GLint sMaxVertexAttribs = -1;
     
@@ -339,6 +362,11 @@ GLCommandBuffer::GetVertexAttributes( VertexAttributeSupport & support ) const
         glGetIntegerv( GL_MAX_VERTEX_ATTRIBS, &sMaxVertexAttribs );
         
         sMaxVertexAttribs -= 4; // ignore built-ins
+        
+        if ( sMaxVertexAttribs > FormatExtensionList::kMaxAttribs )
+        {
+			sMaxVertexAttribs = FormatExtensionList::kMaxAttribs;
+		}
     }
     
     support.maxCount = (U32)sMaxVertexAttribs;
@@ -346,6 +374,34 @@ GLCommandBuffer::GetVertexAttributes( VertexAttributeSupport & support ) const
     support.hasDivisors = GLGeometry::SupportsDivisors();
     support.hasPerInstance = support.hasDivisors; // divisor == 1
     support.suffix = GLGeometry::InstanceIDSuffix();
+}
+
+uintptr_t
+CommandBuffer::QueryBackendDetail( U32 detail, uintptr_t arg )
+{
+	switch (detail)
+	{
+	case Renderer::kMaxTextureSize:
+		return GetMaxTextureSize();
+	case Renderer::kGlString:
+		return reinterpret_cast<uintptr_t>( GetGlString( reinterpret_cast<const char*>( arg ) ) );
+	case Renderer::kSupportsHighPrecisionFragmentShaders:
+		return GetGpuSupportsHighPrecisionFragmentShaders();
+	case Renderer::kMaxUniformVectorsCount:
+		return GetMaxUniformVectorsCount();
+	case Renderer::kMaxVertexTextureUnits:
+		return GetMaxVertexTextureUnits();
+	case Renderer::kMaxImageUnits:
+		return GetMaxTextureUnits();
+	case Renderer::kHasFramebufferBlit:
+		return HasFramebufferBlit( reinterpret_cast<U32 *>( arg ) );
+	case Renderer::kVertexAttributes:
+		GetVertexAttributes( *reinterpret_cast<VertexAttributeSupport*>( arg ) );
+		return 0;
+	default:
+		Rtt_ASSERT_NOT_REACHED();
+		return 0;
+	}
 }
 
 GLCommandBuffer::GLCommandBuffer( Rtt_Allocator* allocator )
@@ -740,8 +796,8 @@ GLCommandBuffer::Clear(Real r, Real g, Real b, Real a)
 void
 GLCommandBuffer::Draw( U32 offset, U32 count, Geometry::PrimitiveType type )
 {
-    Rtt_ASSERT( fProgram && fProgram->GetGPUResource() );
-    ApplyUniforms( fProgram->GetGPUResource() );
+//    Rtt_ASSERT( fProgram && fProgram->GetGPUResource() );
+//    ApplyUniforms( fProgram->GetGPUResource() );
     
     WRITE_COMMAND( kCommandDraw );
     switch( type )
@@ -763,8 +819,8 @@ GLCommandBuffer::DrawIndexed( U32, U32 count, Geometry::PrimitiveType type )
     // The first argument, offset, is currently unused. If support for non-
     // VBO based indexed rendering is added later, an offset may be needed.
 
-    Rtt_ASSERT( fProgram && fProgram->GetGPUResource() );
-    ApplyUniforms( fProgram->GetGPUResource() );
+//    Rtt_ASSERT( fProgram && fProgram->GetGPUResource() );
+//    ApplyUniforms( fProgram->GetGPUResource() );
     
     WRITE_COMMAND( kCommandDrawIndexed );
     switch( type )
@@ -773,6 +829,155 @@ GLCommandBuffer::DrawIndexed( U32, U32 count, Geometry::PrimitiveType type )
         default: Rtt_ASSERT_NOT_REACHED(); break;
     }
     Write<GLsizei>(count);
+}
+
+GLCommandBuffer::Label
+GLCommandBuffer::EmitLabel()
+{
+	Label label;
+
+	label.byteCount = fBytesUsed;
+	label.commandCount = fNumCommands;
+	label.hasSkipInfo = false;
+	
+	return label;
+}
+
+GLCommandBuffer::Label
+GLCommandBuffer::EmitLabelWithSkipInfo()
+{
+	Reserve( sizeof(SkipInfo) ); // skip count, to pos2
+
+	Label label = EmitLabel();
+	
+	label.hasSkipInfo = true;
+	
+	return label;
+}
+    
+void
+GLCommandBuffer::BridgeLabels( const Label& from, const Label& to )
+{
+	Rtt_ASSERT( from.hasSkipInfo );
+
+	SkipInfo skip;
+	skip.byteCount = to.byteCount - from.byteCount;
+	skip.commandCount = to.commandCount - from.commandCount;
+
+	memcpy( &fBuffer[from.byteCount - sizeof(SkipInfo)], &skip, sizeof(SkipInfo) );
+}
+		
+void
+GLCommandBuffer::ApplySkipInfo( const SkipInfo& info )
+{
+	fOffset += info.byteCount;
+	fNumCommands -= info.commandCount;
+}
+
+void
+GLCommandBuffer::CheckTextureConsistency( ShaderResource* shaderResource, Program* defaultProgram, const TextureList* list, const U8* extraNames )
+{
+	WRITE_COMMAND( kCommandCheckConsistency );
+	Write<ShaderResource*>( shaderResource );
+	if ( list->IsEmpty() )
+	{
+		Write<S16>( -1 );
+	}
+	else
+	{
+		Write<S16>( list->IsArray() ? list->GetCount() : 2 ); // TODO relax + 2
+
+		Texture* fill0 = list->GetFill0();
+		Texture* fill1 = list->GetFill1();
+
+		Write<U32>( fill0 ? fill0->GetFormat().GetBackingValue() : 0 );
+		Write<U32>( fill1 ? fill1->GetFormat().GetBackingValue() : 0 );
+
+		U32 extraTexturesCount = list->GetCountAfterFills();
+		if ( extraTexturesCount > 0 )
+		{
+			for ( U32 i = 0; i < extraTexturesCount; i++ )
+			{
+				Write<U32>( list->GetPositionAfterFills()[i]->GetFormat().GetBackingValue() );
+			}
+			
+			U32 size = ExtraTextureInfo::NamesSize( extraNames, extraTexturesCount );
+			U8* names = Reserve( size );
+
+			memcpy( names, extraNames, size );
+			
+			for ( U32 i = 0; i < extraTexturesCount; i++ )
+			{
+				Write<GPUResource*>( list->GetPositionAfterFills()[i]->GetGPUResource() );
+			}
+		}
+	}
+
+	// When we do consistency checks, they will obviously either pass
+	// or fail, and thus we have an if-else structure here, as well as
+	// in RestoreConsistency() should we need to clean up.
+	
+	// So far so good. We only progress forward in the stream, and
+	// put down "labels" to track stream details at certain points:
+	// where we happen to be in the byte stream, along with how many
+	// commands were issued thus far.
+	
+	// Some labels are emitted with a "skip info" placeholder. If we
+	// bridge such a label to another later one, it will be supplied
+	// with details of how to advance the command stream from label
+	// 1's position to label 2's.
+		
+	// The control flow is designed around ApplyUniforms() using the
+	// most recent BindProgram() result. Different commands are issued
+	// per uniform type (when present), and also depend on whether the
+	// program is new. The fallback must honor this scheme.
+		
+	// The whole command stream is written, though many are skipped.
+
+	// Currently, all memory written for a command must also be read
+	// back during execution, so that the stream ends up on a command
+	// boundary. A command could instead bundle its own offset: then
+	// we could jump directly via the command index.
+		
+	Label start = EmitLabelWithSkipInfo();
+
+	/* IF ( textures consistent) */
+	{
+		LoadUniforms();
+
+		WRITE_COMMAND( kCommandJump ); // n.b. owns the subsequent skip info
+	}
+
+	Label split = EmitLabelWithSkipInfo();
+	
+	BridgeLabels( start, split ); // skip
+
+	/* ELSE */
+	{
+		BindProgram( defaultProgram, fCurrentPrepVersion );
+		LoadUniforms();
+	}
+	
+	BridgeLabels( split, EmitLabel() ); // skip
+}
+
+void
+GLCommandBuffer::RestoreConsistency( Program* previous )
+{
+	WRITE_COMMAND( kCommandRestoreConsistency );
+
+	// see note in CheckConsistency()
+
+	Label start = EmitLabelWithSkipInfo();
+	
+	/* IF ( textures not consistent ) */
+	{
+		BindProgram( previous, fCurrentPrepVersion );
+	}
+
+	BridgeLabels( start, EmitLabel() ); // skip
+	
+	/* end if */
 }
 
 S32
@@ -888,6 +1093,7 @@ GLCommandBuffer::WriteNamedUniform( const char * uniformName, const void * data,
         case GL_FLOAT_MAT4:
             glUniformMatrix4fv( location, WriteCount( size, count, 16 ), GL_FALSE, floatData );
             break;
+		// TODO: other...
         default:
             Rtt_ASSERT_NOT_REACHED();
         }
@@ -952,6 +1158,7 @@ GLCommandBuffer::Execute( bool measureGPU )
     Geometry::Vertex* instancingData = NULL;
     U32 currentAttributeCount = 0, instanceCount = 0;
     bool clearingDepth = false, clearingStencil = false;
+    bool areTexturesInconsistent = false;
 
 	SetDidUseTime( false );
 
@@ -971,7 +1178,7 @@ GLCommandBuffer::Execute( bool measureGPU )
 				fbo->Bind( asDrawBuffer );
 				DEBUG_PRINT( "Bind FrameBufferObject (as draw buffer = %s): OpenGL name: %i, OpenGL Texture name, if any: %d",
 								asDrawBuffer ? "true" : "false",
-								fbo->GetName(),
+								fbo->GetName(),fskip
                                 fbo->GetTextureName() );
                 CHECK_ERROR_AND_BREAK;
             }
@@ -1080,31 +1287,24 @@ GLCommandBuffer::Execute( bool measureGPU )
                 // Reconstitute any attribute attached to the geometry.
                 U16 attributeCount = Read<U16>();
                 
-                Array< FormatExtensionList::Attribute > attributeArr( fAllocator );
-
-                std::vector< FormatExtensionList::Attribute > attributes;
-                std::vector< FormatExtensionList::Group > groups;
+				FormatExtensionList::Attribute attributeArr[ FormatExtensionList::kMaxAttribs ];
                 
                 for (U32 i = 0; i < attributeCount; ++i)
                 {
-                    FormatExtensionList::Attribute attribute = Read<FormatExtensionList::Attribute>();
-                    
-                    attributeArr.Append( attribute );
+                    attributeArr[i] = Read<FormatExtensionList::Attribute>();
                 }
                 
                 U16 groupCount = Read<U16>();
                 
-                Array< FormatExtensionList::Group > groupArr( fAllocator );
+				FormatExtensionList::Group groupArr[ FormatExtensionList::kMaxAttribs ];
                 
                 for (U32 i = 0; i < groupCount; ++i)
                 {
-                    FormatExtensionList::Group group = Read<FormatExtensionList::Group>();
-                    
-                    groupArr.Append( group );
+                    groupArr[i] = Read<FormatExtensionList::Group>();
                 }
 
-                FormatExtensionList list = FormatExtensionList::FromArrays( groupArr, attributeArr );
-
+                FormatExtensionList list( groupArr, groupCount, attributeArr, attributeCount );
+                
                 // Bring the enabled arrays into agreement.
                 if (!geometry->StoredOnGPU())
                 {
@@ -1118,15 +1318,15 @@ GLCommandBuffer::Execute( bool measureGPU )
                 
                 bool hasDivisors = GLGeometry::SupportsDivisors();
                 
-                for (auto iter = FormatExtensionList::AllAttributes( &list ); !iter.IsDone(); iter.Advance())
+				for ( auto&& iter : FormatExtensionList::AllAttributes( &list ) )
                 {
-                    GLuint index = Geometry::FirstExtraAttribute() + iter.GetAttributeIndex();
+                    GLuint index = Geometry::FirstExtraAttribute() + iter.attributeIndex;
                     
                     glEnableVertexAttribArray( index );
                     
                     if (hasDivisors)
                     {
-                        GLGeometry::VertexAttribDivisor( index, iter.GetGroup()->divisor );
+                        GLGeometry::VertexAttribDivisor( index, iter.group->divisor );
                     }
                 }
                 
@@ -1377,6 +1577,87 @@ GLCommandBuffer::Execute( bool measureGPU )
                 }
                 CHECK_ERROR_AND_BREAK;
             }
+            case kCommandCheckConsistency:
+            {
+				ShaderResource* shaderResource = Read<ShaderResource*>();
+                S16 count = Read<S16>();
+
+				U32 extraCount = 0;
+				RenderDataState rds;
+
+				if ( count < 0 ) // strictly broken
+				{
+					areTexturesInconsistent = true;
+				}
+				else // otherwise run check
+				{
+					U32 backingValues[RenderDataState::kOccupancyBits], *extraBackingValues = NULL;
+					for ( S16 i = 0; i < count; i++ )
+					{
+						backingValues[i] = Read<U32>();
+					}
+					
+					U8* extraNames = NULL;
+					if ( count > 2 )
+					{
+						extraCount = count - 2; // TODO: relax + 2
+						extraBackingValues = backingValues + 2;
+						extraNames = fOffset;
+						
+						U32 size = ExtraTextureInfo::NamesSize( extraNames, extraCount );
+						
+						fOffset += size;
+					}
+					
+					areTexturesInconsistent = !shaderResource->AreFormatsConsistent( backingValues, extraBackingValues, extraCount, extraNames, &rds );
+				}
+
+                if ( areTexturesInconsistent )
+                {
+					fOffset += extraCount * sizeof(GLTexture*); // unused, so skip
+				}
+				else
+				{
+					Rtt_ASSERT( extraCount <= RenderDataState::kOccupancyBits );
+				
+					U32 occupancy = rds.GetOccupancy();
+					for ( U32 i = 0, unit = 0; i < extraCount; i++ )
+					{
+						GLTexture* tex = Read<GLTexture*>();
+						
+						if ( occupancy & ( 1U << i ) )
+						{
+							tex->Bind( Texture::kNumUnits + unit );
+							
+							unit++;
+						}
+					}
+				}
+				
+				SkipInfo skip = Read<SkipInfo>();
+				if ( areTexturesInconsistent )
+				{
+					ApplySkipInfo( skip );
+				}
+				
+				CHECK_ERROR_AND_BREAK;
+            }
+            case kCommandRestoreConsistency:
+            {
+				SkipInfo skip = Read<SkipInfo>();
+				if ( !areTexturesInconsistent )
+				{
+					ApplySkipInfo( skip );
+				}
+				areTexturesInconsistent = false;
+				CHECK_ERROR_AND_BREAK;
+            }
+            case kCommandJump:
+            {
+				SkipInfo skip = Read<SkipInfo>();
+				ApplySkipInfo( skip );
+				CHECK_ERROR_AND_BREAK;
+            }
             default:
             {
                 U16 id = command - kNumCommands;
@@ -1443,6 +1724,12 @@ GLCommandBuffer::Write( T value )
     U8 * writePos = Reserve( size );
 
     memcpy( writePos, &value, size );
+}
+
+void GLCommandBuffer::LoadUniforms()
+{
+    Rtt_ASSERT( fProgram && fProgram->GetGPUResource() );
+    ApplyUniforms( fProgram->GetGPUResource() );
 }
 
 void GLCommandBuffer::ApplyUniforms( GPUResource* resource )

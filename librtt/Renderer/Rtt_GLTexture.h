@@ -27,8 +27,8 @@ class GLTexture : public GPUResource
 		typedef GLTexture Self;
 
 	public:
-		virtual void Create( CPUResource* resource );
-		virtual void Update( CPUResource* resource );
+		virtual void Create( CPUResource* resource, const RenderContext* context );
+		virtual void Update( CPUResource* resource, const RenderContext* context );
 		virtual void Destroy();
 		virtual void Bind( U32 unit );
 

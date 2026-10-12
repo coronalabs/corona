@@ -169,9 +169,15 @@ class TextureFactory
 		void AddToTeardownList( const std::string &key );
 		void RemoveFromTeardownList( const std::string &key );
 
+	public:
+		bool AddCustomFormat( const TextureFormatDescription& format );
+		const TextureFormatDescription* GetCurrentFormatList() const { return fCustomFormats.ReadAccess(); }
+		U32 GetCurrentFormatCount() const { return (U32)fCustomFormats.Length(); }
+
 	private:
 		Cache fCache;
 		Array< WeakPtr< TextureResource > > fCreateQueue;
+		Array< TextureFormatDescription > fCustomFormats;
 		Display &fDisplay;
 		WeakPtr< TextureResource > fDefault;
 		WeakPtr< TextureResource > fContainerMask;
