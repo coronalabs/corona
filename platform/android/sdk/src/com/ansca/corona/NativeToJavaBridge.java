@@ -3291,7 +3291,7 @@ public class NativeToJavaBridge {
 	}
 	protected static void callSetNavigationBarColor(CoronaRuntime runtime, double red, double green, double blue) {
 		if (runtime != null) {
-			Activity activity = CoronaEnvironment.getCoronaActivity();
+			CoronaActivity activity = CoronaEnvironment.getCoronaActivity();
 			if (activity == null) return;
 			int color = Color.rgb(
 					(int)(255 * red),
