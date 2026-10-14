@@ -109,7 +109,7 @@ $(OBJDIR)/jidctflt.o \
 $(OBJDIR)/jidctfst.o \
 $(OBJDIR)/jidctint.o \
 $(OBJDIR)/jidctred.o \
-$(OBJDIR)/jmemansi.o \
+$(OBJDIR)/jmemnobs.o \
 $(OBJDIR)/jmemmgr.o \
 $(OBJDIR)/jquant1.o \
 $(OBJDIR)/jquant2.o \
@@ -338,7 +338,7 @@ $(OBJDIR)/jidctred.o: ../../../external/libjpeg/jidctred.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 
-$(OBJDIR)/jmemansi.o: ../../../external/libjpeg/jmemansi.c
+$(OBJDIR)/jmemnobs.o: ../../../external/libjpeg/jmemnobs.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 

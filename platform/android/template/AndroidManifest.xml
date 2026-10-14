@@ -47,13 +47,14 @@
 		<!-- The main Corona activity that runs the Corona project. -->
 		<activity android:name="com.ansca.corona.CoronaActivity"
 		          @USER_DEFAULT_ORIENTATION@
-		          android:configChanges="keyboard|keyboardHidden|navigation|screenSize|orientation"
+		          android:configChanges="keyboard|keyboardHidden|navigation|screenSize|smallestScreenSize|screenLayout|density|orientation"
 		          android:label="@USER_APP_NAME@"
 		          android:launchMode="singleTask"
 				  @USER_CORONA_ACTIVITY_ATTRIBUTES@
 		          android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
 			@USER_CORONA_WINDOW_MOVES_WHEN_KEYBOARD_APPEARS@
 			@USER_INITIAL_SYSTEM_UI_VISIBILITY@
+			@USER_EDGE_TO_EDGE@
 			@USER_REQUESTED_DEFAULT_ORIENTATION@
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />

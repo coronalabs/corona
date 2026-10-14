@@ -20,7 +20,14 @@ fi
 
 PROGRAM_NAME="ERROR" # $(basename "$0")
 CORONA_RES_DIR=$(dirname "$0")
-ADB="${CORONA_RES_DIR}/device-support/adb"
+
+# Use adb from the Android SDK the Simulator builds with when it has it (see android_sendapp.sh)
+ADB="$HOME/Library/Application Support/Corona/Android Build/sdk/platform-tools/adb"
+
+if [ ! -x "$ADB" ]
+then
+	ADB="${CORONA_RES_DIR}/device-support/adb"
+fi
 
 if [ ! -x "${ADB}" ]
 then

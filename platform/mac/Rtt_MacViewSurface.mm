@@ -80,12 +80,23 @@ MacViewSurface::GetOrientation() const
 S32
 MacViewSurface::AdaptiveWidth() const
 {
+	// The view's value wins so the Simulator can change it, e.g. when a foldable device folds
+	S32 viewWidth = (S32)[fView adaptiveWidth];
+	if ( viewWidth > 0 )
+	{
+		return viewWidth;
+	}
 	return ( fAdaptiveWidth > 0 ? fAdaptiveWidth : Super::AdaptiveWidth() );
 }
 
 S32
 MacViewSurface::AdaptiveHeight() const
 {
+	S32 viewHeight = (S32)[fView adaptiveHeight];
+	if ( viewHeight > 0 )
+	{
+		return viewHeight;
+	}
 	return ( fAdaptiveHeight > 0 ? fAdaptiveHeight : Super::AdaptiveHeight() );
 }
 

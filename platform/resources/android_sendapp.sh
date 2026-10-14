@@ -23,8 +23,22 @@ CORONA_ACTIVITY_NAME="com.ansca.corona.CoronaActivity"
 PROGRAM_NAME="ERROR" # $(basename "$0")
 SEND_TO_ALL=$(defaults read com.coronalabs.Corona_Simulator sendToAllDevices 2>/dev/null)
 CORONA_RES_DIR=$(dirname "$0")
-ADB="${CORONA_RES_DIR}/device-support/adb"
-AAPT="${CORONA_RES_DIR}/device-support/aapt"
+
+# Use the tools in the Android SDK the Simulator builds with when it has them: the ones in device-support are Intel
+# only so on Apple silicon they need Rosetta
+ANDROID_SDK_DIR="$HOME/Library/Application Support/Corona/Android Build/sdk"
+ADB="$ANDROID_SDK_DIR/platform-tools/adb"
+AAPT=$(ls "$ANDROID_SDK_DIR"/build-tools/*/aapt 2>/dev/null | tail -n 1)
+
+if [ ! -x "$ADB" ]
+then
+	ADB="${CORONA_RES_DIR}/device-support/adb"
+fi
+
+if [ ! -x "$AAPT" ]
+then
+	AAPT="${CORONA_RES_DIR}/device-support/aapt"
+fi
 
 if [ ! -x "${ADB}" ] || [ ! -x "${AAPT}" ]
 then

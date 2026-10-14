@@ -614,6 +614,23 @@ void IPhonePlatformBase::GetSafeAreaInsetsPixels(Rtt_Real &top, Rtt_Real &left, 
 	if (@available(iOS 11.0, tvOS 11.0, *))
 	{
 		UIEdgeInsets insets = [fView safeAreaInsets];
+#if __IPHONE_26_0
+		if (@available(iOS 26.0, tvOS 26.0, *))
+		{
+			// A rounded display corner (an unfolded iPhone Duo's top-left, say) or iPad window controls can sit
+			// inside the safe area. iOS reports how far in each edge has to come to clear them. Where neither edge
+			// of a corner does, bring both in by the smaller of the two, so the corner of the safe area clears it.
+			UIEdgeInsets v = [fView edgeInsetsForLayoutRegion:[UIViewLayoutRegion safeAreaLayoutRegionWithCornerAdaptation:UIViewLayoutRegionAdaptivityAxisVertical]];
+			UIEdgeInsets h = [fView edgeInsetsForLayoutRegion:[UIViewLayoutRegion safeAreaLayoutRegionWithCornerAdaptation:UIViewLayoutRegionAdaptivityAxisHorizontal]];
+			const UIEdgeInsets safe = insets;
+			const bool topIn = safe.top < v.top, bottomIn = safe.bottom < v.bottom;
+			const bool leftIn = safe.left < h.left, rightIn = safe.right < h.right;
+			if (topIn && leftIn) { CGFloat d = MIN(v.top, h.left); insets.top = MAX(insets.top, d); insets.left = MAX(insets.left, d); }
+			if (topIn && rightIn) { CGFloat d = MIN(v.top, h.right); insets.top = MAX(insets.top, d); insets.right = MAX(insets.right, d); }
+			if (bottomIn && leftIn) { CGFloat d = MIN(v.bottom, h.left); insets.bottom = MAX(insets.bottom, d); insets.left = MAX(insets.left, d); }
+			if (bottomIn && rightIn) { CGFloat d = MIN(v.bottom, h.right); insets.bottom = MAX(insets.bottom, d); insets.right = MAX(insets.right, d); }
+		}
+#endif
 		const CGFloat scaleFactor = fView.contentScaleFactor;
 		top = Rtt_FloatToReal(insets.top*scaleFactor);
 		left = Rtt_FloatToReal(insets.left*scaleFactor);

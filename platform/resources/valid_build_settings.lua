@@ -43,6 +43,7 @@ settings =
 		isGame = true,
 		allowAppsReadOnlyAccessToFiles = false,
 		minSdkVersion = "",
+		resources = "",
 		largeHeap = true,
 		googlePlayGamesAppId = "",
 		mainIntentFilter =
@@ -78,6 +79,7 @@ settings =
 		CoronaWindowMovesWhenKeyboardAppears = false,  -- Both camel case and pascal case are accepted.
 		coronaWindowMovesWhenKeyboardAppears = false,
 		initialSystemUiVisibility = "",
+		edgeToEdge = false,
 		facebookAppId = "",  -- Both camel case and pascal case are accepted.
 		FacebookAppID = "",
 

@@ -22,7 +22,6 @@
 
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSString.h>
-#import <UIKit/UIAccelerometer.h>
 #import <UIKit/UIApplication.h>
 #import <UIKit/UIDevice.h>
 #import <AudioToolbox/AudioServices.h>

@@ -120,7 +120,16 @@ JavaToNativeBridge::Init(
 			stream.SwapContentSize();
 			stream.SwapContentAlign();
 		}
-		stream.UpdateContentScale(width, height);
+
+		if ( display.HasDeviceSizeChanged() )
+		{
+			// A new screen size (fold, multi-window), not a rotation: recompute the content size and scale
+			display.WindowSizeChanged();
+		}
+		else
+		{
+			stream.UpdateContentScale(width, height);
+		}
 
 		fRuntime->RestartRenderer((Rtt::DeviceOrientation::Type)orientation);
 		display.GetScene().Invalidate();

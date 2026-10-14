@@ -1785,6 +1785,65 @@ Display::WindowSizeChanged()
     runtime.End();
 }
 
+void
+Display::DeviceSizeChanged()
+{
+    const Runtime& runtime = GetRuntime();
+    runtime.Begin();
+    {
+        RenderingStream *stream = fStream;
+        if ( stream && stream->IsProperty( RenderingStream::kInitialized ) )
+        {
+            DeviceOrientation::Type launchOrientation = stream->GetLaunchOrientation();
+            DeviceOrientation::Type contentOrientation = stream->GetContentOrientation();
+
+            S32 screenW = fTarget->DeviceWidth();
+            S32 screenH = fTarget->DeviceHeight();
+            S32 contentWidth;
+            S32 contentHeight;
+            Rtt::Display::ScaleMode scaleMode = stream->GetScaleMode();
+            if ( Display::kAdaptive == scaleMode )
+            {
+                contentWidth = fTarget->AdaptiveWidth();
+                contentHeight = fTarget->AdaptiveHeight();
+            }
+            else if ( Display::kNone == scaleMode )
+            {
+                contentWidth = screenW;
+                contentHeight = screenH;
+            }
+            else
+            {
+                // The stream's content size is for the current orientation, so get the upright size
+                contentWidth = stream->ContentWidth();
+                contentHeight = stream->ContentHeight();
+                if ( DeviceOrientation::IsSideways( contentOrientation ) )
+                {
+                    Swap( contentWidth, contentHeight );
+                }
+            }
+
+            // Set the stream up for the new size in the launch orientation, like at launch.
+            // Reinitialize() doesn't swap the sizes and scale for a sideways orientation, so swap them here.
+            if ( DeviceOrientation::IsSideways( launchOrientation ) )
+            {
+                Swap( screenW, screenH );
+                Swap( contentWidth, contentHeight );
+            }
+            stream->Preinitialize( contentWidth, contentHeight );
+            stream->UpdateContentScale( Rtt_IntToReal( screenW ), Rtt_IntToReal( screenH ) );
+            stream->Reinitialize( * fTarget, launchOrientation );
+
+            // Then turn the content back to its current orientation, like a rotation does
+            stream->SetContentOrientation( contentOrientation );
+            stream->PrepareToRender();
+
+            GetScene().Invalidate();
+        }
+    }
+    runtime.End();
+}
+
 bool
 Display::HasWindowSizeChanged() const
 {
@@ -1793,6 +1852,24 @@ Display::HasWindowSizeChanged() const
         return false;
     }
     return ((fStream->DeviceWidth() != fTarget->DeviceWidth()) || (fStream->DeviceHeight() != fTarget->DeviceHeight()));
+}
+
+bool
+Display::HasDeviceSizeChanged() const
+{
+    if (!fStream || !fTarget || !fStream->IsProperty( RenderingStream::kInitialized ))
+    {
+        return false;
+    }
+
+    S32 streamW = fStream->DeviceWidth(), streamH = fStream->DeviceHeight();
+    S32 targetW = fTarget->DeviceWidth(), targetH = fTarget->DeviceHeight();
+    if ( targetW <= 0 || targetH <= 0 )
+    {
+        return false;
+    }
+    // Compare (short, long) side pairs so a rotation in progress, which swaps them briefly, doesn't count
+    return ( Min( streamW, streamH ) != Min( targetW, targetH ) ) || ( Max( streamW, streamH ) != Max( targetW, targetH ) );
 }
 
 DeviceOrientation::Type

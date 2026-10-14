@@ -1415,6 +1415,29 @@ PrintTouches( NSSet *touches, const char *header )
 	fShouldInvalidate = true;
 }
 
+// Live view resizing (foldable devices)
+// ----------------------------------------------------------------------------
+#pragma mark # Live view resizing
+
+- (void)layoutSubviews
+{
+	[super layoutSubviews];
+	[self checkForDeviceSizeChange];
+}
+
+// Opening or closing a foldable changes the view's size without an orientation change, which the
+// orientation path below never notices: raise "resize" for the new device size.
+- (void)checkForDeviceSizeChange
+{
+	Rtt::Runtime *runtime = self.runtime;
+	if ( runtime && runtime->GetDisplay().HasDeviceSizeChanged() )
+	{
+		runtime->GetDisplay().DeviceSizeChanged();
+		runtime->DispatchEvent( Rtt::ResizeEvent() );
+		fLastContentHeight = (int)runtime->GetDisplay().ContentHeight(); // so didOrientationChange: doesn't raise a second "resize"
+	}
+}
+
 // CoronaOrientationObserver
 // ----------------------------------------------------------------------------
 #ifdef Rtt_ORIENTATION
@@ -1574,7 +1597,7 @@ PrintTouches( NSSet *touches, const char *header )
 	BOOL result = NO;
 
 #ifdef Rtt_ORIENTATION
-	UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+	UIInterfaceOrientation orientation = Rtt::IPhoneOrientation::CurrentInterfaceOrientation( self );
 	if (orientation == UIDeviceOrientationPortrait || orientation == UIDeviceOrientationPortraitUpsideDown)
 	{
 		result = YES;

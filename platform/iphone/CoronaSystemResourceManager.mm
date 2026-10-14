@@ -23,7 +23,6 @@
 #import <UIKit/UIDevice.h>
 #import <CoreLocation/CoreLocation.h>
 
-@protocol UIAccelerometerDelegate;
 @protocol CLLocationManagerDelegate;
 
 
@@ -80,8 +79,8 @@ NSString * const CoronaHeadingResourceKey()
 #endif
 
 #ifdef Rtt_ACCELEROMETER
-- (void)addObserverAccelerometer:(id <UIAccelerometerDelegate>)observer;
-- (void)removeObserverAccelerometer:(id <UIAccelerometerDelegate>)observer;
+- (void)addObserverAccelerometer:(id)observer;
+- (void)removeObserverAccelerometer:(id)observer;
 #endif
 
 #ifdef Rtt_CORE_MOTION
@@ -318,12 +317,12 @@ NSString * const CoronaHeadingResourceKey()
 
 #ifdef Rtt_ACCELEROMETER
 
-- (void)addObserverAccelerometer:(id <UIAccelerometerDelegate>)observer
+- (void)addObserverAccelerometer:(id)observer
 {
 	;
 }
 
-- (void)removeObserverAccelerometer:(id <UIAccelerometerDelegate>)observer
+- (void)removeObserverAccelerometer:(id)observer
 {
 	;
 }

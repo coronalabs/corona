@@ -12,7 +12,8 @@
 
 int main(int argc, char *argv[]) {
 	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-	int retVal = UIApplicationMain(argc, argv, nil, nil);
+	// Scene-based apps get no delegate from a main nib, so the delegate class is named here (see AppDelegate.h)
+	int retVal = UIApplicationMain(argc, argv, nil, @"AppDelegate");
 	[pool release];
 	return retVal;
 }

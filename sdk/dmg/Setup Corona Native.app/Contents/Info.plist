@@ -34,7 +34,7 @@
 		<key>bundleDividerCollapsed</key>
 		<true/>
 		<key>bundlePositionOfDivider</key>
-		<real>0.0</real>
+		<real>0</real>
 		<key>dividerCollapsed</key>
 		<false/>
 		<key>eventLogLevel</key>
@@ -48,5 +48,7 @@
 		<key>selectedTab</key>
 		<string>description</string>
 	</dict>
+	<key>NSAppleEventsUsageDescription</key>
+	<string>To create necessary links</string>
 </dict>
 </plist>

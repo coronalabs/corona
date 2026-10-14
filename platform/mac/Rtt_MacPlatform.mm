@@ -701,6 +701,12 @@ MacPlatform::GetPreference( Category category, Rtt::String * value ) const
 		case MPlatform::kScreenDressingFile:
 			result = [[properties valueForKey:@"screenDressingFile"] UTF8String];
 			break;
+		case MPlatform::kStatusBarHeight:
+			result = [[[properties valueForKey:@"statusBarHeight"] stringValue] UTF8String];
+			break;
+		case MPlatform::kScreenNaturalOrientation:
+			result = [[properties valueForKey:@"screenNaturalOrientation"] UTF8String];
+			break;
 		case MPlatform::kSubscription:
 			result = [[properties valueForKey:@"subscription"] UTF8String];
 			break;
@@ -1687,6 +1693,9 @@ MacPlatform::RuntimeErrorNotification( const char *errorType, const char *messag
 																	  attributes:textAttributes]];
 				[accessory setEditable:NO];
 				[accessory setDrawsBackground:NO];
+				// NSAlert only makes room for the accessory's current frame, and the text view doesn't grow to
+				// fit its text until it is drawn (macOS 27), which spills the text over the message. Fit it now.
+				[accessory sizeToFit];
 
 				[alert setAccessoryView:accessory];
 			}
@@ -2117,10 +2126,27 @@ void MacPlatform::GetSafeAreaInsetsPixels(Rtt_Real &top, Rtt_Real &left, Rtt_Rea
 
 	if (DeviceOrientation::IsSideways(GetDevice().GetOrientation()))
 	{
-		top = [[properties valueForKey:@"safeLandscapeScreenInsetTop"] floatValue];
-		left = [[properties valueForKey:@"safeLandscapeScreenInsetLeft"] floatValue];
-		bottom = [[properties valueForKey:@"safeLandscapeScreenInsetBottom"] floatValue];
-		right = [[properties valueForKey:@"safeLandscapeScreenInsetRight"] floatValue];
+		bool isLandscapeLeft = (DeviceOrientation::kSidewaysLeft == GetDevice().GetOrientation());
+		if (isLandscapeLeft && [properties valueForKey:@"safeLandscapeLeftScreenInsetTop"] != nil)
+		{
+			top = [[properties valueForKey:@"safeLandscapeLeftScreenInsetTop"] floatValue];
+			left = [[properties valueForKey:@"safeLandscapeLeftScreenInsetLeft"] floatValue];
+			bottom = [[properties valueForKey:@"safeLandscapeLeftScreenInsetBottom"] floatValue];
+			right = [[properties valueForKey:@"safeLandscapeLeftScreenInsetRight"] floatValue];
+		}
+		else
+		{
+			top = [[properties valueForKey:@"safeLandscapeScreenInsetTop"] floatValue];
+			left = [[properties valueForKey:@"safeLandscapeScreenInsetLeft"] floatValue];
+			bottom = [[properties valueForKey:@"safeLandscapeScreenInsetBottom"] floatValue];
+			right = [[properties valueForKey:@"safeLandscapeScreenInsetRight"] floatValue];
+
+			// Skins give the landscape insets for landscapeRight. Turned the other way, left and right trade places.
+			if (isLandscapeLeft)
+			{
+				Swap(left, right);
+			}
+		}
 
 		top += statusBarMult * [[properties valueForKey:@"safeLandscapeScreenInsetStatusBar"] floatValue];
 	}

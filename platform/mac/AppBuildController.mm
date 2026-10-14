@@ -1029,6 +1029,9 @@ static NSString *kValueNotSet = @"not set";
     [accessory setEditable:NO];
     [accessory setDrawsBackground:NO];
     [accessory setDelegate:self];
+    // NSAlert only makes room for the accessory's current frame, and the text view doesn't grow to
+    // fit its text until it is drawn (macOS 27), which spills the text over the title. Fit it now.
+    [accessory sizeToFit];
 
     // cancel any pending progress sheet
     [self endProgressSheetBanner:parentWindow];
