@@ -137,6 +137,10 @@ SnapshotObject::SnapshotObject(
 	fGroup->SetRenderedOffScreen( true );
 	fCanvas->SetRenderedOffScreen( true );
 
+	// Lets ancestry walks (e.g. display.isValidObject) continue from the snapshot
+	fGroup->SetOwner( this );
+	fCanvas->SetOwner( this );
+
     SetObjectDesc( "SnapshotObject" );     // for introspection
 }
 

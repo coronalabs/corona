@@ -64,6 +64,13 @@ class GroupObject : public DisplayObject
 		void SetStage( StageObject* canvas ) { fStage = canvas; }
 
 	public:
+		// Owning display object for internal groups outside the parent hierarchy
+		// (e.g. snapshot.group/snapshot.canvas); NULL for ordinary groups.
+		DisplayObject* GetOwner() { return fOwner; }
+		const DisplayObject* GetOwner() const { return fOwner; }
+		void SetOwner( DisplayObject* owner ) { fOwner = owner; }
+
+	public:
 		S32 NumChildren() const { return fChildren.Length(); }
 		const DisplayObject& ChildAt( S32 index ) const { return * fChildren[index]; }
 		DisplayObject& ChildAt( S32 index ) { return * fChildren[index]; }
@@ -86,6 +93,7 @@ class GroupObject : public DisplayObject
 
 	private:
 		StageObject* fStage;
+		DisplayObject* fOwner;
 
 	protected:
 		// Children are drawn in order, i.e. first child is drawn below the second
