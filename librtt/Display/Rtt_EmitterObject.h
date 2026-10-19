@@ -29,7 +29,7 @@ namespace Rtt
 {
 class LuaUserdataProxy;
 class TextureResource;
-struct EmitterObjectParticle;
+struct EmitterObjectParticles;
 
 #define EMITTER_ABSOLUTE_PARENT ((GroupObject*)-1)
 // ----------------------------------------------------------------------------
@@ -270,7 +270,9 @@ public:
 private:
 
 	void _AddParticle(const Matrix &spawnTimeTransform);
-	void _RemoveParticle( int particleIndex );
+	void _SetParticleCount( int count );
+	void _UpdateParticles( float time_delta );
+	void _UpdateVertices();
 	void _Update( const Display &display );
 	void _Cleanup();
 
@@ -337,12 +339,16 @@ private:
 
 	std::string fTextureFileName;
 
-	friend struct EmitterObjectParticle;
+	friend struct EmitterObjectParticles;
 	//! We're also using this to determine if Initialize() has been called.
-	EmitterObjectParticle *fParticles;
+	EmitterObjectParticles *fParticles;
 
 	int fParticleCount;
-	
+
+	// If true, each particle is an indexed quad (4 vertices) stored on the GPU.
+	// Otherwise, each particle is 2 triangles (6 vertices) batched by the renderer.
+	bool fUsesIndexedQuads;
+
 	Mapping fMapping;
 	State fState;
 
