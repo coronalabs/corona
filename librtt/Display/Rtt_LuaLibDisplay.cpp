@@ -678,7 +678,7 @@ DisplayLibrary::PushImage(
     // Create the image object with the above dimensions.
     ShapeObject* v = PushImage( L, topLeft, paint, display, parent, width, height, replacement );
 
-    v->SetObjectDesc("ImageObject");
+    v->SetObjectDesc(DisplayObject::kImageObjectDesc/*"ImageObject"*/);
     
     /*
     // TODO: Figure out what to do with this block once Android is ready...

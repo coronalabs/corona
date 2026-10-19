@@ -120,6 +120,7 @@ class DisplayObject : public MDrawable, public MLuaProxyable
             kIsRestricted = 0x800,
             kSkipsCull = 0x1000,
             kSkipsHitTest = 0x2000,
+            kHasFocusID = 0x4000
 
             // NOTE: Current maximum of 16 PropertyMasks!!!
         };
@@ -424,9 +425,11 @@ class DisplayObject : public MDrawable, public MLuaProxyable
         bool IsUsedByHitTest() const { return (fProperties & kIsUsedByHitTest) != 0; }
         void SetUsedByHitTest( bool newValue ) { SetProperty( kIsUsedByHitTest, newValue ); }
 
-    public:
+    public:/*
         void SetFocusId( const void *newValue ) { fFocusId = newValue; }
-        const void* GetFocusId() const { return fFocusId; }
+        const void* GetFocusId() const { return fFocusId; }*/
+        void SetHasFocusId( bool newValue ) { SetProperty( kHasFocusID, newValue ); }
+        bool GetHasFocusId() const { return ( fProperties & kHasFocusID ) != 0; }
 
     protected:
         // Use the PropertyMask constants
@@ -442,6 +445,10 @@ class DisplayObject : public MDrawable, public MLuaProxyable
             fListenerSet = ( value ? p | mask : p & ~mask );
         }
 
+	protected:
+		void SetScratchNybble( U8 newValue ) { fUnused = newValue; }
+		U8 GetScratchNybble() const { return fUnused; }
+
 #ifdef Rtt_PHYSICS
     public:
         bool InitializeExtensions( Rtt_Allocator *allocator );
@@ -450,8 +457,28 @@ class DisplayObject : public MDrawable, public MLuaProxyable
 #endif
 
     public:
-        void SetObjectDesc( const char *objectDesc ) { fObjectDesc = objectDesc; }
-        const char *GetObjectDesc() const { return fObjectDesc; }
+		typedef enum _ObjectDesc : U8
+		{
+			kDisplayObjectDesc,
+			kCompositeObjectDesc,
+			kContainerObjectDesc,
+			kEmitterObjectDesc,
+			kEmbossedTextObjectDesc,
+			kGroupObjectDesc,
+			kImageObjectDesc,
+			kLineObjectDesc,
+			kParticleSystemObjectDesc,
+			kShapeObjectDesc,
+			kSnapshotObjectDesc,
+			kSpriteObjectDesc,
+			kStageObjectDesc,
+			kTextObjectDesc,
+			kNumObjectDescTypes
+		}
+		ObjectDesc;
+    
+        void SetObjectDesc( ObjectDesc objectDesc ) { fObjectDesc = objectDesc; }
+        const char *GetObjectDesc() const;
 
     private:
         GroupObject* fParent;
@@ -469,9 +496,11 @@ class DisplayObject : public MDrawable, public MLuaProxyable
         mutable LuaProxy* fLuaProxy;
         mutable DisplayObjectExtensions *fExtensions;
         const void *fFocusId;
+	#if 0
         const char *fObjectDesc;
         const char *fWhereDefined;
         const char *fWhereChanged;
+	#endif
 
     private:
         BitmapMask *fMask;
@@ -485,7 +514,14 @@ class DisplayObject : public MDrawable, public MLuaProxyable
         U8 fAlpha;
         U8 fAlphaCumulative;
         ListenerSet fListenerSet;
+	#if 0
         U8 fUnused; // Alignment
+	#else
+		U8 fObjectDesc : 4;
+		U8 fUnused : 4;
+	#endif
+	
+		Rtt_STATIC_ASSERT( kNumObjectDescTypes <= ( 1 << 4 ) );
 
         friend class DisplayObjectDrawGuard;
         friend class GroupObject; // Access to CullOffscreen

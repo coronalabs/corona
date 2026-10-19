@@ -42,7 +42,7 @@ ContainerObject::ContainerObject(
 
 	SetProperty( kIsAnchorChildren, true );
 
-    SetObjectDesc( "ContainerObject" );     // for introspection
+    SetObjectDesc( kContainerObjectDesc/*"ContainerObject"*/ );     // for introspection
 }
 
 ContainerObject::~ContainerObject()
