@@ -35,8 +35,8 @@ class GLProgram : public GPUResource
 	public:
 		GLProgram();
 
-		virtual void Create( CPUResource* resource );
-		virtual void Update( CPUResource* resource );
+		virtual void Create( CPUResource* resource, const RenderContext* context );
+		virtual void Update( CPUResource* resource, const RenderContext* context );
 		virtual void Destroy();
 		virtual void Bind( Program::Version version );
 
@@ -82,7 +82,7 @@ class GLProgram : public GPUResource
 
 		void Create( Program::Version version, VersionData& data );
 		void Update( Program::Version version, VersionData& data );
-		void UpdateShaderSource( Program* program, Program::Version version, VersionData& data );
+		void UpdateShaderSource( Program* program, Program::Version version, VersionData& data, const char names[], const U16 offsets[] );
 		void Reset( VersionData& data );
 
         enum { kUniformNameBufferSize = 64 };
@@ -94,6 +94,10 @@ class GLProgram : public GPUResource
     
         void (*fCleanupShellTransform)(void *); // compare CoronaGraphics.h
         GLProgramUniformsCache * fUniformsCache;
+    
+		// SAS TODO: some way to track extra textures, sampler info
+			// with different versions could diverge... (although we could enforce otherwise? what about wireframe?)
+			// frequent, so want to be fast, or possible to yoink into paint
     
         friend class GLCommandBuffer;
 		friend class GLExtraUniforms;

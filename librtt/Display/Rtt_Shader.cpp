@@ -24,11 +24,13 @@
 #include "Renderer/Rtt_Matrix_Renderer.h"
 
 #include "Renderer/Rtt_Geometry_Renderer.h"
+#include "Renderer/Rtt_RenderTypes.h"
 
 #include <string.h>
 
 #include "Renderer/Rtt_FormatExtensionList.h"
 #include "Display/Rtt_ObjectHandle.h"
+#include "Display/Rtt_CompositePaint.h"
 
 #include "CoronaGraphics.h"
 
@@ -224,8 +226,7 @@ Shader::RenderToTexture( Renderer& renderer, Geometry& cache ) const
 				renderer.SetViewport( 0, 0, w, h );
 				renderer.Clear( 0.0f, 0.0f, 0.0f, 0.0f );
 				renderer.BeginDrawing();
-				
-				renderer.Insert( fRenderData, GetData() );
+				renderer.Insert( fRenderData, GetData(), &fRenderDataState );
 			}
 			renderer.PopMaskCount();
 		}
@@ -273,7 +274,8 @@ Shader::Prepare( RenderData& objectData, int w, int h, ShaderResource::ProgramMo
 void
 Shader::Draw( Renderer& renderer, const RenderData& objectData, const GeometryWriter* writers, U32 n ) const
 {
-    if ( !renderer.CanAddGeometryWriters() ) // ignore during raw draws
+	bool isNormalPhase = !renderer.CanAddGeometryWriters();
+    if ( isNormalPhase ) // leave writers alone during before- and after-draw phases, i.e. during ShaderRawDraw()s
     {
         renderer.SetGeometryWriters( writers, n );
     }
@@ -283,8 +285,8 @@ Shader::Draw( Renderer& renderer, const RenderData& objectData, const GeometryWr
     if (DoAnyBeforeDrawAndThenOriginal( state, renderer, objectData ))
     {
         // No-op
-    //    renderer.TallyTimeDependency( fResource->UsesTime() );
-        renderer.Insert( & objectData, GetData() );
+    //    renderer.TallyTimeDependency( fResource->UsesTime() );	
+        renderer.Insert( & objectData, GetData(), &fRenderDataState );
     }
 
     DoAnyAfterDraw( state, renderer, objectData );
@@ -405,13 +407,41 @@ Shader::DoAnyAfterDraw( const DrawState & state, Renderer & renderer, const Rend
 }
 
 bool
-Shader::IsCompatible( const Geometry* geometry )
+Shader::IsCompatible( const Geometry* geometry ) const
 {
     Rtt_ASSERT( geometry );
 
     const FormatExtensionList* shaderList = fResource->GetExtensionList();
 
     return FormatExtensionList::Compatible( shaderList, geometry->GetExtensionList() );
+}
+
+bool
+Shader::IsPaintConsistent( const Paint* paint ) const // n.b. shader has no owner yet
+{
+	Rtt_ASSERT( paint );
+	
+	TextureList list;	
+	if ( paint->IsType( Paint::kMultitexture ) )
+	{
+		const CompositePaint* compositePaint = (const CompositePaint*)paint;
+
+		compositePaint->PopulateTextureList( list );
+
+		return fResource->AreTexturesConsistent( list, compositePaint->GetNameList(), &fRenderDataState );
+	}
+	else
+	{
+		list.SetFill0( paint->GetTexture() );
+		
+		return fResource->AreTexturesConsistent( list, NULL );
+	}
+}
+
+bool
+Shader::CanCheckConsistency() const
+{
+	return ( RenderDataState::kUnsynced == fRenderDataState.GetSyncState() ) && fResource->HasTextureInfo();
 }
 
 // ----------------------------------------------------------------------------

@@ -3313,7 +3313,7 @@ LuaLibDisplay::LuaNewColor( lua_State *L, int index, bool isBytes )
 
 // { type="image", baseDir=, filename= }
 static BitmapPaint *
-NewBitmapPaintFromFile( lua_State *L, int paramsIndex )
+NewBitmapPaintFromFile( lua_State *L, int paramsIndex, void* shaderResourceOut )
 {
     BitmapPaint *paint = NULL;
 
@@ -3328,7 +3328,7 @@ NewBitmapPaintFromFile( lua_State *L, int paramsIndex )
 
         Runtime *runtime = LuaContext::GetRuntime( L );
         U32 flags = PlatformBitmap::kIsNearestAvailablePixelDensity;
-        paint = BitmapPaint::NewBitmap( *runtime, imageName, baseDir, flags );
+        paint = BitmapPaint::NewBitmap( *runtime, imageName, baseDir, flags, shaderResourceOut );
         if ( paint && paint->GetBitmap() && paint->GetBitmap()->NumBytes() == 0 )
         {
             CoronaLuaWarning(L, "file '%s' does not contain a valid image", imageName);
@@ -3378,16 +3378,16 @@ NewBitmapPaintFromSheet( lua_State *L, int paramsIndex )
 }
 
 BitmapPaint *
-LuaLibDisplay::LuaNewBitmapPaint( lua_State *L, int paramsIndex )
+LuaLibDisplay::LuaNewBitmapPaint( lua_State *L, int paramsIndex, void* shaderResourceOut )
 {
     BitmapPaint *result = NULL;
 
     if ( ! result )
     {
-        result = NewBitmapPaintFromFile( L, paramsIndex );
+        result = NewBitmapPaintFromFile( L, paramsIndex, shaderResourceOut );
     }
 
-    if ( ! result )
+    if ( ! result && !shaderResourceOut )
     {
         result = NewBitmapPaintFromSheet( L, paramsIndex );
     }
@@ -3467,6 +3467,145 @@ LuaLibDisplay::LuaNewGradientPaint( lua_State *L, int paramsIndex )
     return result;
 }
 
+struct ArrayData {
+	const char* name;
+	U8 length;
+	
+	static int Compare( const void* p1, const void* p2 )
+	{
+		const ArrayData* d1 = (const ArrayData*)p1, *d2 = (const ArrayData*)p2;
+
+		return strcmp( d1->name, d2->name );
+	}
+};
+
+struct ArrayDataEx {
+	SharedPtr<TextureResource> tr;
+	ArrayData item;
+};
+
+static bool
+ReservedByBackend( const char* key )
+{
+	if ( 0 == strncmp( key, "gl_", 3 ) || 0 == strncmp( key, "__", 2 ) )
+	{
+		Rtt_LogException( "WARNING: key has prefix (%s) reserved by GL backends", 'g' == *key ? "gl_" : "__" );
+		return true;
+	}
+	
+	return false;
+}
+
+static void
+GatherExtraPaint( lua_State *L, Array<ArrayData> &arr )
+{
+	if ( LUA_TSTRING != lua_type( L, -2 ) )
+	{
+		Rtt_LogException( "WARNING: non-string (%s) key in `extraPaints`", luaL_typename( L, -2 ) );
+		return;
+	}
+	else if ( !lua_istable( L, -1 ) )
+	{
+		Rtt_Log( "WARNING: non-table (%s) value in `extraPaints`", luaL_typename( L, -1 ) );
+		return;
+	}
+	
+	size_t len = lua_objlen( L, -2 );
+		
+	ArrayData ad;
+	ad.name = lua_tostring( L, -2 );
+	ad.length = (U8)len;
+	
+	if ( 0 == len )
+	{
+		Rtt_LogException( "WARNING: empty string as key" );
+		return;
+	}
+	else if ( len > ExtraTextureInfo::kMaxNameLength )
+	{
+		Rtt_LogException( "WARNING: key (%s) exceeds maximum sampler identifier length %i", ad.name, ExtraTextureInfo::kMaxNameLength );
+		return;
+	}
+	else if ( ReservedByBackend( ad.name ) || !String::IsIdentifier( ad.name ) ) // n.b. will issue own warnings
+	{
+		return;
+	}
+		
+	lua_getfield( L, -1, "type" );
+	
+	const char* typeString = ( LUA_TSTRING == lua_type( L, -1 ) ) ? lua_tostring( L, -1 ) : "";
+
+	lua_pop( L, 1 );
+
+	if ( 0 == strcmp( typeString, "image" ) )
+	{
+		lua_getfield( L, -1, "filename" );
+		lua_getfield( L, -2, "sheet" );
+		
+		bool isFilenameString = LUA_TSTRING == lua_type( L, -2 );
+		bool isSheetUserdata = lua_isuserdata( L, -1 );
+		
+		lua_pop( L, 2 );
+		
+		if ( !isFilenameString )
+		{
+			Rtt_LogException( "WARNING: key %s: 'image'-type paint, but `filename` is not a string (%s)", ad.name, luaL_typename( L, -2 ) );
+			return;
+		}
+		else if ( isSheetUserdata )
+		{
+			Rtt_LogException( "WARNING: key %s: sheet-based 'image'-type paint not supported in `extraPaints`", ad.name );
+			return;
+		}
+	}
+	else if ( 0 != strcmp( typeString, "camera" ) )
+	{
+		Rtt_LogException( "WARNING: key %s: unknown, unsupported, or empty paint type in `extraPaints`: %s", ad.name, typeString );
+		return;
+	}
+	else if ( RenderDataState::kOccupancyBits == arr.Length() )
+	{
+		Rtt_LogException( "WARNING: key %s: %i paints from `extraPaints` already added", ad.name, RenderDataState::kOccupancyBits );
+		return;
+	}
+	
+	arr.Append( ad );
+}
+
+static bool
+BuildExtraPaint( lua_State *L, ArrayDataEx &ad )
+{
+	lua_getfield( L, -1, ad.item.name );
+
+	LuaLibDisplay::LuaNewPaint( L, -1, &ad.tr ); // get resource only (no Paint)
+				
+	return !ad.tr.IsNull();
+}
+
+static void
+CommitExtraPaints( CompositePaint *paint, Array<ArrayDataEx> &arr, U32 numExtra, const LengthAccumulator& nameLengths )
+{
+	paint->PrepareExtraTextures( numExtra, nameLengths );
+	
+	U8* nameList = paint->GetNameList();
+	NamesEncoder names( nameList, nameLengths );
+	SharedPtr<TextureResource>* textureResourceList = (SharedPtr<TextureResource>*)paint->GetTextureResourceList();
+	for ( int i = 0, iMax = arr.Length(); i < iMax; i++ )
+	{
+		if ( 0 == arr[i].item.length )
+		{
+			continue;
+		}
+
+		*textureResourceList++ = arr[i].tr;
+
+		names.Encode( arr[i].item.name, arr[i].item.length );
+	}
+	names.CheckTotalCount();
+	
+	paint->CommitExtraTextures();
+}
+
 CompositePaint *
 LuaLibDisplay::LuaNewCompositePaint( lua_State *L, int paramsIndex )
 {
@@ -3489,20 +3628,70 @@ LuaLibDisplay::LuaNewCompositePaint( lua_State *L, int paramsIndex )
     lua_pop( L, 1 );
 
     if ( paint0 && paint1 )
-    {
+    {	
+		U32 numExtra = 0;
+		LengthAccumulator nameLengths;
+		Array<ArrayDataEx> arr( LuaContext::GetAllocator( L ) );
+
+		lua_getfield( L, paramsIndex, "extraPaints" );
+		if ( lua_istable( L, -1 ) )
+		{
+			Array<ArrayData> prepArr( LuaContext::GetAllocator( L ) );
+			
+			for ( lua_pushnil( L ); lua_next( L, -2 ); lua_pop( L, 1 ) )
+			{
+				GatherExtraPaint( L, prepArr );
+			}
+
+			qsort( prepArr.WriteAccess(), prepArr.Length(), sizeof(ArrayData), ArrayData::Compare ); // also done by ShaderResource
+
+			arr.PadToSize( (U32)prepArr.Length(), ArrayDataEx() );
+
+			for ( S32 i = 0, iMax = prepArr.Length(); i < iMax; i++, lua_pop( L, 1 ) )
+			{
+				arr[i].item = prepArr[i];
+				
+				bool didBuild = BuildExtraPaint( L, arr[i] );
+				if ( didBuild )
+				{
+					numExtra++;
+					
+					nameLengths.AddLength( arr[i].item.length );
+				}
+				else
+				{
+					Rtt_LogException( "WARNING: failed to load %s from `extraPaints`", arr[i].item.name );
+					
+					arr[i].item.length = 0; // skip in the commit step
+				}
+			}
+		}
+
         result = Rtt_NEW( LuaContext::GetAllocator( L ), CompositePaint( paint0, paint1 ) );
+        
+        if ( result && numExtra > 0 )
+        {
+			CommitExtraPaints( result, arr, numExtra, nameLengths );
+		}
     }
 
     return result;
 }
 
 CameraPaint *
-LuaLibDisplay::LuaNewCameraPaint( lua_State *L, int paramsIndex )
+LuaLibDisplay::LuaNewCameraPaint( lua_State *L, int paramsIndex, void* shaderResourceOut )
 {
     Runtime *runtime = LuaContext::GetRuntime( L );
     Display& display = runtime->GetDisplay();
     
     SharedPtr< TextureResource > resource = display.GetTextureFactory().GetVideo();
+    
+    if ( shaderResourceOut )
+    {
+		*( SharedPtr< TextureResource >* )shaderResourceOut = resource;
+    
+		return NULL;
+    }
     
     CameraPaint *result = Rtt_NEW( LuaContext::GetAllocator( L ), CameraPaint( resource ) );
 
@@ -3517,7 +3706,7 @@ LuaLibDisplay::LuaNewCameraPaint( lua_State *L, int paramsIndex )
 // object.fill = { type="camera" }
 // TODO: object.fill = other.fill
 Paint *
-LuaLibDisplay::LuaNewPaint( lua_State *L, int index )
+LuaLibDisplay::LuaNewPaint( lua_State *L, int index, void* shaderResourceOut )
 {
     Paint *result = NULL;
 
@@ -3534,7 +3723,7 @@ LuaLibDisplay::LuaNewPaint( lua_State *L, int index )
         {
             if ( 0 == strcmp( "image", paintType ) )
             {
-                result = LuaNewBitmapPaint( L, index );
+                result = LuaNewBitmapPaint( L, index, shaderResourceOut );
             }
             else if ( 0 == strcmp( "gradient", paintType ) )
             {
@@ -3546,7 +3735,7 @@ LuaLibDisplay::LuaNewPaint( lua_State *L, int index )
             }
             else if ( 0 == strcmp( "camera", paintType ) )
             {
-                result = LuaNewCameraPaint( L, index );
+                result = LuaNewCameraPaint( L, index, shaderResourceOut );
             }
         }
         else

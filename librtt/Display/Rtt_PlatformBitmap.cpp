@@ -18,6 +18,32 @@ namespace Rtt
 
 // ----------------------------------------------------------------------------
 
+ PlatformBitmap::Format::Format( FormatValue value )
+:	fValue( value )
+{
+}
+
+PlatformBitmap::FormatValue
+PlatformBitmap::Format::GetValue() const
+{
+	if ( !IsNonCore() )
+	{
+		return (FormatValue)FormatDetails::GetStockFormat( fValue );
+	}
+	else
+	{
+		return kUndefined; // arbitrary invalid value
+	}
+}
+
+bool
+PlatformBitmap::Format::IsNonCore() const
+{
+	return !FormatDetails::IsCore( fValue );
+}
+
+// ----------------------------------------------------------------------------
+
 PlatformBitmap::PlatformBitmap()
 :	fMagFilter( RenderTypes::kLinearTextureFilter ),
 	fMinFilter( RenderTypes::kLinearTextureFilter ),
@@ -50,7 +76,7 @@ PlatformBitmap::HitTest( Rtt_Allocator *context, int i, int j, U8 threshold ) co
 
 			int index = (int) bytesPerPixel * ( i + j*Width() );
 
-			switch ( format )
+			switch ( format.GetValue() )
 			{
 				case kMask:
 					{
@@ -134,7 +160,7 @@ PlatformBitmap::HasAlphaChannel() const
 
 	Format format = GetFormat();
 
-	switch ( format )
+	switch ( format.GetValue() )
 	{
 		case kRGBA:
 		case kBGRA:
@@ -143,6 +169,10 @@ PlatformBitmap::HasAlphaChannel() const
 			result = true;
 			break;
 		default:
+			if ( format.IsNonCore() )
+			{
+				result = FormatDetails::HasAlphaChannel( format.GetBackingValue() ); 
+			}
 			break;
 	}
 
@@ -189,7 +219,7 @@ PlatformBitmap::IsLandscape() const
 size_t
 PlatformBitmap::BytesPerPixel( Format format )
 {
-	switch( format )
+	switch( format.GetValue() )
 	{
 		case kMask:
 			return 1;
@@ -203,6 +233,12 @@ PlatformBitmap::BytesPerPixel( Format format )
 		case kABGR:
 			return 4;
 		default:
+			if ( format.IsNonCore() )
+			{
+				// TODO: does "per pixel" have the right meaning, if compressed?
+			
+				return FormatDetails::GetSize( 1, 1, format.GetBackingValue() );
+			}
 			break;
 	}
 
@@ -259,7 +295,7 @@ PlatformBitmap::GetColorByteIndexesFor(
 	int blueIndexOut = -1;
 
 	// Fetch the color byte index by format and endianness.
-	switch (format)
+	switch ( format.GetValue() )
 	{
 		case PlatformBitmap::kRGB:
 			#ifdef Rtt_LITTLE_ENDIAN
@@ -325,8 +361,15 @@ PlatformBitmap::GetColorByteIndexesFor(
 			#endif
 			break;
 		default:
-			// New formats need to have a case above
-			Rtt_ASSERT_NOT_IMPLEMENTED();
+			if ( format.IsNonCore() )
+			{
+				FormatDetails::GetComponentIndices( format.GetBackingValue(), redIndexOut, greenIndexOut, blueIndexOut, alphaIndexOut );
+			}
+			else
+			{
+				// New formats need to have a case above
+				Rtt_ASSERT_NOT_IMPLEMENTED();
+			}
 			break;
 	}
 
@@ -371,7 +414,7 @@ PlatformBitmap::Unlock()
 void 
 PlatformBitmap::SwapRGB()
 {
-	if ( GetFormat() != kRGBA )
+	if ( GetFormat().GetValue() != kRGBA )
 		return;
 
 	char * pixels = const_cast<char *>( (const char *) GetBits( NULL ) );
@@ -399,6 +442,15 @@ PlatformBitmap::SwapBitmapRGB( char * pixels, int w, int h )
 	}
 }
 #endif
+
+// ----------------------------------------------------------------------------
+
+using FV1 = Texture::FormatValue;
+using FV2 = PlatformBitmap::FormatValue;
+
+// These details are basically frozen, but enforce them.
+Rtt_STATIC_ASSERT( (U32)FV1::kNumFormats == (U32)FV2::kNumFormats );
+Rtt_STATIC_ASSERT( (U32)( 1U << FormatDetails::kStockFormatBits ) >= (U32)FV1::kNumFormats );
 
 // ----------------------------------------------------------------------------
 

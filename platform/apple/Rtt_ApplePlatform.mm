@@ -74,6 +74,9 @@
         (void*)CoronaExternalFormatBPP,
         (void*)CoronaExternalGetUserData,
         (void*)CoronaExternalPushTexture,
+        (void*)CoronaDefineStandardTextureFormat,
+        (void*)CoronaDefineWordPackedTextureFormat,
+        (void*)CoronaDefineCompressedTextureFormat,
         (void*)CoronaGeometrySetComponentWriter,
         (void*)CoronaGeometryRegisterVertexExtension,
         (void*)CoronaGeometryUnregisterVertexExtension,
@@ -621,7 +624,7 @@ ApplePlatform::CreateRenderingStream( bool antialias ) const
 PlatformSurface*
 ApplePlatform::CreateOffscreenSurface( const PlatformSurface& parent ) const
 {
-#ifdef Rtt_NO_GUI
+#if defined( Rtt_NO_GUI ) || !defined( OLD_GRAPHICS ) // n.b. seems to be dead code
     return NULL;
 #else
     OffscreenGPUSurface *result = Rtt_NEW( Allocator(), OffscreenGPUSurface( parent ) );

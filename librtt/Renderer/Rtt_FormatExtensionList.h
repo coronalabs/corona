@@ -27,17 +27,21 @@ class String;
 
 class FormatExtensionList {
     public:
-        FormatExtensionList();
+		struct Group;
+		struct Attribute;
+		
+        FormatExtensionList( Group* groups = NULL, U16 groupCount = 0, Attribute* attributes = NULL, U16 attributeCount = 0 );
         ~FormatExtensionList();
-   
+        
     public:
         struct Attribute {
-            U32 nameHash;
-            U16 type;
-            U16 offset : 13;
-            U16 comp_minus_1 : 2;
-            U16 normalized : 1;
-            
+            U32 type : 4; // adequate in GL 4.6 / ES 3.2; other backends might call for redesign?
+            U32 offset : 10; // fully saturated = 32 dvec4 values = 32 * 8 * 4 = 2^10
+            U32 name_triples_minus_1 : 4; // 1..16 g
+            U32 name_offset : 11; // fully saturated = 32 48-byte names = 2^5 * 2^5 * 1.5 < 2^11, with ~ 512 wiggle room (header <= 32, easy fit)
+            U32 comp_minus_1 : 2; // 1..4
+            U32 normalized : 1;
+
             U32 GetSize() const;
             U16 GetComponentCount() const { return comp_minus_1 + 1; }
             bool IsFloat() const;
@@ -51,12 +55,13 @@ class FormatExtensionList {
             bool IsInstanceRate() const { return 0 != divisor; }
             bool IsWindowed() const { return 0 == size; }
             bool NeedsDivisor() const { return divisor > 1; }
-            U32 GetWindowAttributeCount( U32 valueCount ) const;
-            U32 GetValueCount( U32 instanceCount ) const;
-            size_t GetDataSize( U32 instanceCount, const Attribute * firstAttribute ) const;
-            U32 GetVertexCount( U32 instanceCount, const Attribute * firstAttribute ) const;
+            U32 GetWindowAttributeCount( U32 divisorChunks ) const;
+            U32 InstanceStreamSizeInDivisorChunks( U32 instanceCount ) const;
+            U32 InstanceStreamSizeInBytes( U32 instanceCount, const Attribute * firstAttribute ) const;
+            U32 InstanceStreamSizeInVertices( U32 instanceCount, const Attribute * firstAttribute ) const;
         };
-
+   
+	public:
         class Iterator {
         public:
             enum GroupFilter { kAllGroups, kVertexRateGroups, kInstancedGroups };
@@ -65,12 +70,20 @@ class FormatExtensionList {
             Iterator( const FormatExtensionList* list, GroupFilter filter, IterationPolicy policy );
         
         public:
-            void Advance();
-            bool IsDone() const;
-            U32 GetAttributeIndex() const;
-            U32 GetGroupIndex() const;
-            const Attribute* GetAttribute() const;
-            const Group* GetGroup() const;
+			struct CurrentState {
+				const Attribute* attribute;
+				const Group* group;
+				U32 attributeIndex;
+				U32 groupIndex;
+			};
+			
+			Iterator begin();
+			Iterator end();
+			
+			const CurrentState operator*() const;
+			
+			Iterator& operator++();
+			bool operator!=( const Iterator& ) const;
         
         private:
             void AdvanceGroup();
@@ -89,22 +102,69 @@ class FormatExtensionList {
         static Iterator AllGroups( const FormatExtensionList* list );
         static Iterator AllAttributes( const FormatExtensionList* list );
         static Iterator InstancedGroups( const FormatExtensionList* list );
-    
-        static FormatExtensionList FromArrays( const Array<Group>& groups, const Array<Attribute>& attributes );
+
+	public:
+		class NamedAttributeIterator {
+		public:
+			NamedAttributeIterator();
+			NamedAttributeIterator( const U8* lookupData, U8 specificTriples );
+			
+			struct CurrentState {
+				const U8 *nameData;
+				U8 attributeIndex;
+				U8 triplesCount;
+			};
+			
+			CurrentState operator*() const;
+			
+		private:
+			void PrepareTripleCount();
+			
+		public:
+			NamedAttributeIterator& operator++();
+			bool operator!=( const NamedAttributeIterator& ) const;
+			
+		private:
+			const U8 *fNameData;
+			U16 fTriplesBits;
+			U8 fAttributeIndex;
+			U8 fTriples;
+		};
+
+		class NamedAttributeRange {
+		public:
+			NamedAttributeRange( const U8* lookupData, U8 specificTriples )
+			:	fLookupData( lookupData ),
+				fSpecificTriples( specificTriples )
+			{
+			}
+			
+			NamedAttributeIterator begin() const { return NamedAttributeIterator( fLookupData, fSpecificTriples ); }
+			NamedAttributeIterator end() const { return NamedAttributeIterator(); }
+			
+		private:
+			const U8 *fLookupData;
+			U8 fSpecificTriples;
+		};
+
+	public:
+		NamedAttributeRange NamedAttributes() const { return NamedAttributeRange( fLookupData, 0 ); }
+		NamedAttributeRange NamedAttributesWithTriplesCount( U8 triplesCount ) const { return NamedAttributeRange( fLookupData, triplesCount ); }
+
+		const U8* FindAttributeNameData( const Attribute* attribute ) const { return fLookupData + attribute->name_offset; }
+		int FindAttributeWithName( const char* name ) const;
+		int FindMatchingAttribute( const U8* data, U8 triplesCount ) const;
+		int FindMatchingAttribute( const FormatExtensionList* otherList, const Attribute* otherAttribute ) const;
 
     public:
-        U32 ExtraVertexCount() const;
+        U32 ExtraVertexRateSizeInVertices() const;
         U32 InstanceGroupCount() const;
 	    bool IsInstanced() const { return fInstancedByID || HasInstanceRateData(); }
         bool IsInstancedByID() const { return fInstancedByID; }
         bool HasInstanceRateData() const;
         bool HasVertexRateData() const;
-        void SortNames() const;
-        const char* FindNameByAttribute( U32 attributeIndex, S32* index = NULL ) const;
-        S32 FindHash( size_t hash ) const;
-        S32 FindName( const char* name ) const;
         U32 FindGroup( U32 attributeIndex ) const;
-        S32 FindCorrespondingInstanceGroup( const Group* group, const Attribute* attribute, U32 * attributeIndex ) const;
+        S32 FindCorrespondingInstanceGroup( const Group* group, const Attribute* attribute, const U8* nameData, U32 * attributeIndex ) const;
     
     public:
         const Attribute* GetAttributes() const { return fAttributes; }
@@ -113,31 +173,38 @@ class FormatExtensionList {
         U16 GetGroupCount() const { return fGroupCount; }
 
     public:
-        static size_t GetExtraVertexSize( const FormatExtensionList * list );
-        static size_t GetVertexSize( const FormatExtensionList * list );
+        static U32 ExtraVertexRateSizeInBytes( const FormatExtensionList * list );
+        static U32 FullVertexRateSizeInBytes( const FormatExtensionList * list );
         static bool Compatible( const FormatExtensionList * shaderList, const FormatExtensionList * geometryList );
         static bool Match( const FormatExtensionList * list1, const FormatExtensionList * list2 );
         static void ReconcileFormats( Rtt_Allocator* allocator, CommandBuffer * buffer, const FormatExtensionList * shaderList, const FormatExtensionList * geometryList, U32 offset );
     
     public:
+		struct NamedAttributeInfo {
+			const char *name;
+			Attribute *attribute;
+            U16 length;
+        
+            bool operator<( const NamedAttributeInfo & other ) const;
+        };
+        
         void Build( Rtt_Allocator* allocator, const CoronaVertexExtension * extension );
     
-    private:
-        struct NamePair {
-            String* str;
-            S32 index;
-        
-            bool operator<( const NamePair & other ) const { return index < other.index; }
-        };
+    public:
+		enum {
+			kFinal = 0x80,
+			kMaxAttribs = 32 // could be up to 128 (just has to not fight kFinal), but hardware is not usually
+							 // so generous; also, this is the sweet spot for the Attribute bit-packing
+		};
     
+    private:
         Attribute * fAttributes;
         Group * fGroups;
-        mutable NamePair* fNames; // allow reordering
+        U8 * fLookupData; // 1 + N U16 headers; U8* name content follows
         U16 fAttributeCount;
         U16 fGroupCount;
 	    bool fInstancedByID;
         bool fOwnsData;
-        mutable bool fSorted;
 };
 
 // ----------------------------------------------------------------------------

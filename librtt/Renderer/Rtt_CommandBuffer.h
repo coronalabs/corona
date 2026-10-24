@@ -56,14 +56,7 @@ class CommandBuffer
 		void WriteBytes( const void * value, size_t size );
 		
 	public:
-		static size_t GetMaxUniformVectorsCount();
-		static size_t GetMaxVertexTextureUnits();
-		static size_t GetMaxTextureSize();
-		static const char *GetGlString( const char *s );
-		static bool GetGpuSupportsHighPrecisionFragmentShaders();
-
-        virtual bool HasFramebufferBlit( bool * canScale ) const = 0;
-		virtual void GetVertexAttributes( VertexAttributeSupport & support ) const = 0;
+		static uintptr_t QueryBackendDetail( U32 detail, uintptr_t arg );
 
     public:
         CommandBuffer( Rtt_Allocator* allocator );
@@ -102,6 +95,11 @@ class CommandBuffer
         virtual void Clear( Real r, Real g, Real b, Real a ) = 0;
         virtual void Draw( U32 offset, U32 count, Geometry::PrimitiveType type ) = 0;
         virtual void DrawIndexed( U32 offset, U32 count, Geometry::PrimitiveType type ) = 0;
+        virtual void LoadUniforms() {} /* TODO? grumble, grumble */
+        
+        virtual void CheckTextureConsistency( ShaderResource* shaderResource, Program* defaultProgram, const TextureList* list, const U8* extraNames ) {}
+        virtual void RestoreConsistency( Program* previous ) {}
+        
         virtual S32 GetCachedParam( CommandBuffer::QueryableParams param ) = 0;
 
 		virtual bool HasProgramVersion( Program* program, Program::Version version ) const { return false; }

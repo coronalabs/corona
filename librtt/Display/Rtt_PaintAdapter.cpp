@@ -137,6 +137,21 @@ PaintAdapter::ValueForKey(
     return result;
 }
 
+static RenderDataState::SyncState
+CheckShaderState( const Shader* shader, const Paint* paint )
+{
+	if ( paint->IsType( Paint::kColor ) || paint->IsType( Paint::kGradient ) || paint->IsType( Paint::kCamera ) )
+	{
+		return RenderDataState::kSyncConsistent;
+	}
+	else if ( shader->CanCheckConsistency() )
+	{
+		return shader->IsPaintConsistent( paint ) ? RenderDataState::kSyncConsistent : RenderDataState::kSyncInconsistent;
+	}
+
+	return RenderDataState::kUnsynced;
+}
+
 bool
 PaintAdapter::SetValueForKey(
     LuaUserdataProxy& sender,
@@ -217,16 +232,26 @@ PaintAdapter::SetValueForKey(
                         }
                     }
 
-                    if (shader && !shader->IsCompatible( geometry ))
+                    if ( shader && shader->IsCompatible( geometry ) )
                     {
-                        result = false;
+						RenderDataState::SyncState syncState = CheckShaderState( shader, paint );
+						if ( RenderDataState::kSyncInconsistent != syncState )
+						{
+						//	paint->SetShader( shader ); // n.b. we probably want to set the shader anyhow...
+
+							result = true; // check against existing...
+						}
+						else
+						{
+							Rtt_LogException( "ERROR: some paint textures and `%s` samplers are inconsistent", lua_tostring( L, valueIndex ) );
+						}
+						
+						shader->GetRenderDataState().SetSyncState( syncState );
                     }
                     
-                    else
+                    if ( shader )
                     {
-                        paint->SetShader( shader );
-
-                        result = true;
+						paint->SetShader( shader );
                     }
                 }
                 break;
