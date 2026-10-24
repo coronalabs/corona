@@ -790,11 +790,11 @@ ClassifySampler( GLenum type )
 
 	// Each U16 holds 5 3-bit IDs (0-6), representing common patterns.
 	// There are 81 unique low bytes plus offset 0 to consider, thus
-	// implicitly this comprises ceil(82 / 5) = 17 uint16_t values.
+	// implicitly this comprises ceil(82 / 5) = 17 U16 values.
 	
 	// As it happens, the first four IDs are 0, and the sentinel can be
-	// as well; several trailing IDs are as well. The form shown here
-	// uses some indexing adjustments to lop off the dead weight.
+	// as well; likewise several trailing IDs. The form shown here uses
+	// some indexing adjustments to lop off the dead weight.
 	
 	// (This choice of IDs is a convention, nothing intrinsic. The 0s
 	// were already in their handy positions via the sort order, but

@@ -66,7 +66,7 @@ int CoronaExternalPushTexture( lua_State *L, const CoronaExternalTextureCallback
 		}
 		
 		U64 used = 0;
-		for ( const CoronaExternalTextureExtensionBase* ext = callbacks2->firstExtension; NULL != ext; ext = ext->next )
+		for ( const CoronaExternalTextureExtensionHeader* ext = callbacks2->firstExtension; NULL != ext; ext = ext->next )
 		{
 			U64 mask = 1U << ext->type;
 			if ( used & mask )

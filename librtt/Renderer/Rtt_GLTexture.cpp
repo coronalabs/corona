@@ -681,7 +681,7 @@ MatchCompressedFormat( const CoronaCompressedTextureFormatDetails* details, Text
 			"WARNING: depth %u ignored; no such formats supported yet",
 			details->depth ));
 	}
-
+/*
 	U8 family = details->family & TextureFormatDescription::kFamiliesMask;
 
 	if ( (U8)details->family != family )
@@ -689,7 +689,7 @@ MatchCompressedFormat( const CoronaCompressedTextureFormatDetails* details, Text
 		Rtt_TRACE_SIM(( "ERROR: unknown family (%i)\n", details->family ));
 		return false;
 	}
-
+*/
 	int w = 4, h = 4;
 	bool has16Bytes = 0 != details->has16Bytes;
 	if ( 0 != details->width || 0 != details->height )
@@ -709,8 +709,6 @@ MatchCompressedFormat( const CoronaCompressedTextureFormatDetails* details, Text
 			return false;
 		}
 	}
-
-	desc->fInputInfo |= family << TextureFormatDescription::kFamiliesShift;
 	
 	return AuxDoCompressedFormat( details->internalFormat, desc, w, h, has16Bytes ? 16 : 8 );
 }

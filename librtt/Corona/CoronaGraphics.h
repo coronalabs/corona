@@ -171,15 +171,15 @@ typedef enum {
 
 /**
 */
-typedef struct CoronaExternalTextureExtensionBase {
+typedef struct CoronaExternalTextureExtensionHeader {
 	/**
 	*/
-	struct CoronaExternalTextureExtensionBase * next;
+	struct CoronaExternalTextureExtensionHeader * next;
 	
 	/**
 	*/
 	CoronaExternalTextureExtensionType type;
-} CoronaExternalTextureExtensionBase;
+} CoronaExternalTextureExtensionHeader;
 
 /**
 	TODO: what sort of sampler / texture data
@@ -243,7 +243,7 @@ typedef struct CoronaExternalTextureExtension_TextureTarget {
 	/**
 		inherited
 	*/
-	CoronaExternalTextureExtensionBase common;
+	CoronaExternalTextureExtensionHeader common;
 
 	/**
 	*/
@@ -268,7 +268,7 @@ typedef struct CoronaExternalTextureExtension_TextureTarget {
 typedef struct CoronaExternalTextureExtension_CustomFormat {
 	/**
 	*/
-	CoronaExternalTextureExtensionBase common;
+	CoronaExternalTextureExtensionHeader common;
 
 	/**
 		as returned by CoronaDefine??Format
@@ -288,7 +288,7 @@ typedef struct CoronaExternalTextureCallbacks2 {
 	/**
 		linked list of textensiosn
 	*/
-	CoronaExternalTextureExtensionBase * firstExtension;
+	CoronaExternalTextureExtensionHeader * firstExtension;
 } CoronaExternalTextureCallbacks2;
 
 // C API
@@ -430,10 +430,6 @@ CoronaTextureFormatDetails
 typedef struct
 CoronaCompressedTextureFormatDetails
 {
-	/**
-	*/
-	CoronaTextureFamily family;
-	
 	/**
 	*/
 	int internalFormat;

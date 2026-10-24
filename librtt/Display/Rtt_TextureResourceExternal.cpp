@@ -231,7 +231,7 @@ ProcessTarget( const CoronaExternalTextureExtension_TextureTarget* target_ext, E
 static void
 ProcessExtensions( TextureFactory& factory, const CoronaExternalTextureCallbacks2* callbacks2, ExternalBitmap* bitmap )
 {
-	for ( CoronaExternalTextureExtensionBase* ext = callbacks2->firstExtension; NULL != ext; ext = ext->next )
+	for ( CoronaExternalTextureExtensionHeader* ext = callbacks2->firstExtension; NULL != ext; ext = ext->next )
 	{
 		switch ( ext->type )
 		{
