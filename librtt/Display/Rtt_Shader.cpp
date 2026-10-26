@@ -120,8 +120,14 @@ Shader::SetTextureBounds( const TextureInfo& textureInfo )
 {
     if ( ! fTexture )
     {
+		Texture::Format format = textureInfo.fFormat;
+		if ( 0 != fResource->GetColorFormatValue() )
+		{
+			format.SetBackingValue( fResource->GetColorFormatValue() ); // n.b. known to be color-renderable
+		}
+
         fTexture = Rtt_NEW( fAllocator, TextureVolatile( fAllocator, textureInfo.fWidth, textureInfo.fHeight,
-                                                        textureInfo.fFormat, textureInfo.fFilter, textureInfo.fWrap, textureInfo.fWrap ) );
+                                                        format, textureInfo.fFilter, textureInfo.fWrap, textureInfo.fWrap ) );
                                 
         fFBO = Rtt_NEW( fAllocator, FrameBufferObject( fAllocator, fTexture ) );
     }

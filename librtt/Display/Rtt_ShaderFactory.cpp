@@ -10,6 +10,7 @@
 #include "Core/Rtt_Build.h"
 
 #include "Display/Rtt_ShaderFactory.h"
+#include "Display/Rtt_TextureFactory.h"
 
 #include "Corona/CoronaGraphics.h"
 #include "Corona/CoronaLua.h"
@@ -1232,6 +1233,7 @@ ShaderFactory::NewShaderBuiltin( ShaderTypes::Category category, const char *nam
                             Rtt_LUA_STACK_GUARD( L );
 
                             SharedPtr< ShaderResource > resource;
+                            U32 colorFormatValue = 0;
 #if defined( Rtt_USE_PRECOMPILED_SHADERS )
                             ShaderBinaryVersions compiledDefaultShaders( fAllocator );
                             ShaderBinaryVersions compiled25DShaders( fAllocator );
@@ -1253,6 +1255,26 @@ ShaderFactory::NewShaderBuiltin( ShaderTypes::Category category, const char *nam
 
                             lua_getfield( L, tableIndex, "fragment" );
                             const char *kernelFrag = lua_tostring( L, -1 );
+							
+							lua_getfield( L, tableIndex, "colorFormat" );
+							if ( !lua_isnil( L, -1 ) )
+							{
+								U16 formatIndex = lua_tointeger( L, -1 );
+								if ( formatIndex > 0 && formatIndex <= fOwner.GetTextureFactory().GetCurrentFormatCount() )
+								{
+									const TextureFormatDescription &desc = fOwner.GetTextureFactory().GetCurrentFormatList()[formatIndex - 1];
+									const U8 kNotColorRelated = TextureFormatDescription::kIsDepthRelated | TextureFormatDescription::kIsStencilRelated;
+									if ( !( desc.fFlags & kNotColorRelated ) && ( desc.fFlags & TextureFormatDescription::kIsRenderable1 ) )
+									{
+										colorFormatValue = FormatDetails::BuildFromDescription( &desc, formatIndex );
+									}
+								}
+								
+								if ( 0 == colorFormatValue )
+								{
+									CoronaLuaWarning( L, "Format `%i` is unknown or not color-renderable", (int)formatIndex );
+								}
+							}
 							
 							lua_getfield( L, tableIndex, "shellTweaks" );
 							TweakDetails tweaks = {}, *tweaksPtr = NULL;
@@ -1306,6 +1328,11 @@ ShaderFactory::NewShaderBuiltin( ShaderTypes::Category category, const char *nam
 								Shader *prototype = NULL;
 								prototype = NewShaderPrototype( L, tableIndex, resource );
 								result = (ShaderComposite*)prototype->Clone( fAllocator );
+								
+								if ( 0 != colorFormatValue )
+								{
+									resource->SetColorFormatValue( colorFormatValue );
+								}
 							}
 						}
 						else

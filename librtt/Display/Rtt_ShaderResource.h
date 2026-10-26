@@ -291,6 +291,10 @@ class ShaderResource
 		void SetExtensionPrelude( const char* prelude );
 		const char* GetExtensionPrelude() const { return fExtensionPrelude; }
         
+	public:
+		void SetColorFormatValue( U32 formatValue ) { fColorFormatValue = formatValue; }
+		U32 GetColorFormatValue() const { return fColorFormatValue; }
+        
     private:
         void Init(Program *defaultProgram);
 
@@ -312,6 +316,7 @@ class ShaderResource
         U32 fDetailsCount;
         TimeTransform fTimeTransform;
         SamplerTypeDetails fFillTextureInfo[2];
+        U32 fColorFormatValue;
         U8 fExtraTextureCount;
         U8 fFirstVersion : 2;
         U8 fIsFirstMod25D : 1;

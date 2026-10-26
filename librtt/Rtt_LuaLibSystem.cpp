@@ -307,6 +307,9 @@ LuaLibSystem::getInfo( lua_State *L )
             }
         }
     }
+    // TODO: add "isColorFormat", index
+		// also "isFormatRenderable", index (distinguish color, depth, stencil, or fine?)
+		// other choices: linear filterting, compressed, word-packed, etc.
     else
     {
         // This is a place where we can add system.getInfo() categories that return arbitrary types

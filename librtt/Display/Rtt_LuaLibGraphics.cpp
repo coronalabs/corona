@@ -1257,12 +1257,48 @@ SharedPtr<TextureResource> CreateResourceBitmapFromTable(Rtt::TextureFactory &fa
 }
 
 //helper funciton to parse lua table to create canvas resource
-SharedPtr<TextureResource> CreateResourceCanvasFromTable(Rtt::TextureFactory &factory, lua_State *L, int index, bool isCanvas)
+SharedPtr<TextureResource> CreateResourceCanvasFromTable(Rtt::TextureFactory &factory, lua_State *L, int index, bool isMaskCanvas)
 {
     Display &display = factory.GetDisplay();
     
     static unsigned int sNextRenderTextureID = 1;
     SharedPtr<TextureResource> ret;
+    
+    Texture::Format format;
+    if ( isMaskCanvas )
+    {
+		format = Texture::kLuminance;
+    }
+    else
+    {
+		format = Texture::kRGBA;
+    
+		lua_getfield( L, index, "colorFormat" );
+		
+		if ( !lua_isnil( L, -1 ) )
+		{
+			bool isColorRenderable = false;
+			U16 formatIndex = lua_tointeger( L , -1 );
+			if ( ( 0 != formatIndex ) && formatIndex <= factory.GetCurrentFormatCount() )
+			{
+				const TextureFormatDescription &desc = factory.GetCurrentFormatList()[formatIndex - 1];
+				const U8 kNotColorRelated = TextureFormatDescription::kIsDepthRelated | TextureFormatDescription::kIsStencilRelated;
+				if ( !( desc.fFlags & kNotColorRelated ) && ( desc.fFlags & TextureFormatDescription::kIsRenderable1 ) )
+				{
+					format.SetBackingValue( FormatDetails::BuildFromDescription( &desc, formatIndex ) );
+					
+					isColorRenderable = true;
+				}
+			}
+
+			if ( !isColorRenderable )
+			{
+				CoronaLuaWarning( L, "Format `%i` is unknown or not color-renderable", (int)formatIndex );
+			}
+		}
+
+		lua_pop( L, 1 );
+    }
     
     Real width = -1, height = -1;
     int pixelWidth = -1, pixelHeight = -1;
@@ -1332,7 +1368,7 @@ SharedPtr<TextureResource> CreateResourceCanvasFromTable(Rtt::TextureFactory &fa
         char filename[30];
         snprintf(filename, 30, "corona://FBOgo_%u", sNextRenderTextureID++);
 
-        SharedPtr<TextureResource> texSource = factory.FindOrCreateCanvas( filename, width, height, pixelWidth, pixelHeight, isCanvas );
+        SharedPtr<TextureResource> texSource = factory.FindOrCreateCanvas( filename, width, height, pixelWidth, pixelHeight, format );
         if( texSource.NotNull() )
         {
             factory.Retain(texSource);

@@ -78,7 +78,7 @@ class TextureFactory
 		SharedPtr< TextureResource > FindOrCreateCanvas(
 			const std::string &cacheKey,
 			Real w, Real h,
-			int pixelW, int pixelH, bool isMask );
+			int pixelW, int pixelH, Texture::Format format );
 
 		SharedPtr< TextureResource > FindOrCreateCapture(
 			const std::string &cacheKey,
