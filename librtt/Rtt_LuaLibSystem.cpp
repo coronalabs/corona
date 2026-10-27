@@ -315,7 +315,7 @@ LuaLibSystem::getInfo( lua_State *L )
 		const TextureFormatDescription *desc = NULL;
 		U16 formatID = 0;
 		
-		if ( lua_isnoneornil( L, 2 ) )
+		if ( !lua_isnoneornil( L, 2 ) )
 		{
 			formatID = lua_tointeger( L, 2 );
 			if ( formatID > 0 && formatID <= factory.GetCurrentFormatCount() )
@@ -331,7 +331,6 @@ LuaLibSystem::getInfo( lua_State *L )
 		else if ( !desc )
 		{
 			CoronaLuaWarning( L, "Missing or unknown custom format: %u", (U32)formatID );
-			// ERROR!
 		}
 		else
 		{
@@ -372,24 +371,10 @@ LuaLibSystem::getInfo( lua_State *L )
 			else
 			{
 				CoronaLuaWarning( L, "system.getInfo(): isTextureFormat%s is unknown", key );
-				result = 0;
+				lua_pushboolean( L, 0 );
 			}
 		}
-		/*
-{ "Supported", NULL }, // true if format exists
-		{ "ColorRenderable", IsFormatColorRenderable },
-		{ "DepthRenderable", IsFormatDepthRenderable },
-		{ "StencilRenderable", IsFormatStencilRenderable },
-		{ "LinearFilterable", HasLinearFiltering },
-		{ "Compressed", IsCompressed }*/
-		// "Kind" = color, depth, stencil
-		// "Structure" = normal, compressed, word-packed, depth-stencil
-		// "SupportsLinearFilterable"
-		// "IsRenderable"
     }
-    // TODO: add "isColorFormat", index
-		// also "isFormatRenderable", index (distinguish color, depth, stencil, or fine?)
-		// other choices: linear filterting, compressed, word-packed, etc.
     else
     {
         // This is a place where we can add system.getInfo() categories that return arbitrary types

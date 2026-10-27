@@ -200,9 +200,9 @@ struct TextureFormatDescription
 			U8 fNumComponents; // also visible to compressed types
 		};
 		struct {
+			U8 fBlockSize;
 			U8 fBlockWidth;
 			U8 fBlockHeight;
-			U8 fBlockSize;
 		};
 		U8 fSizes[4];
 	};

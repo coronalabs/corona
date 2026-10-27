@@ -95,10 +95,6 @@ class GLProgram : public GPUResource
         void (*fCleanupShellTransform)(void *); // compare CoronaGraphics.h
         GLProgramUniformsCache * fUniformsCache;
     
-		// SAS TODO: some way to track extra textures, sampler info
-			// with different versions could diverge... (although we could enforce otherwise? what about wireframe?)
-			// frequent, so want to be fast, or possible to yoink into paint
-    
         friend class GLCommandBuffer;
 		friend class GLExtraUniforms;
 };

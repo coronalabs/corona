@@ -229,7 +229,7 @@ GLTexture::Create( CPUResource* resource, const RenderContext* context )
 		minFilter = GL_NEAREST;
 		magFilter = GL_NEAREST;
 	}
-// SAS TDOO: generalize target...
+// SaS TODO: generalize target...
     glBindTexture( GL_TEXTURE_2D, name );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter );
