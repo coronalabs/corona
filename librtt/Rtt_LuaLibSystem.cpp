@@ -20,7 +20,7 @@
 #include "Rtt_MPlatformDevice.h"
 
 #include "Rtt_Runtime.h"
-#include "Rtt_GPU.h"
+/* #include "Rtt_GPU.h" */ // TODO: created annoying dependencies, and seemed to be mostly dead code (probably safe to remove)
 #include "Rtt_GPUStream.h"
 #include "Rtt_PhysicsWorld.h"
 #include "Rtt_PlatformInAppStore.h"
@@ -257,6 +257,13 @@ LuaLibSystem::getInfo( lua_State *L )
         Runtime *runtime = LuaContext::GetRuntime( L );
         lua_pushnumber( L, runtime->GetDisplay().GetMaxUniformVectorsCount() );
     }
+    else if ( Rtt_StringCompare( key, "maxExtraTextureUnits" ) == 0 )
+    {
+        Runtime *runtime = LuaContext::GetRuntime( L );
+        size_t n = runtime->GetDisplay().GetMaxTextureUnits();
+        Rtt_ASSERT( n >= 5 ); // 2 builtins, + 3 masks
+        lua_pushnumber( L, n - 5U );
+    }
     else if ( Rtt_StringCompare( key, "maxVertexTextureUnits" ) == 0 )
     {
         Runtime *runtime = LuaContext::GetRuntime( L );
@@ -299,6 +306,65 @@ LuaLibSystem::getInfo( lua_State *L )
                 lua_setfield( L, -2, "hasInstanceID" );
             }
         }
+    }
+    else if ( Rtt_StringStartsWith( key, "isTextureFormat" ) )
+    {
+		key += sizeof("isTextureFormat") - 1;
+		
+		TextureFactory& factory = LuaContext::GetRuntime( L )->GetDisplay().GetTextureFactory();
+		U16 formatID = lua_tointeger( L, 2 );
+		const TextureFormatDescription *desc = factory.GetCustomFormatDescription( formatID );
+		
+		if ( Rtt_StringCompare( key, "Supported" ) == 0 )
+		{
+			lua_pushboolean( L, NULL != desc );
+		}
+		else if ( !desc )
+		{
+			CoronaLuaWarning( L, "Missing or unknown custom format: %u", (U32)formatID );
+		}
+		else
+		{
+			U8 flags = desc->fFlags;
+			const U8 kDepthStencilMask = TextureFormatDescription::kIsDepthRelated | TextureFormatDescription::kIsStencilRelated;
+			
+			if ( Rtt_StringCompare( key, "ColorRenderable" ) == 0 )
+			{
+				lua_pushboolean( L, !( flags & kDepthStencilMask ) );
+			}
+			else if ( Rtt_StringCompare( key, "DepthRenderable" ) == 0 )
+			{
+				lua_pushboolean( L, ( flags & TextureFormatDescription::kIsDepthRelated ) && ( flags & TextureFormatDescription::kIsRenderable1 ) );
+			}
+			else if ( Rtt_StringCompare( key, "StencilRenderable" ) == 0 )
+			{
+				if ( kDepthStencilMask == ( flags & kDepthStencilMask ) )
+				{
+					lua_pushboolean( L, flags & TextureFormatDescription::kIsRenderable2 );
+				}
+				else
+				{
+					lua_pushboolean( L, ( flags & TextureFormatDescription::kIsStencilRelated ) && ( flags & TextureFormatDescription::kIsRenderable1 ) );
+				}
+			}
+			else if ( Rtt_StringCompare( key, "LinearFilterable" ) == 0 )
+			{
+				lua_pushboolean( L, flags & TextureFormatDescription::kHasLinearFiltering );
+			}
+			else if ( Rtt_StringCompare( key, "Compressed" ) == 0 )
+			{
+				lua_pushboolean( L, desc->IsCompressed() );
+			}
+			else if ( Rtt_StringCompare( key, "WordPacked" ) == 0 )
+			{
+				lua_pushboolean( L, desc->IsWordPacked() );
+			}
+			else
+			{
+				CoronaLuaWarning( L, "system.getInfo(): isTextureFormat%s is unknown", key );
+				lua_pushboolean( L, 0 );
+			}
+		}
     }
     else
     {

@@ -78,7 +78,7 @@ class TextureFactory
 		SharedPtr< TextureResource > FindOrCreateCanvas(
 			const std::string &cacheKey,
 			Real w, Real h,
-			int pixelW, int pixelH, bool isMask );
+			int pixelW, int pixelH, Texture::Format format );
 
 		SharedPtr< TextureResource > FindOrCreateCapture(
 			const std::string &cacheKey,
@@ -169,9 +169,16 @@ class TextureFactory
 		void AddToTeardownList( const std::string &key );
 		void RemoveFromTeardownList( const std::string &key );
 
+	public:
+		bool AddCustomFormat( const TextureFormatDescription& format );
+		const TextureFormatDescription* GetCurrentFormatList() const { return fCustomFormats.ReadAccess(); }
+		U32 GetCurrentFormatCount() const { return (U32)fCustomFormats.Length(); }
+		const TextureFormatDescription* GetCustomFormatDescription( U16 formatIndex ) const;
+
 	private:
 		Cache fCache;
 		Array< WeakPtr< TextureResource > > fCreateQueue;
+		Array< TextureFormatDescription > fCustomFormats;
 		Display &fDisplay;
 		WeakPtr< TextureResource > fDefault;
 		WeakPtr< TextureResource > fContainerMask;

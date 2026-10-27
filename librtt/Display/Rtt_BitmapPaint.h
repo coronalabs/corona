@@ -37,7 +37,7 @@ class BitmapPaint : public Paint
 ///		static SharedPtr< TextureResource > NewTextureResource( Runtime& runtime, const char* filename, MPlatform::Directory baseDir, U32 flags, bool isMask );
 
 		// Load bitmap from file or reuse bitmap from image cache
-		static BitmapPaint* NewBitmap( Runtime& runtime, const char* filename, MPlatform::Directory baseDir, U32 flags );
+		static BitmapPaint* NewBitmap( Runtime& runtime, const char* filename, MPlatform::Directory baseDir, U32 flags, void* shaderResourceOut = NULL );
 
 		// Load bitmap mask from file or reuse bitmap from image cache
 		static BitmapPaint* NewBitmap( Runtime& runtime, const FilePath& data, U32 flags, bool isMask );
