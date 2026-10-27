@@ -107,14 +107,17 @@ Shader::Clone( Rtt_Allocator *allocator ) const
     }
     return Rtt_NEW( allocator, Shader(fAllocator, fResource, data ) );
 }
+
 void Shader::Log(std::string preprend, bool last)
 {
     printf( "Shader::Log(%p)::(Effect:%s)\n", this, fResource->GetName().c_str() );
 }
+
 void Shader::Log()
 {
     Log("",false);
 }
+
 void
 Shader::SetTextureBounds( const TextureInfo& textureInfo )
 {
@@ -132,11 +135,13 @@ Shader::SetTextureBounds( const TextureInfo& textureInfo )
         fFBO = Rtt_NEW( fAllocator, FrameBufferObject( fAllocator, fTexture ) );
     }
 }
+
 Texture *
 Shader::GetTexture() const
 {
     return fTexture;
 }
+
 void
 Shader::UpdateCache( const TextureInfo& textureInfo, const RenderData& objectData )
 {

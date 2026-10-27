@@ -307,6 +307,86 @@ LuaLibSystem::getInfo( lua_State *L )
             }
         }
     }
+    else if ( Rtt_StringStartsWith( key, "isTextureFormat" ) )
+    {
+		key += sizeof("isTextureFormat") - 1;
+		
+		TextureFactory& factory = LuaContext::GetRuntime( L )->GetDisplay().GetTextureFactory();
+		const TextureFormatDescription *desc = NULL;
+		U16 formatID = 0;
+		
+		if ( lua_isnoneornil( L, 2 ) )
+		{
+			formatID = lua_tointeger( L, 2 );
+			if ( formatID > 0 && formatID <= factory.GetCurrentFormatCount() )
+			{
+				desc = &factory.GetCurrentFormatList()[ formatID - 1 ];
+			}
+		}
+		
+		if ( Rtt_StringCompare( key, "Supported" ) == 0 )
+		{
+			lua_pushboolean( L, NULL != desc );
+		}
+		else if ( !desc )
+		{
+			CoronaLuaWarning( L, "Missing or unknown custom format: %u", (U32)formatID );
+			// ERROR!
+		}
+		else
+		{
+			U8 flags = desc->fFlags;
+			const U8 kDepthStencilMask = TextureFormatDescription::kIsDepthRelated | TextureFormatDescription::kIsStencilRelated;
+			
+			if ( Rtt_StringCompare( key, "ColorRenderable" ) == 0 )
+			{
+				lua_pushboolean( L, !( flags & kDepthStencilMask ) );
+			}
+			else if ( Rtt_StringCompare( key, "DepthRenderable" ) == 0 )
+			{
+				lua_pushboolean( L, ( flags & TextureFormatDescription::kIsDepthRelated ) && ( flags & TextureFormatDescription::kIsRenderable1 ) );
+			}
+			else if ( Rtt_StringCompare( key, "StencilRenderable" ) == 0 )
+			{
+				if ( kDepthStencilMask == ( flags & kDepthStencilMask ) )
+				{
+					lua_pushboolean( L, flags & TextureFormatDescription::kIsRenderable2 );
+				}
+				else
+				{
+					lua_pushboolean( L, ( flags & TextureFormatDescription::kIsStencilRelated ) && ( flags & TextureFormatDescription::kIsRenderable1 ) );
+				}
+			}
+			else if ( Rtt_StringCompare( key, "LinearFilterable" ) == 0 )
+			{
+				lua_pushboolean( L, flags & TextureFormatDescription::kHasLinearFiltering ); // TODO: validate color format?
+			}
+			else if ( Rtt_StringCompare( key, "Compressed" ) == 0 )
+			{
+				lua_pushboolean( L, desc->IsCompressed() );
+			}
+			else if ( Rtt_StringCompare( key, "WordPacked" ) == 0 )
+			{
+				lua_pushboolean( L, desc->IsWordPacked() );
+			}
+			else
+			{
+				CoronaLuaWarning( L, "system.getInfo(): isTextureFormat%s is unknown", key );
+				result = 0;
+			}
+		}
+		/*
+{ "Supported", NULL }, // true if format exists
+		{ "ColorRenderable", IsFormatColorRenderable },
+		{ "DepthRenderable", IsFormatDepthRenderable },
+		{ "StencilRenderable", IsFormatStencilRenderable },
+		{ "LinearFilterable", HasLinearFiltering },
+		{ "Compressed", IsCompressed }*/
+		// "Kind" = color, depth, stencil
+		// "Structure" = normal, compressed, word-packed, depth-stencil
+		// "SupportsLinearFilterable"
+		// "IsRenderable"
+    }
     // TODO: add "isColorFormat", index
 		// also "isFormatRenderable", index (distinguish color, depth, stencil, or fine?)
 		// other choices: linear filterting, compressed, word-packed, etc.
