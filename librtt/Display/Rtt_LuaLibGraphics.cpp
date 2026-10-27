@@ -1277,21 +1277,15 @@ SharedPtr<TextureResource> CreateResourceCanvasFromTable(Rtt::TextureFactory &fa
 		
 		if ( !lua_isnil( L, -1 ) )
 		{
-			bool isColorRenderable = false;
 			U16 formatIndex = lua_tointeger( L , -1 );
-			if ( ( 0 != formatIndex ) && formatIndex <= factory.GetCurrentFormatCount() )
-			{
-				const TextureFormatDescription &desc = factory.GetCurrentFormatList()[formatIndex - 1];
-				const U8 kNotColorRelated = TextureFormatDescription::kIsDepthRelated | TextureFormatDescription::kIsStencilRelated;
-				if ( !( desc.fFlags & kNotColorRelated ) && ( desc.fFlags & TextureFormatDescription::kIsRenderable1 ) )
-				{
-					format.SetBackingValue( FormatDetails::BuildFromDescription( &desc, formatIndex ) );
-					
-					isColorRenderable = true;
-				}
-			}
+			const TextureFormatDescription *desc = factory.GetCustomFormatDescription( formatIndex );
+			const U8 kNotColorRelated = TextureFormatDescription::kIsDepthRelated | TextureFormatDescription::kIsStencilRelated;
 
-			if ( !isColorRenderable )
+			if ( desc && !( desc->fFlags & kNotColorRelated ) && ( desc->fFlags & TextureFormatDescription::kIsRenderable1 ) )
+			{
+				format.SetBackingValue( FormatDetails::BuildFromDescription( desc, formatIndex ) );
+			}
+			else
 			{
 				CoronaLuaWarning( L, "Format `%i` is unknown or not color-renderable", (int)formatIndex );
 			}

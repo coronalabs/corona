@@ -312,17 +312,8 @@ LuaLibSystem::getInfo( lua_State *L )
 		key += sizeof("isTextureFormat") - 1;
 		
 		TextureFactory& factory = LuaContext::GetRuntime( L )->GetDisplay().GetTextureFactory();
-		const TextureFormatDescription *desc = NULL;
-		U16 formatID = 0;
-		
-		if ( !lua_isnoneornil( L, 2 ) )
-		{
-			formatID = lua_tointeger( L, 2 );
-			if ( formatID > 0 && formatID <= factory.GetCurrentFormatCount() )
-			{
-				desc = &factory.GetCurrentFormatList()[ formatID - 1 ];
-			}
-		}
+		U16 formatID = lua_tointeger( L, 2 );
+		const TextureFormatDescription *desc = factory.GetCustomFormatDescription( formatID );
 		
 		if ( Rtt_StringCompare( key, "Supported" ) == 0 )
 		{
@@ -358,7 +349,7 @@ LuaLibSystem::getInfo( lua_State *L )
 			}
 			else if ( Rtt_StringCompare( key, "LinearFilterable" ) == 0 )
 			{
-				lua_pushboolean( L, flags & TextureFormatDescription::kHasLinearFiltering ); // TODO: validate color format?
+				lua_pushboolean( L, flags & TextureFormatDescription::kHasLinearFiltering );
 			}
 			else if ( Rtt_StringCompare( key, "Compressed" ) == 0 )
 			{

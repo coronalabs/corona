@@ -703,6 +703,18 @@ bool TextureFactory::AddCustomFormat( const TextureFormatDescription &format )
 		return false;
 	}
 }
+
+const TextureFormatDescription* TextureFactory::GetCustomFormatDescription( U16 formatIndex ) const
+{
+	if ( formatIndex > 0 && formatIndex <= GetCurrentFormatCount() )
+	{
+		return GetCurrentFormatList() + ( formatIndex - 1 );
+	}
+	else
+	{
+		return NULL;
+	}
+}
 	
 void TextureFactory::AddTextureToUpdateList( const std::string &key )
 {

@@ -173,6 +173,7 @@ class TextureFactory
 		bool AddCustomFormat( const TextureFormatDescription& format );
 		const TextureFormatDescription* GetCurrentFormatList() const { return fCustomFormats.ReadAccess(); }
 		U32 GetCurrentFormatCount() const { return (U32)fCustomFormats.Length(); }
+		const TextureFormatDescription* GetCustomFormatDescription( U16 formatIndex ) const;
 
 	private:
 		Cache fCache;

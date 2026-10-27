@@ -1260,17 +1260,15 @@ ShaderFactory::NewShaderBuiltin( ShaderTypes::Category category, const char *nam
 							if ( !lua_isnil( L, -1 ) )
 							{
 								U16 formatIndex = lua_tointeger( L, -1 );
-								if ( formatIndex > 0 && formatIndex <= fOwner.GetTextureFactory().GetCurrentFormatCount() )
+								const TextureFormatDescription* desc = fOwner.GetTextureFactory().GetCustomFormatDescription( formatIndex );
+								const U8 kNotColorRelated = TextureFormatDescription::kIsDepthRelated | TextureFormatDescription::kIsStencilRelated;
+									
+								if ( desc && !( desc->fFlags & kNotColorRelated ) && ( desc->fFlags & TextureFormatDescription::kIsRenderable1 ) )
 								{
-									const TextureFormatDescription &desc = fOwner.GetTextureFactory().GetCurrentFormatList()[formatIndex - 1];
-									const U8 kNotColorRelated = TextureFormatDescription::kIsDepthRelated | TextureFormatDescription::kIsStencilRelated;
-									if ( !( desc.fFlags & kNotColorRelated ) && ( desc.fFlags & TextureFormatDescription::kIsRenderable1 ) )
-									{
-										colorFormatValue = FormatDetails::BuildFromDescription( &desc, formatIndex );
-									}
+									colorFormatValue = FormatDetails::BuildFromDescription( desc, formatIndex );
 								}
 								
-								if ( 0 == colorFormatValue )
+								if ( 0 == colorFormatValue ) // TODO: is this guaranteed if built?
 								{
 									CoronaLuaWarning( L, "Format `%i` is unknown or not color-renderable", (int)formatIndex );
 								}
