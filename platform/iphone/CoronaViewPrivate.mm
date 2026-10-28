@@ -1435,10 +1435,20 @@ PrintTouches( NSSet *touches, const char *header )
 	[super layoutSubviews];
 
 	// While rotating, the bounds can pass through sizes that aren't a new device size. Check once the rotation ends instead.
+	// A fold / unfold also runs under a transition coordinator, but with no rotation (identity targetTransform) and a
+	// final size from the first layout: take it now. Waiting for the transition to end left every frame of it rendering
+	// the old content size into the new viewport, stretched.
 	id delegate = self.delegate;
 	id< UIViewControllerTransitionCoordinator > coordinator =
 		( [delegate isKindOfClass:[UIViewController class]] ? ((UIViewController *)delegate).transitionCoordinator : nil );
-	if ( coordinator )
+	BOOL rotating = ( coordinator && ! CGAffineTransformIsIdentity( coordinator.targetTransform ) );
+	Rtt::Runtime *runtime = self.runtime;
+	if ( runtime && runtime->GetDisplay().HasDeviceSizeChanged() )
+	{
+		NSLog( @"CoronaView layoutSubviews: device size changed, bounds %@ coordinator %@ rotating %@",
+			NSStringFromCGRect( self.bounds ), coordinator ? @"yes" : @"no", rotating ? @"yes" : @"no" );
+	}
+	if ( rotating )
 	{
 		[coordinator animateAlongsideTransition:nil completion:^( id< UIViewControllerTransitionCoordinatorContext > context )
 		{
@@ -1535,17 +1545,17 @@ PrintTouches( NSSet *touches, const char *header )
 	if ( runtime && runtime->Platform().GetDevice().DoesNotify( MPlatformDevice::kFoldEvent ) )
 	{
 		FoldEvent::Orientation orientation = FoldEvent::kUnknownOrientation;
-		CGRect region;
-		bool hasFoldRegion = [self getFoldRegionPixels:&region];
+		MPlatform::ReservedRegion region;
+		bool hasFoldRegion = ( [self copyReservedRegions:&region maxCount:1 kind:MPlatform::ReservedRegion::kDivision] > 0 );
 		if ( hasFoldRegion )
 		{
-			orientation = ( region.size.width < region.size.height ) ? FoldEvent::kVertical : FoldEvent::kHorizontal;
+			orientation = ( region.width < region.height ) ? FoldEvent::kVertical : FoldEvent::kHorizontal;
 		}
 
 		FoldEvent event( (FoldEvent::State)state, orientation, angle );
 		if ( hasFoldRegion )
 		{
-			event.SetBounds( region.origin.x, region.origin.y, region.size.width, region.size.height );
+			event.SetBounds( region.x, region.y, region.width, region.height );
 		}
 		runtime->DispatchEvent( event );
 	}
@@ -1556,26 +1566,52 @@ PrintTouches( NSSet *touches, const char *header )
 	return fHingeState;
 }
 
-// The fold's reserved region (UIKit's "division" kind) in pixels of this view; NO when there is none.
-- (BOOL)getFoldRegionPixels:(CGRect *)outRect
+// Fills outRegions with UIKit's reserved regions (camera cutouts and the fold) in pixels of this view.
+// Pass -1 as the kind to get every kind. Returns 0 before iOS 27.1.
+- (int)copyReservedRegions:(Rtt::MPlatform::ReservedRegion *)outRegions maxCount:(int)maxCount kind:(int)kindFilter
 {
+	using namespace Rtt;
+
 	Class kindClass = NSClassFromString( @"UIViewReservedRegionKind" );
 	SEL querySel = NSSelectorFromString( @"reservedRegionsOfKind:" );
-	SEL kindSel = NSSelectorFromString( @"divisionRegionKind" );
-	if ( ! kindClass || ! [self respondsToSelector:querySel] || ! [kindClass respondsToSelector:kindSel] || ! outRect )
+	if ( ! kindClass || ! [self respondsToSelector:querySel] || ! outRegions || maxCount <= 0 )
 	{
-		return NO;
+		return 0;
 	}
 
-	NSArray *regions = [self performSelector:querySel withObject:[kindClass performSelector:kindSel]];
-	if ( 0 == [regions count] )
-	{
-		return NO;
-	}
-	CGRect frame = [[[regions firstObject] valueForKey:@"frame"] CGRectValue];
 	CGFloat scale = self.contentScaleFactor;
-	*outRect = CGRectMake( frame.origin.x * scale, frame.origin.y * scale, frame.size.width * scale, frame.size.height * scale );
-	return YES;
+	int count = 0;
+	for ( int k = MPlatform::ReservedRegion::kOcclusion; k <= MPlatform::ReservedRegion::kDivision && count < maxCount; k++ )
+	{
+		if ( kindFilter >= 0 && k != kindFilter )
+		{
+			continue;
+		}
+
+		SEL kindSel = NSSelectorFromString( MPlatform::ReservedRegion::kDivision == k ? @"divisionRegionKind" : @"occlusionRegionKind" );
+		if ( ! [kindClass respondsToSelector:kindSel] )
+		{
+			continue;
+		}
+		id kind = [kindClass performSelector:kindSel];
+		NSArray *regions = [self performSelector:querySel withObject:kind];
+		for ( id region in regions )
+		{
+			if ( count >= maxCount )
+			{
+				break;
+			}
+			CGRect frame = [[region valueForKey:@"frame"] CGRectValue];
+			MPlatform::ReservedRegion& out = outRegions[count++];
+			out.kind = (MPlatform::ReservedRegion::Kind)k;
+			out.isActive = [[region valueForKey:@"active"] boolValue];
+			out.x = frame.origin.x * scale;
+			out.y = frame.origin.y * scale;
+			out.width = frame.size.width * scale;
+			out.height = frame.size.height * scale;
+		}
+	}
+	return count;
 }
 
 // CoronaOrientationObserver

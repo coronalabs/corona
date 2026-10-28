@@ -14,6 +14,7 @@
 #import "CoronaRuntime.h"
 #include "Rtt_DeviceOrientation.h"
 #include "Rtt_MetalAngleTypes.h"
+#include "Rtt_MPlatform.h"
 
 // ----------------------------------------------------------------------------
 
@@ -87,7 +88,7 @@ class IPhonePlatformBase;
 - (BOOL)startHingeMonitoring; // YES when the OS reports hinge state for this view
 - (void)stopHingeMonitoring;
 - (int)foldState; // Rtt::FoldEvent::State; kUnknownState when not monitored or not foldable
-- (BOOL)getFoldRegionPixels:(CGRect *)outRect; // the fold's reserved region from UIKit (iOS 27.1+), in pixels of this view
+- (int)copyReservedRegions:(Rtt::MPlatform::ReservedRegion *)outRegions maxCount:(int)maxCount kind:(int)kindFilter; // kindFilter -1 = all
 
 @end
 

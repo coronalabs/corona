@@ -109,6 +109,9 @@ class IPhonePlatformBase : public ApplePlatform
 		virtual void RuntimeErrorNotification( const char *errorType, const char *message, const char *stacktrace ) const;
 
 		virtual void GetSafeAreaInsetsPixels(Rtt_Real &top, Rtt_Real &left, Rtt_Real &bottom, Rtt_Real &right) const;
+		virtual void GetCornerAdaptedSafeAreaInsetsPixels(CornerAdaptation axis, Rtt_Real &top, Rtt_Real &left, Rtt_Real &bottom, Rtt_Real &right) const;
+		// Camera cutouts and the fold of a foldable device, from UIKit's reserved regions (iOS 27.1+).
+		virtual int GetReservedRegionsPixels( ReservedRegion *outRegions, int maxCount ) const;
 #endif
 
 	private:

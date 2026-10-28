@@ -15,20 +15,19 @@ simulator =
 	screenOriginY = 84,
 	screenWidth = 1398,
 	screenHeight = 2034,
-	-- Safe areas are what Corona reports on the device: UIKit's safe area, grown where it leaves a rounded
-	-- corner uncovered (iOS 26 corner adaptation). Values in pixels: 7 is 2.33pt, 52 is 17.33pt.
-	safeScreenInsetTop = 7,
-	safeScreenInsetLeft = 7,
+	-- Safe areas are UIKit's safeAreaInsets, measured on the iOS 27.1 iPhone Duo simulator, in pixels.
+	safeScreenInsetTop = 0,
+	safeScreenInsetLeft = 0,
 	safeScreenInsetBottom = 34 * 3,
 	safeScreenInsetRight = 84 * 3,
 	-- landscapeRight. Turned sideways, iOS hides the status bar and keeps the inset on the camera's side.
-	safeLandscapeScreenInsetTop = 52,
+	safeLandscapeScreenInsetTop = 0,
 	safeLandscapeScreenInsetLeft = 84 * 3,
 	safeLandscapeScreenInsetBottom = 34 * 3,
-	safeLandscapeScreenInsetRight = 52,
-	-- landscapeLeft isn't landscapeRight mirrored: the big corners are at the bottom then.
-	safeLandscapeLeftScreenInsetTop = 7,
-	safeLandscapeLeftScreenInsetLeft = 7,
+	safeLandscapeScreenInsetRight = 0,
+	-- landscapeLeft isn't landscapeRight mirrored: the camera stays on the right.
+	safeLandscapeLeftScreenInsetTop = 0,
+	safeLandscapeLeftScreenInsetLeft = 0,
 	safeLandscapeLeftScreenInsetBottom = 34 * 3,
 	safeLandscapeLeftScreenInsetRight = 84 * 3,
 	iosPointWidth = 466,
@@ -60,17 +59,17 @@ simulator =
 		-- (Unverified against hardware: iOS may not turn the inner screen at all.)
 		-- portrait: turned a quarter, the camera column at the top
 		safeScreenInsetTop = 84 * 3,
-		safeScreenInsetLeft = 16 * 3,
-		safeScreenInsetBottom = 16 * 3,
+		safeScreenInsetLeft = 0,
+		safeScreenInsetBottom = 0,
 		safeScreenInsetRight = 34 * 3,
 		-- landscapeRight: turned around, the camera column on the left
 		safeLandscapeScreenInsetTop = 34 * 3,
 		safeLandscapeScreenInsetLeft = 84 * 3,
-		safeLandscapeScreenInsetBottom = 16 * 3,
-		safeLandscapeScreenInsetRight = 16 * 3,
+		safeLandscapeScreenInsetBottom = 0,
+		safeLandscapeScreenInsetRight = 0,
 		-- landscapeLeft: the art as drawn
-		safeLandscapeLeftScreenInsetTop = 16 * 3,
-		safeLandscapeLeftScreenInsetLeft = 16 * 3,
+		safeLandscapeLeftScreenInsetTop = 0,
+		safeLandscapeLeftScreenInsetLeft = 0,
 		safeLandscapeLeftScreenInsetBottom = 34 * 3,
 		safeLandscapeLeftScreenInsetRight = 84 * 3,
 		iosPointWidth = 951,

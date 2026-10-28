@@ -169,6 +169,7 @@ class DisplayLibrary
         static int colorSample( lua_State *L );
         static int setDrawMode( lua_State *L );
         static int getSafeAreaInsets( lua_State *L );
+        static int getReservedRegions( lua_State *L );
 		static int enableStatistics( lua_State *L );
 		static int getStatistics( lua_State *L );
 		static int getSums( lua_State *L );
@@ -249,6 +250,7 @@ DisplayLibrary::Open( lua_State *L )
         { "colorSample", colorSample },
         { "setDrawMode", setDrawMode },
         { "getSafeAreaInsets", getSafeAreaInsets },
+        { "getReservedRegions", getReservedRegions },
 		{ "enableStatistics", enableStatistics },
 		{ "getStatistics", getStatistics },
 		{ "getSums", getSums },
@@ -2871,13 +2873,92 @@ DisplayLibrary::getSafeAreaInsets( lua_State *L )
     Display &display = runtime.GetDisplay();
 
     Rtt_Real top, left, bottom, right;
-    runtime.Platform().GetSafeAreaInsetsPixels(top, left, bottom, right);
+
+    // display.getSafeAreaInsets( { cornerAdaptation = "vertical" | "horizontal" } ) gives the safe area for
+    // content placed in a corner; without it, the plain safe area.
+    const char *cornerAdaptation = NULL;
+    if ( lua_istable( L, 1 ) )
+    {
+        lua_getfield( L, 1, "cornerAdaptation" );
+        cornerAdaptation = lua_tostring( L, -1 );
+        lua_pop( L, 1 );
+    }
+
+    if ( cornerAdaptation && 0 == strcmp( cornerAdaptation, "vertical" ) )
+    {
+        runtime.Platform().GetCornerAdaptedSafeAreaInsetsPixels( MPlatform::kCornerAdaptationVertical, top, left, bottom, right );
+    }
+    else if ( cornerAdaptation && 0 == strcmp( cornerAdaptation, "horizontal" ) )
+    {
+        runtime.Platform().GetCornerAdaptedSafeAreaInsetsPixels( MPlatform::kCornerAdaptationHorizontal, top, left, bottom, right );
+    }
+    else
+    {
+        if ( cornerAdaptation )
+        {
+            CoronaLuaWarning( L, "display.getSafeAreaInsets() cornerAdaptation must be \"vertical\" or \"horizontal\", got \"%s\"", cornerAdaptation );
+        }
+        runtime.Platform().GetSafeAreaInsetsPixels(top, left, bottom, right);
+    }
 
     lua_pushnumber( L, top*display.GetSy() );
     lua_pushnumber( L, left*display.GetSx() );
     lua_pushnumber( L, bottom*display.GetSy() );
     lua_pushnumber( L, right*display.GetSx() );
     return 4;
+}
+
+// display.getReservedRegions( [kind] )
+// Returns an array of { kind="occlusion"|"division", isActive=bool, x, y, width, height } tables in
+// content coordinates: camera cutouts and folds/hinges. Pass "occlusion" or "division" to filter.
+int
+DisplayLibrary::getReservedRegions( lua_State *L )
+{
+    Runtime& runtime = * LuaContext::GetRuntime( L );
+    Display &display = runtime.GetDisplay();
+
+    const char *kindFilter = lua_isstring( L, 1 ) ? lua_tostring( L, 1 ) : NULL;
+
+    const int kMaxRegions = 16;
+    MPlatform::ReservedRegion regions[kMaxRegions];
+    int count = runtime.Platform().GetReservedRegionsPixels( regions, kMaxRegions );
+    if ( count > kMaxRegions )
+    {
+        count = kMaxRegions;
+    }
+
+    Real sx = display.GetSx();
+    Real sy = display.GetSy();
+    Real ox = display.GetXOriginOffset();
+    Real oy = display.GetYOriginOffset();
+
+    lua_createtable( L, count, 0 );
+    int index = 1;
+    for ( int i = 0; i < count; i++ )
+    {
+        const MPlatform::ReservedRegion& r = regions[i];
+        const char *kind = ( MPlatform::ReservedRegion::kDivision == r.kind ) ? "division" : "occlusion";
+        if ( kindFilter && 0 != strcmp( kindFilter, kind ) )
+        {
+            continue;
+        }
+
+        lua_createtable( L, 0, 6 );
+        lua_pushstring( L, kind );
+        lua_setfield( L, -2, "kind" );
+        lua_pushboolean( L, r.isActive );
+        lua_setfield( L, -2, "isActive" );
+        lua_pushnumber( L, Rtt_RealToFloat( Rtt_RealMul( r.x, sx ) - ox ) );
+        lua_setfield( L, -2, "x" );
+        lua_pushnumber( L, Rtt_RealToFloat( Rtt_RealMul( r.y, sy ) - oy ) );
+        lua_setfield( L, -2, "y" );
+        lua_pushnumber( L, Rtt_RealToFloat( Rtt_RealMul( r.width, sx ) ) );
+        lua_setfield( L, -2, "width" );
+        lua_pushnumber( L, Rtt_RealToFloat( Rtt_RealMul( r.height, sy ) ) );
+        lua_setfield( L, -2, "height" );
+        lua_rawseti( L, -2, index++ );
+    }
+    return 1;
 }
 
 int
