@@ -41,6 +41,7 @@ settings =
 		usesExpansionFile = true,
 		supportsTV = true,
 		isGame = true,
+		supportsFoldables = true,
 		allowAppsReadOnlyAccessToFiles = false,
 		minSdkVersion = "",
 		resources = "",

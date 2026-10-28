@@ -23,6 +23,8 @@
 #include "Rtt_MPlatform.h"
 #include "Rtt_PlatformPlayer.h"
 #include "Rtt_PlatformSurface.h"
+#include "Rtt_Runtime.h"
+#include "Rtt_Scheduler.h"
 #include "Rtt_String.h"
 #include "Rtt_LuaContext.h"
 #include "Rtt_FileSystem.h"
@@ -106,6 +108,8 @@ PlatformSimulator::Config::Config( Rtt_Allocator & allocator )
 	defaultFontSize(0.0f),
 	statusBarHeight(0.0f),
 	isFoldable(false),
+	unfoldedHingeIsVertical(true),
+	unfoldedScreenIsWide(false),
 	iosPointWidth(kDefaultConfigIntValue),
 	iosPointHeight(kDefaultConfigIntValue),
 	androidDisplayApproximateDpi(kDefaultConfigIntValue)
@@ -164,7 +168,9 @@ PlatformSimulator::PlatformSimulator( PlatformFinalizer finalizer )
 	fLastDeviceHeight( -1 ),
 	fIsTransparent(false),
 	fIsFoldable(false),
-	fIsUnfolded(false)
+	fIsUnfolded(false),
+	fUnfoldedHingeIsVertical(true),
+	fUnfoldedScreenIsWide(false)
 {
 }
 
@@ -287,6 +293,13 @@ PlatformSimulator::LoadConfig( const char deviceConfigFile[], Config& rConfig, b
 		// the folded ones, so everything below reads the unfolded values when requested.
 		lua_getfield( L, -1, "unfolded" );
 		rConfig.isFoldable = lua_istable( L, -1 );
+		if ( rConfig.isFoldable )
+		{
+			// The hinge is described for the open screen's art, whichever screen is loaded
+			const char *hinge = StringForKey( L, "hingeOrientation", "vertical" );
+			rConfig.unfoldedHingeIsVertical = ( 0 != Rtt_StringCompareNoCase( hinge, "horizontal" ) );
+			rConfig.unfoldedScreenIsWide = ( IntForKey( L, "screenWidth", 0 ) > IntForKey( L, "screenHeight", 0 ) );
+		}
 		if ( unfolded && rConfig.isFoldable )
 		{
 			for ( lua_pushnil( L ); lua_next( L, -2 ); lua_pop( L, 1 ) )
@@ -811,6 +824,9 @@ PropertyMaskForEventType( MPlatformDevice::EventType type )
 		case MPlatformDevice::kMouseEvent:
 			mask = PlatformSimulator::kMouseEventMask;
 			break;
+		case MPlatformDevice::kFoldEvent:
+			mask = PlatformSimulator::kFoldEventMask;
+			break;
 		default:
 			Rtt_ASSERT_NOT_REACHED();
 			break;
@@ -818,6 +834,17 @@ PropertyMaskForEventType( MPlatformDevice::EventType type )
 
 	return mask;
 }
+
+// Reports the fold state to a listener added this frame, after Runtime:addEventListener has returned
+class FoldEventTask : public Task
+{
+	public:
+		FoldEventTask( PlatformSimulator& simulator ) : fSimulator( simulator ) {}
+		virtual void operator()( Scheduler& sender ) { fSimulator.DispatchFoldEvent(); }
+
+	private:
+		PlatformSimulator& fSimulator;
+};
 
 void
 PlatformSimulator::BeginNotifications( MPlatformDevice::EventType type ) const
@@ -840,11 +867,25 @@ PlatformSimulator::BeginNotifications( MPlatformDevice::EventType type ) const
 		case kMultitouchEventMask:
 			Rtt_TRACE_SIM( ( "WARNING: Simulator does not support multitouch events\n" ) );
 			break;
+		case kFoldEventMask:
+			if ( ! fIsFoldable )
+			{
+				Rtt_TRACE_SIM( ( "WARNING: Simulator skin is not foldable, so no 'fold' events will be sent. Choose a foldable skin such as Pixel 10 Pro Fold or iPhone Duo.\n" ) );
+			}
+			break;
 		default:
 			break;
 	}
 
 	const_cast< Self* >( this )->SetProperty( mask, true );
+
+	// Like a device, report the current fold state to a new listener, once the add returns
+	if ( kFoldEventMask == mask && fIsFoldable && fPlayer )
+	{
+		Self *self = const_cast< Self* >( this );
+		Runtime& runtime = self->GetPlayer()->GetRuntime();
+		runtime.GetScheduler().Append( Rtt_NEW( runtime.Allocator(), FoldEventTask( *self ) ) );
+	}
 }
 
 void
@@ -948,10 +989,73 @@ PlatformSimulator::ToggleFold()
 	}
 	fIsUnfolded = unfolded;
 
+	// The screen has been swapped, so system.getInfo("foldState") and the display are current for both events.
+	// "fold" goes first so a "resize" listener can already lay out for the hinge.
+	DispatchFoldEvent();
+
 	// Folding changes the size of the app's screen, so raise a resize event like a rotation does.
 	runtime.DispatchEvent( ResizeEvent() );
 	fLastDeviceWidth = runtime.GetDisplay().DeviceWidth();
 	fLastDeviceHeight = runtime.GetDisplay().DeviceHeight();
+}
+
+void
+PlatformSimulator::SetFoldableConfig( const Config& config )
+{
+	fIsFoldable = config.isFoldable;
+	fUnfoldedHingeIsVertical = config.unfoldedHingeIsVertical;
+	fUnfoldedScreenIsWide = config.unfoldedScreenIsWide;
+}
+
+const char *
+PlatformSimulator::FoldStateName() const
+{
+	if ( ! fIsFoldable )
+	{
+		return NULL;
+	}
+	return FoldEvent::StringForState( fIsUnfolded ? FoldEvent::kOpen : FoldEvent::kClosed );
+}
+
+void
+PlatformSimulator::DispatchFoldEvent()
+{
+	if ( ! fIsFoldable || ! fPlayer || ! IsProperty( kFoldEventMask ) )
+	{
+		return;
+	}
+
+	Runtime& runtime = GetPlayer()->GetRuntime();
+
+	if ( ! fIsUnfolded )
+	{
+		// Closed: the outer screen has no fold across it, so like Android there is no orientation or bounds
+		FoldEvent event( FoldEvent::kClosed, FoldEvent::kUnknownOrientation, Rtt_REAL_0 );
+		runtime.DispatchEvent( event );
+		return;
+	}
+
+	// The skins draw no hinge, so assume it splits the open screen down the middle with no thickness.
+	// The engine takes a wide inner screen as its portrait size (see MacSimulator::ScreenSizeForEngine),
+	// so the hinge in the art is turned for the app's orientation relative to the art's.
+	bool artIsSideways = fUnfoldedScreenIsWide;
+	bool appIsSideways = DeviceOrientation::IsSideways( GetOrientation() );
+	bool hingeIsVertical = ( fUnfoldedHingeIsVertical == ( artIsSideways == appIsSideways ) );
+
+	const Display& display = runtime.GetDisplay();
+	Real viewWidth = Rtt_IntToReal( appIsSideways ? display.DeviceHeight() : display.DeviceWidth() );
+	Real viewHeight = Rtt_IntToReal( appIsSideways ? display.DeviceWidth() : display.DeviceHeight() );
+
+	FoldEvent event( FoldEvent::kOpen, hingeIsVertical ? FoldEvent::kVertical : FoldEvent::kHorizontal, Rtt_FloatToReal( M_PI ) );
+	if ( hingeIsVertical )
+	{
+		event.SetBounds( Rtt_RealDiv2( viewWidth ), Rtt_REAL_0, Rtt_REAL_0, viewHeight );
+	}
+	else
+	{
+		event.SetBounds( Rtt_REAL_0, Rtt_RealDiv2( viewHeight ), viewWidth, Rtt_REAL_0 );
+	}
+	runtime.DispatchEvent( event );
 }
 
 void

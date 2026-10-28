@@ -103,6 +103,9 @@ AndroidDevice::HasEventSource( EventType type ) const
 		case MPlatformDevice::kOrientationEvent:
 			hasEventSource = true;
 			break;
+		case MPlatformDevice::kFoldEvent:
+			hasEventSource = fNativeToJavaBridge->IsFoldStateAvailable();
+			break;
 		default:
 			Rtt_ASSERT_NOT_REACHED();
 			break;
@@ -129,6 +132,9 @@ AndroidDevice::BeginNotifications( EventType type ) const
 		case MPlatformDevice::kMultitouchEvent:
 			fNativeToJavaBridge->SetEventNotification( type, true );
 			break;
+		case MPlatformDevice::kFoldEvent:
+			// Fold state is observed by the platform whenever it is available; nothing to start or stop.
+			break;
 		default:
 			Rtt_ASSERT_NOT_REACHED();
 			break;
@@ -149,6 +155,9 @@ AndroidDevice::EndNotifications( EventType type ) const
 		case MPlatformDevice::kHeadingEvent:
 		case MPlatformDevice::kMultitouchEvent:
 			fNativeToJavaBridge->SetEventNotification( type, false );
+			break;
+		case MPlatformDevice::kFoldEvent:
+			// Fold state is observed by the platform whenever it is available; nothing to start or stop.
 			break;
 		default:
 			Rtt_ASSERT_NOT_REACHED();

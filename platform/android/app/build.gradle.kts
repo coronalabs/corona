@@ -132,6 +132,13 @@ val parsedBuildProperties: JsonObject = run {
 
 extra["minSdkVersion"] = parsedBuildProperties.lookup<Any?>("buildSettings.android.minSdkVersion").firstOrNull()?.toString()?.toIntOrNull()
         ?: 15
+// build.settings android.supportsFoldables = true links Jetpack WindowManager, which backs the Lua "fold"
+// event and system.getInfo("foldState") on foldable devices. The library needs API 23, so the manifest
+// step raises a lower minSdkVersion to 23 (update_manifest.lua).
+val supportsFoldables = parsedBuildProperties.lookup<Any?>("buildSettings.android.supportsFoldables").firstOrNull()?.toString() == "true"
+if (supportsFoldables && (extra["minSdkVersion"] as Int) < 23) {
+    extra["minSdkVersion"] = 23
+}
 
 
 val coronaAndroidResourcesDir = file(coronaSrcDir).resolve(
@@ -1157,4 +1164,7 @@ dependencies {
         implementation(project(":plugin"))
     }
     implementation("androidx.multidex:multidex:2.0.1")
+    if (supportsFoldables) {
+        implementation("androidx.window:window-java:1.5.1")
+    }
 }

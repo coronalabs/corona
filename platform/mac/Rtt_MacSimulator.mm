@@ -148,7 +148,7 @@ MacSimulator::Initialize(
 	fDeviceConfigFile = [[NSString stringWithExternalString:deviceConfigFile] copy];
 	fMacPlatform = platform;
 	DeviceOrientation::Type naturalOrientation = ApplyScreenSize( config, nil );
-	SetIsFoldable( config.isFoldable );
+	SetFoldableConfig( config );
 	if ( ! config.isFoldable )
 	{
 		SetUnfolded( false );

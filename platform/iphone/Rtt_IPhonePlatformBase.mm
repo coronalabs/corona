@@ -24,6 +24,7 @@
 #include "Rtt_IPhoneTextBoxObject.h"
 #include "Rtt_IPhoneTextFieldObject.h"
 #include "Rtt_IPhoneTimer.h"
+#include "Rtt_Event.h"
 #include "Rtt_IPhoneVideoObject.h"
 
 #include "Rtt_AppleFont.h"
@@ -582,6 +583,15 @@ IPhonePlatformBase::PushSystemInfo( lua_State *L, const char *key ) const
         lua_pushboolean(L, res);
         pushedValues = 1;
     }
+	else if ( Rtt_StringCompare( key, "foldState" ) == 0 )
+	{
+		// "closed", "halfOpen" or "open" on a foldable running iOS 27.1+; nil everywhere else.
+		// The first call starts observing the hinge, so the state may only be known a moment later.
+		[fView startHingeMonitoring];
+		const char *state = FoldEvent::StringForState( (FoldEvent::State)[fView foldState] );
+		state ? lua_pushstring( L, state ) : lua_pushnil( L ); // an explicit nil keeps tostring() happy
+		pushedValues = 1;
+	}
 	else
 	{
 		// Attempt to fetch the requested system info from the base class.
@@ -614,23 +624,6 @@ void IPhonePlatformBase::GetSafeAreaInsetsPixels(Rtt_Real &top, Rtt_Real &left, 
 	if (@available(iOS 11.0, tvOS 11.0, *))
 	{
 		UIEdgeInsets insets = [fView safeAreaInsets];
-#if __IPHONE_26_0
-		if (@available(iOS 26.0, tvOS 26.0, *))
-		{
-			// A rounded display corner (an unfolded iPhone Duo's top-left, say) or iPad window controls can sit
-			// inside the safe area. iOS reports how far in each edge has to come to clear them. Where neither edge
-			// of a corner does, bring both in by the smaller of the two, so the corner of the safe area clears it.
-			UIEdgeInsets v = [fView edgeInsetsForLayoutRegion:[UIViewLayoutRegion safeAreaLayoutRegionWithCornerAdaptation:UIViewLayoutRegionAdaptivityAxisVertical]];
-			UIEdgeInsets h = [fView edgeInsetsForLayoutRegion:[UIViewLayoutRegion safeAreaLayoutRegionWithCornerAdaptation:UIViewLayoutRegionAdaptivityAxisHorizontal]];
-			const UIEdgeInsets safe = insets;
-			const bool topIn = safe.top < v.top, bottomIn = safe.bottom < v.bottom;
-			const bool leftIn = safe.left < h.left, rightIn = safe.right < h.right;
-			if (topIn && leftIn) { CGFloat d = MIN(v.top, h.left); insets.top = MAX(insets.top, d); insets.left = MAX(insets.left, d); }
-			if (topIn && rightIn) { CGFloat d = MIN(v.top, h.right); insets.top = MAX(insets.top, d); insets.right = MAX(insets.right, d); }
-			if (bottomIn && leftIn) { CGFloat d = MIN(v.bottom, h.left); insets.bottom = MAX(insets.bottom, d); insets.left = MAX(insets.left, d); }
-			if (bottomIn && rightIn) { CGFloat d = MIN(v.bottom, h.right); insets.bottom = MAX(insets.bottom, d); insets.right = MAX(insets.right, d); }
-		}
-#endif
 		const CGFloat scaleFactor = fView.contentScaleFactor;
 		top = Rtt_FloatToReal(insets.top*scaleFactor);
 		left = Rtt_FloatToReal(insets.left*scaleFactor);
@@ -642,6 +635,33 @@ void IPhonePlatformBase::GetSafeAreaInsetsPixels(Rtt_Real &top, Rtt_Real &left, 
 	{
 		top = left = bottom = right = 0;
 	}
+}
+
+void IPhonePlatformBase::GetCornerAdaptedSafeAreaInsetsPixels(CornerAdaptation axis, Rtt_Real &top, Rtt_Real &left, Rtt_Real &bottom, Rtt_Real &right) const
+{
+#if __IPHONE_26_0
+	if (@available(iOS 26.0, tvOS 26.0, *))
+	{
+		// For content in a corner: iOS brings the edges along one axis in far enough to clear a rounded display
+		// corner or iPad window controls. Applied to the whole safe area this would cost a strip along each edge.
+		UIViewLayoutRegionAdaptivityAxis adaptivityAxis = ( kCornerAdaptationHorizontal == axis
+			? UIViewLayoutRegionAdaptivityAxisHorizontal : UIViewLayoutRegionAdaptivityAxisVertical );
+		UIEdgeInsets insets = [fView edgeInsetsForLayoutRegion:[UIViewLayoutRegion safeAreaLayoutRegionWithCornerAdaptation:adaptivityAxis]];
+		const CGFloat scaleFactor = fView.contentScaleFactor;
+		top = Rtt_FloatToReal(insets.top*scaleFactor);
+		left = Rtt_FloatToReal(insets.left*scaleFactor);
+		bottom = Rtt_FloatToReal(insets.bottom*scaleFactor);
+		right = Rtt_FloatToReal(insets.right*scaleFactor);
+		return;
+	}
+#endif
+	GetSafeAreaInsetsPixels(top, left, bottom, right);
+}
+
+int
+IPhonePlatformBase::GetReservedRegionsPixels( ReservedRegion *outRegions, int maxCount ) const
+{
+	return [fView copyReservedRegions:outRegions maxCount:maxCount kind:-1];
 }
 
 // ============================================================================

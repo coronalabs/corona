@@ -281,6 +281,57 @@ class ResizeEvent : public VirtualEvent
 // ----------------------------------------------------------------------------
 
 // Immediately broadcast to "Runtime"
+// Raised when a foldable device's hinge changes state. Bounds are surface pixels, converted to
+// content coordinates when pushed; fields a platform doesn't know are left out of the Lua event.
+class FoldEvent : public VirtualEvent
+{
+	public:
+		typedef VirtualEvent Super;
+
+		enum State
+		{
+			kUnknownState = 0,
+			kClosed,
+			kHalfOpen,
+			kOpen,
+
+			kNumStates
+		};
+
+		enum Orientation
+		{
+			kUnknownOrientation = 0,
+			kHorizontal, // The fold runs left to right (tabletop posture when half open)
+			kVertical,   // The fold runs top to bottom (book posture when half open)
+
+			kNumOrientations
+		};
+
+		static const char* StringForState( State state );
+
+	public:
+		FoldEvent( State state, Orientation orientation = kUnknownOrientation, Real angle = -1 );
+
+		void SetBounds( Real x, Real y, Real w, Real h ); // In surface pixels
+
+	public:
+		virtual const char* Name() const;
+		virtual int Push( lua_State *L ) const;
+
+	private:
+		U8 fState;
+		U8 fOrientation;
+		bool fHasBounds;
+		Real fAngle; // Radians; negative when unknown
+		Real fBoundsX;
+		Real fBoundsY;
+		Real fBoundsWidth;
+		Real fBoundsHeight;
+};
+
+// ----------------------------------------------------------------------------
+
+// Immediately broadcast to "Runtime"
 class WindowStateEvent : public VirtualEvent
 {
 	public:

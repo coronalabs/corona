@@ -481,6 +481,10 @@ bool WinDevice::HasEventSource(EventType type) const
 				hasEventSource = true;
 			}
 			break;
+		case MPlatformDevice::kFoldEvent:
+			// The Windows Simulator has no foldable skins yet.
+			hasEventSource = false;
+			break;
 		default:
 			Rtt_ASSERT_NOT_REACHED();
 			break;

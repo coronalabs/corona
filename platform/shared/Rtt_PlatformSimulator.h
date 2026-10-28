@@ -71,7 +71,8 @@ class PlatformSimulator
 			kHeadingEventMask		= 0x0800,
 			kMultitouchEventMask	= 0x1000,
 			kGyroscopeEventMask		= 0x2000,
-			kMouseEventMask			= 0x4000
+			kMouseEventMask			= 0x4000,
+			kFoldEventMask			= 0x8000
 		}
 		PropertyMask;
 
@@ -131,6 +132,10 @@ class PlatformSimulator
 			float statusBarHeight;
 			// The skin has an "unfolded" table describing the screen of an opened foldable.
 			bool isFoldable;
+			// From the "unfolded" table, whichever screen is loaded: the fold runs top to bottom in the
+			// art as drawn ("hingeOrientation", default "vertical"), and the art is wider than tall.
+			bool unfoldedHingeIsVertical;
+			bool unfoldedScreenIsWide;
 
 			// iOS skin-specific
 			S32 iosPointWidth;
@@ -194,11 +199,16 @@ class PlatformSimulator
 		void Rotate( bool clockwise );
 		virtual void Shake();
 
-		// Foldable skins. Set the initial state before Initialize(); ToggleFold() swaps the screen and raises "resize".
+		// Foldable skins. Set the initial state before Initialize(); ToggleFold() swaps the screen and
+		// raises "fold" and "resize", like opening or closing the device does on iOS and Android.
 		bool IsFoldable() const { return fIsFoldable; }
 		bool IsUnfolded() const { return fIsUnfolded; }
 		void SetUnfolded( bool newValue ) { fIsUnfolded = newValue; }
 		void ToggleFold();
+		// What system.getInfo("foldState") reports: "open" or "closed" for a foldable skin, NULL otherwise.
+		const char *FoldStateName() const;
+		// Raises a "fold" event for the current state when the app listens for one.
+		void DispatchFoldEvent();
 		DeviceOrientation::Type GetOrientation() const { return (DeviceOrientation::Type)fOrientation; }
 		virtual const char *GetOSName() const { return "simulator"; }
 
@@ -220,6 +230,8 @@ class PlatformSimulator
 	protected:
 		void SetOrientationSupported( DeviceOrientation::Type orientation );
 		void SetIsFoldable( bool newValue ) { fIsFoldable = newValue; }
+		// Records the skin's fold support and hinge for FoldStateName() and DispatchFoldEvent().
+		void SetFoldableConfig( const Config& config );
 
 	protected:
 		void SetIsTransparent( bool newValue ) { fIsTransparent = newValue; }
@@ -257,6 +269,8 @@ class PlatformSimulator
 		bool fIsTransparent;
 		bool fIsFoldable;
 		bool fIsUnfolded;
+		bool fUnfoldedHingeIsVertical;
+		bool fUnfoldedScreenIsWide;
 };
 
 // ----------------------------------------------------------------------------

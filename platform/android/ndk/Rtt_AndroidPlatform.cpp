@@ -75,6 +75,7 @@ AndroidPlatform::AndroidPlatform(
 	fImageProvider( NULL ),
 	fVideoProvider( NULL ),
 	fWebPopup( NULL ),	
+	fScreenSurface( NULL ),
 	fPackage( fAllocator ),
 	fDocumentsDir( fAllocator ),
 	fApplicationSupportDir( fAllocator ),
@@ -127,7 +128,17 @@ PlatformSurface*
 AndroidPlatform::CreateScreenSurface() const
 {
 	int approximateScreenDpi = fNativeToJavaBridge->GetApproximateScreenDpi();
-	return Rtt_NEW( fAllocator, AndroidScreenSurface( fView, approximateScreenDpi ) );
+	fScreenSurface = Rtt_NEW( fAllocator, AndroidScreenSurface( fView, approximateScreenDpi ) );
+	return fScreenSurface;
+}
+
+void
+AndroidPlatform::UpdateScreenSurfaceDpi() const
+{
+	if ( fScreenSurface )
+	{
+		fScreenSurface->SetApproximateScreenDpi( fNativeToJavaBridge->GetApproximateScreenDpi() );
+	}
 }
 
 PlatformSurface* 

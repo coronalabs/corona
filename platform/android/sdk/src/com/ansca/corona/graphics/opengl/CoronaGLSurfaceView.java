@@ -383,7 +383,12 @@ public class CoronaGLSurfaceView extends GLSurfaceView {
 			// Note: This check assumes that this view is being displayed full screen.
 			// CoronaKit does not have this restriction because the activity can be in portrait but the view
 			// can just be a different wide and vice versa.
-			if (!fIsCoronaKit && 
+			// Only check while rotating. A fold or unfold changes the size without changing the orientation,
+			// and an unfolded screen can be wider than it is tall in portrait.
+			boolean isOrientationChanging =
+				(fLastReceivedWindowOrientation == com.ansca.corona.WindowOrientation.UNKNOWN) ||
+				(fLastReceivedWindowOrientation != currentWindowOrientation);
+			if (!fIsCoronaKit && isOrientationChanging &&
 				((currentWindowOrientation.isPortrait() && (width > height)) ||
 				 (currentWindowOrientation.isLandscape() && (width < height)))) {
 				fCanRender = false;

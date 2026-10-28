@@ -132,6 +132,7 @@ class NativeToJavaBridge
 		int GetStatusBarMode();
 		int GetStatusBarHeight();
 		void GetSafeAreaInsetsPixels(Rtt::Real &top, Rtt::Real &left, Rtt::Real &bottom, Rtt::Real &right);
+		bool IsFoldStateAvailable();
 		
 		void ShowNativeAlert( const char * title, const char * msg, 
 			const char ** labels, int numLabels, Rtt::LuaResource * resource );

@@ -64,6 +64,8 @@ namespace Rtt
 		case MPlatformDevice::kAccelerometerEvent:
 			hasEventSource = true;
 			break;
+		case MPlatformDevice::kFoldEvent:
+			break;
 		default:
 			Rtt_ASSERT_NOT_REACHED();
 			break;
@@ -84,6 +86,9 @@ namespace Rtt
 		case MPlatformDevice::kHeadingEvent:
 		case MPlatformDevice::kMultitouchEvent:
 			break;
+		case MPlatformDevice::kFoldEvent:
+			// Fold state is observed by the platform whenever it is available; nothing to start or stop.
+			break;
 		default:
 			Rtt_ASSERT_NOT_REACHED();
 			break;
@@ -102,6 +107,9 @@ namespace Rtt
 		case MPlatformDevice::kGyroscopeEvent:
 		case MPlatformDevice::kHeadingEvent:
 		case MPlatformDevice::kMultitouchEvent:
+			break;
+		case MPlatformDevice::kFoldEvent:
+			// Fold state is observed by the platform whenever it is available; nothing to start or stop.
 			break;
 		default:
 			Rtt_ASSERT_NOT_REACHED();
