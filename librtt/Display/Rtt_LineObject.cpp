@@ -53,7 +53,7 @@ LineObject::LineObject( OpenPath* path )
 	Rtt_ASSERT( fPath );
 	fPath->SetObserver( this );
 
-    SetObjectDesc("LineObject"); // for introspection
+    SetObjectDesc(kLineObjectDesc/*"LineObject"*/); // for introspection
 }
 
 LineObject::~LineObject()

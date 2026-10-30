@@ -236,7 +236,6 @@ DisplayObject::DisplayObject()
     fStageBounds(),
     fLuaProxy( NULL ),
     fExtensions( NULL ),
-    fFocusId( NULL ),
     fMask( NULL ),
     fMaskUniform( NULL ),
     fAnchorX( Rtt_REAL_0 ),
@@ -245,9 +244,13 @@ DisplayObject::DisplayObject()
     fProperties( kIsVisible | kIsHitTestMasked ),
     fAlpha( 0xFF ),
     fAlphaCumulative( fAlpha ),
-    fObjectDesc("DisplayObject"),
+    fObjectDesc( kDisplayObjectDesc ),
+    fUnused( 0 ) // TODO: decide on policy
+#if 0
+    ,
     fWhereDefined(NULL),
     fWhereChanged(NULL)
+#endif
 {
 }
 
@@ -282,9 +285,10 @@ DisplayObject::~DisplayObject()
         // This disconnects DisplayObject from the LuaProxy.
         ReleaseProxy();
     }
-
+#if 0
     free((void *)fWhereDefined);
     free((void *)fWhereChanged);
+#endif
 }
 
 void
@@ -650,23 +654,7 @@ DisplayObject::InitProxy( lua_State *L )
             LuaProxy( L, * const_cast< DisplayObject* >( this ), ProxyVTable(), kProxyClassName ) );
     }
 
-    // This is called for all display objects so take the opportunity to record where definition occurred
-    // (this is a noop on non-debug builds because lua_where returns an empty string)
-    luaL_where(L, 1);
-    const char *where = lua_tostring( L, -1 );
-
-    if (where[0] != 0)
-    {
-        if (fWhereDefined != NULL)
-        {
-            free((void *) fWhereDefined);
-        }
-
-        // If this fails, the pointer will be NULL and that's handled gracefully
-        fWhereDefined = strdup(where);
-    }
-
-    lua_pop(L, 1);
+	fLuaProxy->UpdateDefinedDebugInfo( L );
 }
 
 LuaProxy*
@@ -1248,7 +1236,7 @@ void
 DisplayObject::CalculateMaskMatrix( Matrix& dstToMask, const Matrix& srcToDst, const BitmapMask& mask )
 {
     Matrix srcToBitmap = srcToDst;
-    srcToBitmap.Concat( mask.GetTransform().GetMatrix( NULL ) ); // Mask's transform gets applied first
+    srcToBitmap.Concat( mask.GetTransform().GetMatrix( Transform::kV2, NULL ) ); // Mask's transform gets applied first
 
     Matrix dstToBitmap;
     Matrix::Invert( srcToBitmap, dstToBitmap );
@@ -1666,7 +1654,7 @@ void
 DisplayObject::SetV1Compatibility( bool newValue )
 {
     SetProperty( kIsV1Compatibility, newValue );
-    fTransform.SetV1Compatibility( newValue );
+//    fTransform.SetV1Compatibility( newValue );
 }
 
 void
@@ -1822,7 +1810,9 @@ DisplayObject::GetMatrix() const
 	Vertex2 deltas;
 	bool correct = GetTrimmedFrameOffsetForAnchor( deltas.x, deltas.y );
 
-	return fTransform.GetMatrix( shouldOffset ? & offset : NULL, correct ? &deltas : NULL );
+	Transform::Compatibility v1Compat = IsV1Compatibility() ? Transform::kV1 : Transform::kV2;
+
+	return fTransform.GetMatrix( v1Compat, shouldOffset ? & offset : NULL, correct ? &deltas : NULL );
 }
 
 void
@@ -1862,6 +1852,35 @@ DisplayObject::RemoveExtensions()
     }
 }
 #endif
+    
+const char *
+DisplayObject::GetObjectDesc() const
+{
+	#define DESC( NAME ) k##NAME##Desc: return #NAME
+
+	switch ( fObjectDesc )
+	{
+	case DESC( DisplayObject );
+	case DESC( CompositeObject );
+	case DESC( ContainerObject );
+	case DESC( EmitterObject );
+	case DESC( EmbossedTextObject );
+	case DESC( GroupObject );
+	case DESC( ImageObject );
+	case DESC( LineObject );
+	case DESC( ParticleSystemObject );
+	case DESC( ShapeObject );
+	case DESC( SnapshotObject );
+	case DESC( SpriteObject );
+	case DESC( StageObject );
+	case DESC( TextObject );
+	default:
+		Rtt_ASSERT_NOT_REACHED();
+		return NULL;
+	}
+	
+	#undef DESC
+}
     
 void
 DisplayObject::AddedToParent( lua_State * L, GroupObject * parent )

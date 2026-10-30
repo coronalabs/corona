@@ -87,7 +87,7 @@ GroupObject::GroupObject( Rtt_Allocator* pAllocator, StageObject* canvas )
     fStage( canvas ),
     fChildren( pAllocator )
 {
-    SetObjectDesc("GroupObject"); // for introspection
+    SetObjectDesc(kGroupObjectDesc/*"GroupObject"*/); // for introspection
 }
 
 GroupObject*
