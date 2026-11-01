@@ -12,7 +12,7 @@
 #include "Rtt_WinPlatform.h"
 #include "Rtt_WinPlatformServices.h"
 #include "WinGlobalProperties.h"
-#include "WinString.h"
+#include "RttString.h"
 
 #include <wincrypt.h>
 
@@ -31,7 +31,7 @@ namespace Rtt
 // initialized in CSimulatorApp::InitInstance() 
 static HKEY GetAppRegistryKey( HKEY hkeyTopLevel ) 
 {
-    WinString strRegKey, strRegProfile;
+    RttString strRegKey, strRegProfile;
 #ifdef Rtt_NO_GUI
 	strRegKey.SetUTF8("Ansca Corona");
 	strRegProfile.SetUTF8("Corona Simulator");
@@ -92,7 +92,7 @@ static HKEY GetSectionKey(LPCTSTR lpszSection, HKEY hkeyTopLevel )
 }
 
 static bool GetProfileString(
-	WinString *pstrValue, LPCTSTR lpszSection, LPCTSTR lpszEntry, HKEY hkeyTopLevel = HKEY_CURRENT_USER)
+	RttString *pstrValue, LPCTSTR lpszSection, LPCTSTR lpszEntry, HKEY hkeyTopLevel = HKEY_CURRENT_USER)
 {
 	Rtt_ASSERT(lpszSection != NULL);
 	Rtt_ASSERT(lpszEntry != NULL);
@@ -261,7 +261,7 @@ static void EncryptString( const char *sSecret, BYTE **paBytes, UINT *pnBytes )
     LocalFree( encryptedData.pbData );
 }
 
-static bool DecryptString( WinString *pStr, BYTE *aBytes, UINT nBytes )
+static bool DecryptString( RttString *pStr, BYTE *aBytes, UINT nBytes )
 {
     DATA_BLOB encryptedData, unencryptedData;
     
@@ -306,7 +306,7 @@ WinPlatformServices::Platform() const
 void
 WinPlatformServices::GetPreference( const char *key, String * value ) const
 {
-	WinString strResult, strKey;
+	RttString strResult, strKey;
     strKey.SetUTF8( key );
     bool bFound = GetProfileString( &strResult, Rtt_REGISTRY_SECTION, strKey.GetTCHAR());
 
@@ -321,7 +321,7 @@ WinPlatformServices::SetPreference( const char *key, const char *value ) const
 {
 	if ( Rtt_VERIFY( key ) )
 	{
-        WinString strKey, strValue;
+        RttString strKey, strValue;
         strKey.SetUTF8( key );
         strValue.SetUTF8( value );
         WriteProfileString( Rtt_REGISTRY_SECTION, strKey.GetTCHAR(), strValue.GetTCHAR() );
@@ -336,14 +336,14 @@ WinPlatformServices::GetSecurePreference( const char *key, String * value ) cons
 
 	BYTE *aBytes;
 	UINT nBytes;
-    WinString strKey;
+    RttString strKey;
     strKey.SetUTF8( key );
 
     bool bFound = GetProfileBinary(Rtt_REGISTRY_SECTION, strKey.GetTCHAR(), &aBytes, &nBytes);
 
     if( bFound )
 	{
-        WinString strResult;
+        RttString strResult;
 		if( DecryptString( &strResult, aBytes, nBytes ) )
 		{
 			value->Set( strResult.GetUTF8() );
@@ -362,7 +362,7 @@ WinPlatformServices::SetSecurePreference( const char *key, const char *value ) c
 		UINT nBytes;
 		EncryptString( value, &aBytes, &nBytes );
 
-		WinString strKey;
+		RttString strKey;
 		strKey.SetUTF8( key );
 
 		result = WriteProfileBinary( Rtt_REGISTRY_SECTION, strKey.GetTCHAR(), aBytes, nBytes );
@@ -377,7 +377,7 @@ void
 WinPlatformServices::GetLibraryPreference( const char *key, String * value ) const
 {
 	// Get the value from HKLM
-	WinString strResult, strKey;
+	RttString strResult, strKey;
     strKey.SetUTF8( key );
     bool bFound = GetProfileString( &strResult, Rtt_REGISTRY_SECTION, strKey.GetTCHAR(),
                                     HKEY_LOCAL_MACHINE );
@@ -394,7 +394,7 @@ WinPlatformServices::SetLibraryPreference( const char *key, const char *value ) 
 	// Set the value in HKLM
 	if ( Rtt_VERIFY( key ) )
 	{
-        WinString strKey, strValue;
+        RttString strKey, strValue;
         strKey.SetUTF8( key );
         strValue.SetUTF8( value );
         WriteProfileString( Rtt_REGISTRY_SECTION, strKey.GetTCHAR(), strValue.GetTCHAR(),

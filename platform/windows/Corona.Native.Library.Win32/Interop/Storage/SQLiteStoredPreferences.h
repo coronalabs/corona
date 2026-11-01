@@ -12,7 +12,7 @@
 #include "Core\Rtt_Macros.h"
 #include "MStoredPreferences.h"
 #include "Rtt_PreferenceCollection.h"
-#include "WinString.h"
+#include "RttString.h"
 extern "C"
 {
 	struct sqlite3;
@@ -130,7 +130,7 @@ class SQLiteStoredPreferences : public MStoredPreferences
 
 
 		/// <summary>The file name and path of the SQLite database file.</summary>
-		WinString fFilePath;
+		RttString fFilePath;
 
 		/// <summary>
 		///  <para>Stores the last modified timestamp assigned to the SQLite database file.</para>

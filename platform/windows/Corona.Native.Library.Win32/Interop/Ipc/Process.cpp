@@ -13,7 +13,7 @@
 #include "Interop\UI\HandleMessageEventArgs.h"
 #include "Interop\UI\MessageOnlyWindow.h"
 #include "AsyncPipeReader.h"
-#include "WinString.h"
+#include "RttString.h"
 #include <Shlwapi.h>
 #include <thread>
 
@@ -436,7 +436,7 @@ Process::LaunchResult Process::LaunchUsing(const Process::LaunchSettings& settin
 	// Build a command line used to launch the given file and with the given arguments.
 	// Note: Launching an EXE via a command line string allows us to support relative paths
 	//       too which takes advantage of the standard Windows lookup path.
-	WinString commandLineArguments;
+	RttString commandLineArguments;
 	commandLineArguments.Append(L'\"');
 	commandLineArguments.Append(settings.FileNamePath);
 	commandLineArguments.Append(L'\"');

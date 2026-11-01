@@ -12,7 +12,7 @@
 #include "CoronaInterface.h"
 #include "Simulator.h"
 #include "WinGlobalProperties.h"
-#include "WinString.h"
+#include "RttString.h"
 #include "Core/Rtt_Build.h"
 #include "Rtt_WinPlatformServices.h"
 

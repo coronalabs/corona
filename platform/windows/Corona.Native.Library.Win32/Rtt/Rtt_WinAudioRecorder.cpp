@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "WinString.h"
+#include "RttString.h"
 #include "Core/Rtt_Build.h"
 #include "Rtt_WinAudioRecorder.h"
 #include "Rtt_LuaContext.h"
@@ -125,7 +125,7 @@ void WinAudioRecorder::Start()
 	// Create the audio file to record to if enabled.
 	if (fFileWriter)
 	{
-		WinString convertedFileName;
+		RttString convertedFileName;
 		convertedFileName.SetUTF8(fFilename.GetString());
 		fFileWriter->CreateWaveFile(convertedFileName.GetTCHAR(), &fWaveFormatEx);
 	}
@@ -175,7 +175,7 @@ void WinAudioRecorder::Stop()
 /// @param mmResult The result object returned by a Microsoft waveIn function.
 void WinAudioRecorder::LogWaveInError(MMRESULT mmResult)
 {
-	WinString message;
+	RttString message;
 
 	message.Expand(MAX_PATH);
 	waveInGetErrorText(mmResult, message.GetBuffer(), MAX_PATH);

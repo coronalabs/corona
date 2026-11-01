@@ -24,4 +24,7 @@
     <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\sync.c" />
     <ClCompile Include="..\..\..\external\pthreads-w32-2-8-0-release\tsd.c" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
 </Project>

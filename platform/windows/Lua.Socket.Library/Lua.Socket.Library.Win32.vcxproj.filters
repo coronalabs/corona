@@ -46,4 +46,7 @@
     <LuaToCpp Include="..\..\..\external\luasocket\src\url.lua" />
     <LuaToCpp Include="..\..\..\external\luasocket\src\ftp.lua" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
 </Project>

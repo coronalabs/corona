@@ -23,7 +23,7 @@
 #ifdef Rtt_WIN_ENV
 #include "windows.h"
 #include "shellapi.h"  // ShellExecute()
-#include "WinString.h"
+#include "RttString.h"
 #include "Resource.h"  // error string ids
 #ifdef Rtt_NO_GUI
 #include "Rtt_WinConsolePlatform.h"
@@ -198,7 +198,7 @@ bool JavaHost::LoadJvm()
 static HKEY GetVersionKey( LPCTSTR sKey )
 {
 	HKEY hJreKey = NULL;
-    WinString strVersion;
+    RttString strVersion;
 	HKEY hJreVersionKey = NULL;
 
     // Look for JRE/JDK registry entry
@@ -235,9 +235,9 @@ static HKEY GetVersionKey( LPCTSTR sKey )
 // function is static member of JavaHost
 bool JavaHost::LoadJvm()
 {
-	WinString registryKeyPath;
-	WinString runtimeBinPath;
-	WinString runtimeLibraryPath;
+	RttString registryKeyPath;
+	RttString runtimeBinPath;
+	RttString runtimeLibraryPath;
 
 	TCHAR buf[MAX_PATH + 100];
 	TCHAR sMsg[MAX_PATH];
@@ -280,7 +280,7 @@ bool JavaHost::LoadJvm()
 #endif // USE_JNI
 
 // Look for JRE registry entry, return RuntimeLib
-static bool JavaRegistryLookup( LPCTSTR sLocation, LPCTSTR sKey, WinString* pstrValue )
+static bool JavaRegistryLookup( LPCTSTR sLocation, LPCTSTR sKey, RttString* pstrValue )
 {
 	LONG lResult;
     bool bResult = false;
@@ -337,11 +337,11 @@ static bool JavaRegistryLookup( LPCTSTR sLocation, LPCTSTR sKey, WinString* pstr
 	return bResult;
 }
 
-static bool CopyJavaRuntimeRegistryKeyPathTo(WinString* pPath)
+static bool CopyJavaRuntimeRegistryKeyPathTo(RttString* pPath)
 {
     if (pPath)
 	{
-        WinString versionName;
+        RttString versionName;
 		if (JavaRegistryLookup(JRE_REGISTRY_LOCATION, JAVA_REGISTRY_VERSION, &versionName))
 		{
 			pPath->SetTCHAR(JRE_REGISTRY_LOCATION);
@@ -361,11 +361,11 @@ static bool CopyJavaRuntimeRegistryKeyPathTo(WinString* pPath)
 	return false;
 }
 
-static bool CopyJavaDevelopmentKitRegistryKeyPathTo(WinString* pPath)
+static bool CopyJavaDevelopmentKitRegistryKeyPathTo(RttString* pPath)
 {
     if (pPath)
 	{
-        WinString versionName;
+        RttString versionName;
 		if (JavaRegistryLookup(JDK_REGISTRY_LOCATION, JAVA_REGISTRY_VERSION, &versionName))
 		{
 			pPath->SetTCHAR(JDK_REGISTRY_LOCATION);
@@ -416,7 +416,7 @@ const char *JavaHost::GetJdkPath()
 	{
 		// try to find bunled JRE
 		TCHAR buffer[MAX_PATH] = _T("");
-		WinString rootPath;
+		RttString rootPath;
 		GetFullPathName(_T("jre"), MAX_PATH, buffer, NULL);
 		if (buffer[0] && CheckDirExists(buffer)) {
 			rootPath.SetTCHAR(buffer);
@@ -440,8 +440,8 @@ const char *JavaHost::GetJdkPath()
 			return s_sJdkJavaHome;
 		}
 
-        WinString sRegistryKeyPath;
-		WinString sValue;
+        RttString sRegistryKeyPath;
+		RttString sValue;
 		if (CopyJavaDevelopmentKitRegistryKeyPathTo(&sRegistryKeyPath))
 		{
 			if (JavaRegistryLookup(sRegistryKeyPath.GetTCHAR(), JDK_REGISTRY_JAVAHOME, &sValue))
@@ -462,7 +462,7 @@ const char *JavaHost::GetJrePath()
 	{
 		// try to find bunled JRE
 		TCHAR buffer[MAX_PATH] = _T("");
-		WinString rootPath;
+		RttString rootPath;
 		GetFullPathName(_T("jre\\jre"), MAX_PATH, buffer, NULL);
 		if (buffer[0] && CheckDirExists(buffer)) {
 			rootPath.SetTCHAR(buffer);
@@ -486,8 +486,8 @@ const char *JavaHost::GetJrePath()
 			return s_sJreJavaHome;
 		}
 
-        WinString sRegistryKeyPath;
-		WinString sValue;
+        RttString sRegistryKeyPath;
+		RttString sValue;
 		if (CopyJavaRuntimeRegistryKeyPathTo(&sRegistryKeyPath))
 		{
 			if (JavaRegistryLookup(sRegistryKeyPath.GetTCHAR(), JDK_REGISTRY_JAVAHOME, &sValue))

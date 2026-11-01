@@ -13,7 +13,7 @@
 #include "sundown\buffer.h"
 #include "sundown\html.h"
 #include "sundown\markdown.h"
-#include "WinString.h"
+#include "RttString.h"
 
 
 IMPLEMENT_DYNAMIC(CHtmlMessageDlg, CDialog)
@@ -132,7 +132,7 @@ void CHtmlMessageDlg::SetHtmlFromMarkdown(const CString& text)
 	SetHtmlFromPlainText(_T(""));
 
 	// Do not continue if given a null/empty string.
-	WinString textTranscoder(text);
+	RttString textTranscoder(text);
 	if (textTranscoder.IsEmpty())
 	{
 		return;

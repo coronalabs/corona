@@ -12,7 +12,7 @@
 #include "Interop\ApplicationServices.h"
 #include "Interop\RuntimeEnvironment.h"
 #include "Rtt_MPlatform.h"
-#include "WinString.h"
+#include "RttString.h"
 #include <list>
 #include <string>
 
@@ -58,7 +58,7 @@ namespace
 		///  Array storing paths of all sandboxed dirctories supported by Corona such as
 		///  kResourceDir, kDcoumentsDir, etc.
 		/// </summary>
-		WinString DirectoryPaths[Rtt::MPlatform::kNumDirs];
+		RttString DirectoryPaths[Rtt::MPlatform::kNumDirs];
 
 		/// <summary>
 		///  <para>
@@ -171,7 +171,7 @@ namespace
 					"A video driver supporting OpenGL %s or higher is required.\r\n"
 					"\r\n"
 					"Please upgrade your video driver and try again.";
-			WinString message;
+			RttString message;
 			message.Format(kMessageFormat, validationResult.MinVersionSupported.GetString());
 			return Interop::RuntimeEnvironment::CreationResult::FailedWith(message.GetUTF16());
 		}
@@ -486,7 +486,7 @@ CORONA_API int CoronaWin32RuntimeRun(
 		}
 
 		// Fetch the failure message.
-		WinString message(result.GetMessage());
+		RttString message(result.GetMessage());
 		if (message.IsEmpty())
 		{
 			message.SetUTF16(L"An unknown error occurred while starting up the Corona runtime.");

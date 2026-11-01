@@ -16,7 +16,7 @@
 #include "Rtt_WinCrypto.h"
 #include "Rtt_WinDevice.h"
 #include "Rtt_WinExitCallback.h"
-#include "WinString.h"
+#include "RttString.h"
 #include <memory>
 #include <windows.h>
 
@@ -149,7 +149,7 @@ class WinPlatform : public MPlatform
 	private:
 		typedef std::shared_ptr<Interop::Storage::MStoredPreferences> SharedMStoredPreferencesPointer;
 
-		void CopyAppNameTo(WinString& destinationString) const;
+		void CopyAppNameTo(RttString& destinationString) const;
 		int GetEncoderClsid(const WCHAR *format, CLSID *pClsid) const;
 		Rtt::ValueResult<SharedMStoredPreferencesPointer> GetStoredPreferencesByCategoryName(const char* categoryName) const;
 		void OnSetActivityIndicator(bool visible);

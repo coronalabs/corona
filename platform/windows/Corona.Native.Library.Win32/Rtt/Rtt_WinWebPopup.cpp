@@ -110,7 +110,7 @@ void WinWebPopup::Show(const MPlatform& platform, const char *url)
 	}
 
 	// Navigate to the given URL.
-	WinString updatedUrl;
+	RttString updatedUrl;
 	if (fBaseDirectory != MPlatform::kUnknownDir)
 	{
 		Rtt::String filePath(&fEnvironment.GetAllocator());

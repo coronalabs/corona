@@ -15,7 +15,7 @@
 #include <fstream>
 #include <cstring>
 #include <shlwapi.h>
-#include "..\Corona.Native.Library.Win32\WinString.h"
+#include "..\Corona.Native.Library.Win32\RttString.h"
 
 namespace Rtt {
 
@@ -23,9 +23,9 @@ namespace Rtt {
 	{
 		resultData.Set("");
 		errorMesg.Set("");
-		WinString canonUrl;
+		RttString canonUrl;
 		{
-			WinString wsUrl(url);
+			RttString wsUrl(url);
 			if (wsUrl.IsEmpty()) {
 				errorMesg.Set("Empty URL was passed");
 				return false;
@@ -47,7 +47,7 @@ namespace Rtt {
 		}
 		std::unique_ptr< HINTERNET, void (*)(HINTERNET*) > internetCloser(&hInternet, [](auto* h) { Rtt_VERIFY(InternetCloseHandle(*h)); });
 
-		WinString headerStr;
+		RttString headerStr;
 		for ( auto const & kv : headers)
 		{
 			if (!headerStr.IsEmpty()) headerStr.Append(L"\n");
@@ -63,7 +63,7 @@ namespace Rtt {
 			WCHAR effBuff[3001] = {};
 			DWORD errorMessageID = ::GetLastError();
 			DWORD err = 0;
-			WinString errStr(L"Unable to open URL: ");
+			RttString errStr(L"Unable to open URL: ");
 
 			if (InternetGetLastResponseInfo(&err, effBuff, &bufSize) && bufSize > 0) {
 				errStr.Append(effBuff);
@@ -112,9 +112,9 @@ namespace Rtt {
 	bool HTTPClient::HttpDownloadFile(const char* url, const char* filename, String& errorMesg, const std::map<std::string, std::string>& headers)
 	{
 		errorMesg.Set("");
-		WinString canonUrl;
+		RttString canonUrl;
 		{
-			WinString wsUrl(url);
+			RttString wsUrl(url);
 			if (wsUrl.IsEmpty()) {
 				errorMesg.Set("Empty URL was passed");
 				return false;
@@ -136,7 +136,7 @@ namespace Rtt {
 		}
 		std::unique_ptr< HINTERNET, void (*)(HINTERNET*) > internetCloser(&hInternet, [](auto* h) { Rtt_VERIFY(InternetCloseHandle(*h)); });
 
-		WinString headerStr;
+		RttString headerStr;
 		for (auto const& kv : headers)
 		{
 			if (!headerStr.IsEmpty()) headerStr.Append(L"\n");
@@ -152,7 +152,7 @@ namespace Rtt {
 			WCHAR effBuff[3001] = {};
 			DWORD errorMessageID = ::GetLastError();
 			DWORD err = 0;
-			WinString errStr(L"Unable to open URL: ");
+			RttString errStr(L"Unable to open URL: ");
 
 			if (InternetGetLastResponseInfo(&err, effBuff, &bufSize) && bufSize > 0) {
 				errStr.Append(effBuff);

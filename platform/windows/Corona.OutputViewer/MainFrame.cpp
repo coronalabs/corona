@@ -17,7 +17,7 @@
 #include "MFCToolBarLabel.h"
 #include "resource.h"
 #include "VisualTheme.h"
-#include "WinString.h"
+#include "RttString.h"
 #include <sstream>
 #include <string>
 #include <thread>
@@ -206,7 +206,7 @@ int MainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 			auto lastSelectedFontPointer = deviceContext.SelectObject(&rtfFont);
 
 			// Measure the timestamp string in TWIPS.
-			WinString timestampString;
+			RttString timestampString;
 			timestampString.Format(kRtfTimestampFormatString, 12, 0, 0, 0);
 			fractionalTextWidth = (double)deviceContext.GetTextExtent(
 					timestampString.GetTCHAR(), timestampString.GetLength()).cx;
@@ -692,7 +692,7 @@ void MainFrame::OnFileOpen()
 	}
 
 	// Start running/monitoring the selected application.
-	WinString filePath;
+	RttString filePath;
 	filePath.SetTCHAR(openFileDialog.GetPathName());
 	StartMonitoringApp(filePath.GetUTF16(), nullptr);
 
@@ -799,7 +799,7 @@ void MainFrame::OnFileSaveAs()
 
 	// Attempt to save the RTF control's text contents to file.
 	bool wasSaved = false;
-	WinString errorMessage;
+	RttString errorMessage;
 	try
 	{
 		// Create and open the file stream.
@@ -1057,7 +1057,7 @@ void MainFrame::OnSetupSubmenu()
 void MainFrame::OnAppAbout()
 {
 	// Display an "About" dialog showing version and copyright information.
-	WinString message;
+	RttString message;
 	message.Append(L"Corona Console\n\n");
 	message.Append(L"Build: ");
 	message.Append(Rtt_MACRO_TO_STRING(Rtt_BUILD_REVISION));
@@ -1455,7 +1455,7 @@ void MainFrame::OnAlertListEntryCountChanged(AlertListPane& sender, const Intero
 
 void MainFrame::UpdateStatusBarLogEntryCount()
 {
-	WinString message;
+	RttString message;
 	COLORREF backColor;
 	COLORREF textColor;
 	int paneIndex;
@@ -1615,7 +1615,7 @@ void MainFrame::QueueLogEntry(const Interop::DateTime& timestamp, const wchar_t*
 {
 	if (text)
 	{
-		WinString stringTranscoder(text);
+		RttString stringTranscoder(text);
 		QueueLogEntry(timestamp, stringTranscoder.GetUTF8());
 	}
 }
@@ -1664,7 +1664,7 @@ void MainFrame::ProcessQueuedLogEntries()
 			//       multiple log entries to a single "consolidated" string. But we also need to limit the size of this
 			//       consolidated string to a max size (ie: our batch of log entries) in case we receive a large amount
 			//       of log entries so that the window appears active (ie: don't block for a long time doing huge inserts).
-			WinString consolidatedRtfLogText;
+			RttString consolidatedRtfLogText;
 			int maxEntriesToProcess = 0;
 			{
 				// Calculate the number of entries we need to pop in the next batch.
@@ -1758,7 +1758,7 @@ void MainFrame::ProcessQueuedLogEntries()
 				// - Prefixed with a timestamp string.
 				// - Ensures line endings are always formatted as \r\n.
 				// - Ensures that the message ends with a \r\n.
-				WinString rtfLogText;
+				RttString rtfLogText;
 				rtfLogText.Expand(pendingLogEntry.Text->length() + 1);
 				auto systemTime = logEntryPointer->GetDateTime().ToSystemTime();
 				rtfLogText.Format(

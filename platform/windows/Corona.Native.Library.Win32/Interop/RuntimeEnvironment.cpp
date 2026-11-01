@@ -158,7 +158,7 @@ RuntimeEnvironment::RuntimeEnvironment(const RuntimeEnvironment::CreationSetting
 						nullptr, resultCode,
 						MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 						(LPWSTR)&utf16Buffer, 0, nullptr);
-				WinString stringConverter;
+				RttString stringConverter;
 				stringConverter.SetUTF16(utf16Buffer);
 				std::string utf8Message = stringConverter.GetUTF8();
 				::LocalFree(utf16Buffer);
@@ -187,7 +187,7 @@ RuntimeEnvironment::RuntimeEnvironment(const RuntimeEnvironment::CreationSetting
 			stringStream << Storage::RegistryStoredPreferences::kCoronaSimulatorKeyName;
 			stringStream << L'\\';
 			{
-				WinString escapedDirectoryPath(fDirectoryPaths[Rtt::MPlatform::kResourceDir].GetUTF16());
+				RttString escapedDirectoryPath(fDirectoryPaths[Rtt::MPlatform::kResourceDir].GetUTF16());
 				escapedDirectoryPath.MakeLowerCase();
 				escapedDirectoryPath.Replace("/", "\\");
 				escapedDirectoryPath.Replace("\\\\", "");
@@ -265,7 +265,7 @@ RuntimeEnvironment::RuntimeEnvironment(const RuntimeEnvironment::CreationSetting
 	{
 		for (auto&& nextArgument : *settings.LaunchArgumentsPointer)
 		{
-			fLaunchArguments.push_back(WinString(nextArgument.c_str()));
+			fLaunchArguments.push_back(RttString(nextArgument.c_str()));
 		}
 	}
 
@@ -457,11 +457,11 @@ const wchar_t* RuntimeEnvironment::GetRegistryPathWithoutHive() const
 void RuntimeEnvironment::SetPathForProjectResourceDirectory(const wchar_t* path)
 {
 	// Copy the given path and remove any trailing slashes or spaces from the end of the path.
-	WinString newPath(path);
+	RttString newPath(path);
 	newPath.TrimEnd(L"\\/ ");
 
 	// Update the Corona runtime's project resource directory path.
-	WinString& destinationString = fDirectoryPaths[Rtt::MPlatform::kProjectResourceDir];
+	RttString& destinationString = fDirectoryPaths[Rtt::MPlatform::kProjectResourceDir];
 	if (newPath.IsEmpty())
 	{
 		// We were given a null/empty string. Reset the path to the resource directory.
@@ -1245,7 +1245,7 @@ OperationResult RuntimeEnvironment::RunUsing(const RuntimeEnvironment::CreationS
 			if (!semaphoreHandle)
 			{
 				// Ask if the user wants to continue running the Corona project without debugging.
-				WinString message(L"Failed to set up Corona with the debugger.\r\n");
+				RttString message(L"Failed to set up Corona with the debugger.\r\n");
 				if (errorCode)
 				{
 					LPWSTR utf16ErrorMessage = nullptr;
@@ -1579,7 +1579,7 @@ bool RuntimeEnvironment::GenerateSimulatorSandboxPath(
 		sandboxDirectoryPath = utf16Buffer;
 
 		// Create an MD5 hash of the resource directory path.
-		WinString stringConverter;
+		RttString stringConverter;
 		stringConverter.SetUTF16(resourceDirectoryPathWithoutSlash.c_str());
 		stringConverter.MakeLowerCase();
 		CryptoPP::Weak1::MD5 md5;
@@ -1923,7 +1923,7 @@ void RuntimeEnvironment::OnIpcWindowReceivedMessage(UI::UIComponent &sender, UI:
 				std::string utf8WorkingDirectory;
 
 				// Fetch additional newline separated parameters from the WM_COPYDATA buffer, if any.
-				WinString stringTranscoder;
+				RttString stringTranscoder;
 				for (std::wstring utf16String; stringStream && std::getline(stringStream, utf16String);)
 				{
 					// Determine which parameter we were given.
@@ -2756,7 +2756,7 @@ void RuntimeEnvironment::RuntimeDelegate::WillLoadMain(const Rtt::Runtime& sende
 			int luaLaunchTableIndex = lua_gettop(luaStatePointer);
 			if (lua_istable(luaStatePointer, luaLaunchTableIndex))
 			{
-				WinString* urlStringPointer = nullptr;
+				RttString* urlStringPointer = nullptr;
 
 				// Add an "args" field providing a string array of command line arguments.
 				lua_createtable(luaStatePointer, argumentCount, 0);

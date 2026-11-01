@@ -12,7 +12,7 @@
 #include "Input\Rtt_InputAxisType.h"
 #include "Input\Rtt_InputDeviceType.h"
 #include "Key.h"
-#include "WinString.h"
+#include "RttString.h"
 #include <string>
 #include <vector>
 
@@ -463,10 +463,10 @@ class InputDeviceSettings
 		std::string fPermanentStringId;
 
 		/// <summary>The product name assigned to this device by the manufacturer.</summary>
-		WinString fProductName;
+		RttString fProductName;
 
 		/// <summary>Human readable name assigned to this device by the system.</summary>
-		WinString fDisplayName;
+		RttString fDisplayName;
 
 		/// <summary>
 		///  <para>One based player number assigned to the device by the system, such as XInput.</para>

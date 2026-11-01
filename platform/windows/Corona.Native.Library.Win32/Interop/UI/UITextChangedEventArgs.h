@@ -10,7 +10,7 @@
 #pragma once
 
 #include "Interop\EventArgs.h"
-#include "WinString.h"
+#include "RttString.h"
 
 
 namespace Interop { namespace UI {
@@ -82,8 +82,8 @@ class UITextChangedEventArgs : public Interop::EventArgs
 		int GetDeletedCharacterCount() const;
 
 	private:
-		WinString fNewText;
-		WinString fPreviousText;
+		RttString fNewText;
+		RttString fPreviousText;
 		int fPreviousStartSelectionIndex;
 		int fAddedCharacterCount;
 		int fDeletedCharacterCount;

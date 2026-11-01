@@ -70,7 +70,7 @@
       <Filter>Rtt</Filter>
     </ClInclude>
     <ClInclude Include="WinSound.h" />
-    <ClInclude Include="WinString.h" />
+    <ClInclude Include="RttString.h" />
     <ClInclude Include="WinFile.h" />
     <ClInclude Include="Interop\RuntimeEnvironment.h">
       <Filter>Interop</Filter>
@@ -393,7 +393,7 @@
       <Filter>Rtt</Filter>
     </ClCompile>
     <ClCompile Include="WinSound.cpp" />
-    <ClCompile Include="WinString.cpp" />
+    <ClCompile Include="RttString.cpp" />
     <ClCompile Include="WinFile.cpp" />
     <ClCompile Include="Interop\RuntimeEnvironment.cpp">
       <Filter>Interop</Filter>
@@ -646,5 +646,8 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

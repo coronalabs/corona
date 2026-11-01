@@ -16,7 +16,7 @@
 #include "BuildProgressDlg.h"
 #include "BuildResult.h"
 #include "WinGlobalProperties.h"
-#include "WinString.h"
+#include "RttString.h"
 #include "BrowseDirDialog.h"
 #include "HtmlMessageDlg.h"
 #include "MessageDlg.h"
@@ -59,7 +59,7 @@ END_MESSAGE_MAP()
 // Check for trial users, who can only use installed debug.keystore
 BOOL CBuildLinuxDlg::OnInitDialog()
 {
-	WinString stringConverter;
+	RttString stringConverter;
 	CString stringBuffer;
 
 	// Initialize base class first.
@@ -157,7 +157,7 @@ void CBuildLinuxDlg::OnClickedIncludeStandartResources()
 // call core code to package project and send to server for building
 void CBuildLinuxDlg::OnOK()  // OnBuild()
 {
-	WinString stringBuffer;
+	RttString stringBuffer;
     CString sValue;
 	CString sBuildDir;
 	CString sVersionName;
