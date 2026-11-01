@@ -39,6 +39,6 @@
 	<key>CFPlugInUnloadFunction</key>
 	<string></string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2020-2021 Solar2D. All rights reserved.</string>
+	<string>Copyright © 2020-2023 Solar2D. All rights reserved.</string>
 </dict>
 </plist>
