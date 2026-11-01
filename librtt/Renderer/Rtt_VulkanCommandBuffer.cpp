@@ -681,14 +681,26 @@ VulkanCommandBuffer::Execute( bool measureGPU )
 
 		vkResetCommandPool( device, fFrameResources->fCommands, 0U );
 
-		VkCommandBufferAllocateInfo allocInfo = {};
+		// Resetting the pool returns its command buffers to the initial state but does not free them,
+		// so allocate this frame's buffer once and reuse it rather than allocating a new one every frame.
+		if (VK_NULL_HANDLE == fFrameResources->fCommandBuffer)
+		{
+			VkCommandBufferAllocateInfo allocInfo = {};
 
-		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-		allocInfo.commandBufferCount = 1U;
-		allocInfo.commandPool = fFrameResources->fCommands;
-		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+			allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+			allocInfo.commandBufferCount = 1U;
+			allocInfo.commandPool = fFrameResources->fCommands;
+			allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 
-		if (VK_SUCCESS == vkAllocateCommandBuffers( device, &allocInfo, &commandBuffer ))
+			if (VK_SUCCESS != vkAllocateCommandBuffers( device, &allocInfo, &fFrameResources->fCommandBuffer ))
+			{
+				fFrameResources->fCommandBuffer = VK_NULL_HANDLE;
+			}
+		}
+
+		commandBuffer = fFrameResources->fCommandBuffer;
+
+		if (VK_NULL_HANDLE != commandBuffer)
 		{
 			VkCommandBufferBeginInfo beginInfo = {};
 
