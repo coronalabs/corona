@@ -38,8 +38,7 @@ struct RenderData
 
 	Geometry* fGeometry;
 	Program* fProgram;
-	Texture* fFillTexture0;
-	Texture* fFillTexture1;
+	TextureList fTextures;
 	Texture* fMaskTexture;
 	Uniform* fMaskUniform;
 	Uniform* fUserUniform0;

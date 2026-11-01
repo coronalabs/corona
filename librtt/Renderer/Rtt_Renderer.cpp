@@ -28,6 +28,7 @@
 #include "Core/Rtt_Types.h"
 #include "Renderer/Rtt_MCPUResourceObserver.h"
 #include "Display/Rtt_ObjectHandle.h"
+#include "Display/Rtt_Shader.h"
 #include "Display/Rtt_ShaderData.h"
 #include "Display/Rtt_ShaderResource.h"
 
@@ -175,6 +176,9 @@ Renderer::Renderer( Rtt_Allocator* allocator )
     fGeometryWriters( allocator ),
     fCurrentGeometryWriterList( NULL ),
     fCanAddGeometryWriters( false ),
+    fShaderResourcesWithPendingBinds( allocator ),
+    fExtraTextures( allocator ),
+    fMaxExtraTexturesThisFrame( 0 ),
     fMaskCountIndex( 0 ),
     fMaskCount( allocator ),
     fCurrentProgramMaskCount( 0 ),
@@ -184,14 +188,22 @@ Renderer::Renderer( Rtt_Allocator* allocator )
     fMultisampleEnabled( false ),
     fFrameBufferObject( NULL ),
     fInsertionLimit( (std::numeric_limits<U32>::max)() ),
+    fCustomFormats( NULL ),
+    fCustomFormatCount( 0 ),
     fRenderDataCount( 0 ),
 	fVertexOffset( 0 ),
 	fCurrentGeometry( NULL ),
     fTimeDependencyCount( 0 ),
+    fGuardDraw(),
+    fIsES2( false ),
+    fHas8BitRed( false ),
     fPrevTimeTransform( NULL )
 {
     // Always have at least 1 mask count.
     fMaskCount.Append( 0 );
+
+	fDefaultPrograms[0] = NULL;
+	fDefaultPrograms[1] = NULL;
 }
 
 Renderer::~Renderer()
@@ -223,6 +235,15 @@ Renderer::Initialize()
 {
     fBackCommandBuffer->Initialize();
     fFrontCommandBuffer->Initialize();
+    
+    DetectOneComponentTextureFormatSupport();
+}
+
+void
+Renderer::SetDefaultPrograms( Program *defaultPrograms[] )
+{
+	fDefaultPrograms[0] = defaultPrograms[0];
+	fDefaultPrograms[1] = defaultPrograms[1];
 }
 
 void
@@ -270,6 +291,12 @@ Renderer::BeginFrame( Real totalTime, Real deltaTime, Real contentScaleX, Real c
     fBackCommandBuffer->SetBlendEquation( fPrevious.fBlendEquation );
 
     fTimeDependencyCount = 0;
+
+	fShaderResourcesWithPendingBinds.Clear();
+	fExtraTextures.Clear();
+	
+	fGuardDraw.fIsValid = false;
+	fMaxExtraTexturesThisFrame = 0;
     
     DEBUG_PRINT( "--Begin Frame: Renderer--\n" );
 
@@ -303,11 +330,14 @@ Renderer::BeginDrawing()
 void
 Renderer::CaptureFrameBuffer( RenderingStream & stream, BufferBitmap & bitmap, S32 x_in_pixels, S32 y_in_pixels, S32 w_in_pixels, S32 h_in_pixels )
 {
+/*
 	stream.CaptureFrameBuffer( bitmap,
 		x_in_pixels,
 		y_in_pixels,
 		w_in_pixels,
 		h_in_pixels );
+*/
+	FrameBufferObject::Capture(bitmap, x_in_pixels, y_in_pixels, w_in_pixels, h_in_pixels);
 }
 
 void 
@@ -545,8 +575,35 @@ Renderer::PopMaskCount()
     --fMaskCountIndex;
 }
 
+static bool
+DoExtraTexturesDiffer( const LightPtrArray<Texture>& extraTextures, const TextureList& list, const RenderDataState* renderDataState )
+{
+	if ( ( NULL == renderDataState ) || ( RenderDataState::kSyncConsistent != renderDataState->GetSyncState() ) )
+	{
+		return true; // unknown, so assume the worst
+	}
+	else
+	{
+		U32 unit = 0, usageMask = renderDataState->GetOccupancy();
+		for ( U32 i = 0, iMax = list.GetCountAfterFills(); i < iMax; i++ )
+		{
+			if ( usageMask & ( 1U << i ) )
+			{
+				if ( extraTextures[i] != list.GetPositionAfterFills()[unit] )
+				{
+					return true;
+				}
+				
+				++unit;
+			}
+		}
+	}
+	
+	return false;
+}
+
 void
-Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
+Renderer::Insert( const RenderData* data, const ShaderData * shaderData, RenderDataState* renderDataState )
 {
     // For debug visualization, the number of insertions may be limited
     if( fInsertionCount++ > fInsertionLimit )
@@ -558,10 +615,13 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
     Rtt_ASSERT( fBackCommandBuffer != NULL );
     Rtt_ASSERT( fFrontCommandBuffer != NULL );
 
+	Texture* fillTexture0 = data->fTextures.GetFill0();
+	Texture* fillTexture1 = data->fTextures.GetFill1();
+
 	bool blendDirty = data->fBlendMode != fPrevious.fBlendMode;
 	bool blendEquationDirty = data->fBlendEquation != fPrevious.fBlendEquation;
-	bool fillDirty0 = data->fFillTexture0 != fPrevious.fFillTexture0 && data->fFillTexture0;
-	bool fillDirty1 = data->fFillTexture1 != fPrevious.fFillTexture1 && data->fFillTexture1;
+	bool fillDirty0 = fillTexture0 != fPrevious.fTextures.GetFill0() && fillTexture0;
+	bool fillDirty1 = fillTexture1 != fPrevious.fTextures.GetFill1() && fillTexture1;
 	bool maskTextureDirty = data->fMaskTexture != fPrevious.fMaskTexture; // since PushMask() can stomp on the previous texture, a "not NULL" check here is unreliable
 	bool maskUniformDirty = data->fMaskUniform != fPrevious.fMaskUniform; // ...ditto
 	bool programDirty = data->fProgram != fPrevious.fProgram || MaskCount() != fCurrentProgramMaskCount;
@@ -570,6 +630,57 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
 	bool userUniformDirty2 = data->fUserUniform2 != fPrevious.fUserUniform2 && data->fUserUniform2;
 	bool userUniformDirty3 = data->fUserUniform3 != fPrevious.fUserUniform3 && data->fUserUniform3;
 	
+	U32 extraTextureCount = data->fTextures.GetCountAfterFills();
+	if ( extraTextureCount > 0 )
+	{
+		if ( extraTextureCount > fMaxExtraTexturesThisFrame )
+		{
+			fExtraTextures.PadToSize( extraTextureCount, NULL );
+			fMaxExtraTexturesThisFrame = extraTextureCount;
+		}
+		else if ( !DoExtraTexturesDiffer( fExtraTextures, data->fTextures, renderDataState ) )
+		{
+			extraTextureCount = 0;
+		}
+	}
+
+	GuardInfo syncGuard;
+	bool syncingDirty = false;
+	if ( !fWireframeEnabled && ( NULL != renderDataState ) )
+	{
+		bool isUnsynced = RenderDataState::kUnsynced == renderDataState->GetSyncState();
+		if ( isUnsynced )
+		{
+			ShaderResource* shaderResource = data->fProgram->GetShaderResource();
+			const U8* paintNames = data->fTextures.GetNamesList();
+			const Program* refProgram = shaderResource->GetFirstBoundProgram();
+			if ( NULL != refProgram || shaderResource->HasTextureInfo() )
+			{
+				if ( shaderResource->AreTexturesConsistent( data->fTextures, paintNames, renderDataState ) )
+				{
+					renderDataState->SetSyncState( RenderDataState::kSyncConsistent );
+				}
+				else
+				{
+					renderDataState->SetSyncState( RenderDataState::kSyncInconsistent );
+				}
+			}
+			else if ( !shaderResource->IsSyncPending() )
+			{
+				shaderResource->PrepareFirstBind( data->fProgram, static_cast<Program::Version>( MaskCount() ) );
+
+				fShaderResourcesWithPendingBinds.Append( shaderResource );
+				
+				syncGuard.fIsValid = true;
+				syncGuard.fList = data->fTextures;
+				syncGuard.fPrevious = data->fProgram;
+				syncGuard.fNames = paintNames;
+				syncGuard.fIsMod25 = data->fProgram == shaderResource->GetProgramMod( ShaderResource::k25D );
+			}
+		}
+		
+		syncingDirty = RenderDataState::kSyncConsistent != renderDataState->GetSyncState();
+	}
 
     ArrayS32 dirtyIndices( fAllocator );
     U32 largestDirtySize = EnumerateDirtyBlocks( dirtyIndices );
@@ -588,7 +699,7 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
     }
 
     const FormatExtensionList* extensionList = geometry->GetExtensionList();
-    const U32 vertexExtra = extensionList ? extensionList->ExtraVertexCount() : 0;
+    const U32 vertexExtra = extensionList ? extensionList->ExtraVertexRateSizeInVertices() : 0;
     bool formatsDirty = !FormatExtensionList::Match( previousGeometryList, extensionList );
 
     if (!formatsDirty && data->fProgram != fPrevious.fProgram)
@@ -646,9 +757,11 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
                 || blendEquationDirty
                 || fillDirty0
                 || fillDirty1
+                || extraTextureCount > 0
                 || maskTextureDirty
                 || maskUniformDirty
                 || programDirty
+                || syncingDirty
                 || userUniformDirty0
                 || userUniformDirty1
                 || userUniformDirty2
@@ -752,6 +865,11 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
     }
     fRenderDataCount++;
     
+    if (syncingDirty)
+    {
+		fGuardDraw = syncGuard;
+    }
+    
     // Blend mode
     if( data->fBlendMode != fPrevious.fBlendMode )
     {
@@ -778,27 +896,28 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
 	// Fill texture [0]
 	if( fillDirty0 )
 	{
-		if( !data->fFillTexture0->fGPUResource )
+		if( !fillTexture0->fGPUResource )
 		{
-			QueueCreate( data->fFillTexture0 );
+			QueueCreate( fillTexture0 );
 		}
 
-		bool postponeBind = fCaptureGroups.Length() > 0 && !HasFramebufferBlit( NULL );
-		if (!postponeBind)
+		bool hasCaptures = ( fCaptureGroups.Length() > 0 );
+		bool noFramebufferBlit = hasCaptures && ( 0 == QueryBackendDetail( kHasFramebufferBlit, 0 ) );
+		if ( !hasCaptures || !noFramebufferBlit ) /* nothing to capture OR must use non-blit technique? */
 		{
-			fBackCommandBuffer->BindTexture( data->fFillTexture0, Texture::kFill0 );
+			fBackCommandBuffer->BindTexture( fillTexture0, Texture::kFill0 );
 		}
 
-		fPrevious.fFillTexture0 = data->fFillTexture0;
+		fPrevious.fTextures.SetFill0( fillTexture0 );
 		INCREMENT( fStatistics.fTextureBindCount );
 
         // TODO: Eliminate duplication with fFillTexture1
-        float f0 = 1.0f / (float)data->fFillTexture0->GetWidth();
-        float f1 = 1.0f / (float)data->fFillTexture0->GetHeight();
+        float f0 = 1.0f / (float)fillTexture0->GetWidth();
+        float f1 = 1.0f / (float)fillTexture0->GetHeight();
 
         float f2;
         float f3;
-        if( data->fFillTexture0->IsRetina() )
+        if( fillTexture0->IsRetina() )
         {
             f2 = ( f0 / fContentScaleX );
             f3 = ( f1 / fContentScaleY );
@@ -821,22 +940,22 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
 	// Fill texture [1]
 	if( fillDirty1 )
 	{
-		if( !data->fFillTexture1->fGPUResource )
+		if( !fillTexture1->fGPUResource )
 		{
-			QueueCreate( data->fFillTexture1 );
+			QueueCreate( fillTexture1 );
 		}
 
-        fBackCommandBuffer->BindTexture( data->fFillTexture1, Texture::kFill1 );
-        fPrevious.fFillTexture1 = data->fFillTexture1;
+        fBackCommandBuffer->BindTexture( fillTexture1, Texture::kFill1 );
+        fPrevious.fTextures.SetFill1( fillTexture1 );
         INCREMENT( fStatistics.fTextureBindCount );
 
         // TODO: Eliminate duplication with above
         // TODO: Need to use a different Uniform since fTexelSize is used for fFillTexture0
-        float f0 = 1.0f / (float)data->fFillTexture1->GetWidth();
-        float f1 = 1.0f / (float)data->fFillTexture1->GetHeight();
+        float f0 = 1.0f / (float)fillTexture1->GetWidth();
+        float f1 = 1.0f / (float)fillTexture1->GetHeight();
         float f2;
         float f3;
-        if( data->fFillTexture1->IsRetina() )
+        if( fillTexture1->IsRetina() )
         {
             f2 = ( f0 / fContentScaleX );
             f3 = ( f1 / fContentScaleY );
@@ -900,7 +1019,7 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
         fPrevious.fProgram = data->fProgram;
         INCREMENT( fStatistics.fProgramBindCount );
         fCurrentProgramMaskCount = MaskCount();
-        
+
         if (shaderData)
         {
             const CoronaEffectCallbacks * effectCallbacks = shaderResource->GetEffectCallbacks();
@@ -924,6 +1043,61 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
             }
         }
     }
+
+	// follows program, to pick up new syncs:
+	if ( NULL != renderDataState && !fWireframeEnabled )
+	{
+		if ( RenderDataState::kSyncInconsistent != renderDataState->GetSyncState() )
+		{
+			bool isSynced = RenderDataState::kSyncConsistent == renderDataState->GetSyncState();
+			if ( !isSynced )
+			{
+				// The extra texture set might oversupply the shader, so not all
+				// textures wind up in a new unit. When unsynced, the final layout
+				// is unknown, so our best bet is to wipe the cache.
+				fExtraTextures.Clear();
+				
+				fMaxExtraTexturesThisFrame = 0;
+			}
+			
+			Rtt_ASSERT( extraTextureCount <= RenderDataState::kOccupancyBits );
+			
+			U32 usageMask = isSynced ? renderDataState->GetOccupancy() : 0x0;
+			for ( U32 i = 0, unit = 0; i < extraTextureCount; i++ )
+			{
+				Texture* extra = data->fTextures.GetPositionAfterFills()[i]; // n.b. skip fill0 and fill1
+
+				bool usesTexture = ( usageMask & ( 1U << i ) );
+				bool isNew = usesTexture && ( extra != fExtraTextures[unit] );
+				
+				if ( ( isNew || !isSynced ) && !extra->fGPUResource )
+				{
+					QueueCreate( extra ); // n.b. do before BindTexture()
+				}
+				
+				if ( isNew )
+				{
+					fBackCommandBuffer->BindTexture( extra, Texture::kNumUnits + unit );
+					fExtraTextures[unit] = extra;
+				}
+				
+				// n.b. does not bind uniform
+			
+				if ( usesTexture )
+				{
+					++unit;
+				}
+			}
+		}
+		else
+		{
+			fGuardDraw.fList.Clear(); // empty list interpreted as broken, since nothing to sync
+				
+			fGuardDraw.fIsValid = true;
+			fGuardDraw.fPrevious = data->fProgram;
+			fGuardDraw.fIsMod25 = data->fProgram == shaderResource->GetProgramMod( ShaderResource::k25D );
+		}
+	}
 
 	// Mask texture
 	if( maskTextureDirty && data->fMaskTexture )
@@ -970,7 +1144,7 @@ Renderer::Insert( const RenderData* data, const ShaderData * shaderData )
     
     if (fCaptureGroups.Length() > 0)
 	{
-		IssueCaptures( data->fFillTexture0 );
+		IssueCaptures( fillTexture0 );
 	}
 
     if (mustReconcileFormats)
@@ -1006,11 +1180,18 @@ Renderer::Swap()
 
     // Create GPUResources
     Rtt_AbsoluteTime start = START_TIMING();
+    GPUResource::RenderContext context = {};
+    context.fCustomFormats = fCustomFormats;
+    context.fCustomFormatCount = fCustomFormatCount;
+    context.fHasRed = Has8BitRed();
+    context.fIsES2 = fIsES2;
+    
     for(S32 i = 0; i < fCreateQueue.Length(); ++i)
     {
         CPUResource* data = fCreateQueue[i];
         GPUResource* gpuResource = data->GetGPUResource();
-        gpuResource->Create( data );
+// TODO: add way for resource to refer back to Renderer...
+        gpuResource->Create( data, &context );
     }
     fCreateQueue.Remove(0, fCreateQueue.Length(), false);
     fStatistics.fResourceCreateTime = STOP_TIMING(start);
@@ -1020,7 +1201,7 @@ Renderer::Swap()
     for(S32 i = 0; i < fUpdateQueue.Length(); ++i)
     {
         CPUResource* data = fUpdateQueue[i];
-        data->GetGPUResource()->Update( data );
+        data->GetGPUResource()->Update( data, &context );
     }
     fUpdateQueue.Remove(0, fUpdateQueue.Length(), false);
     fStatistics.fResourceUpdateTime = STOP_TIMING(start);
@@ -1037,6 +1218,12 @@ Renderer::Swap()
     fBackCommandBuffer = temp;
     fGeometryPool->Swap();
     fInstancingGeometryPool->Swap();
+
+	// Commit pending first-frame program version syncs.
+	for ( S32 i = 0, iMax = fShaderResourcesWithPendingBinds.Length(); i < iMax; i++ )
+	{
+		fShaderResourcesWithPendingBinds[i]->SyncBinding(); // TODO: Swap()...
+	}
 
     // Add pending commands
     U16 length = (U16)fCustomInfo->fCommands.Length();
@@ -1224,7 +1411,7 @@ Renderer::GetStateBlockInfo( U16 id, U8 *& start, U32 & size, bool mightDirty )
 {
     if (id < fCustomInfo->fStateBlocks.Length())
     {
-        const StateBlockInfo* info = fCustomInfo->fStateBlocks.ReadAccess()[id];
+        const StateBlockInfo* info = fCustomInfo->fStateBlocks[id];
 
         start = fWorkingState.WriteAccess() + info->fOffset;
         size = info->fSize;
@@ -1246,7 +1433,7 @@ Renderer::IssueCaptures( Texture * fill0 )
 	Rtt_ASSERT( fCaptureGroups.Length() > 0 );
 	Rtt_ASSERT( fCaptureRects.Length() > 0 );
 	
-	bool hasFramebufferBlit = HasFramebufferBlit( NULL );
+	bool hasFramebufferBlit = 0 != QueryBackendDetail( kHasFramebufferBlit, 0 );
 	FrameBufferObject * oldFBO = NULL;
 	Texture * mostRecentTexture = NULL;
 	
@@ -1488,47 +1675,10 @@ Renderer::SetWireframeEnabled( bool enabled )
     fWireframeEnabled = enabled;
 }
 
-U32
-Renderer::GetMaxTextureSize()
+uintptr_t
+Renderer::QueryBackendDetail( BackendDetail detail, uintptr_t arg )
 {
-    U32 result = (U32) CommandBuffer::GetMaxTextureSize();
-    return result;
-}
-
-const char *
-Renderer::GetGlString( const char *s )
-{
-    return CommandBuffer::GetGlString( s );
-}
-
-bool
-Renderer::GetGpuSupportsHighPrecisionFragmentShaders()
-{
-    return CommandBuffer::GetGpuSupportsHighPrecisionFragmentShaders();
-}
-
-U32
-Renderer::GetMaxUniformVectorsCount()
-{
-    return CommandBuffer::GetMaxUniformVectorsCount();
-}
-
-U32
-Renderer::GetMaxVertexTextureUnits()
-{
-    return CommandBuffer::GetMaxVertexTextureUnits();
-}
-
-void
-Renderer::GetVertexAttributes( VertexAttributeSupport & support ) const
-{
-    fBackCommandBuffer->GetVertexAttributes( support );
-}
-
-bool
-Renderer::HasFramebufferBlit( bool * canScale ) const
-{
-	return fBackCommandBuffer->HasFramebufferBlit( canScale );
+	return CommandBuffer::QueryBackendDetail( detail, arg );
 }
 
 bool
@@ -1590,6 +1740,24 @@ Renderer::CheckAndInsertDrawCommand()
 {
     if( fRenderDataCount != 0 )
     {
+		if( fGuardDraw.fIsValid )
+		{
+			ShaderResource::ProgramMod mod = fGuardDraw.fIsMod25 ? ShaderResource::k25D : ShaderResource::kDefault;
+
+			// The fallback might be bound without having been drawn with yet, e.g. if
+			// every object so far used a custom effect, so make sure it has a resource.
+			if( !fDefaultPrograms[mod]->fGPUResource )
+			{
+				QueueCreate( fDefaultPrograms[mod] );
+			}
+
+			fBackCommandBuffer->CheckTextureConsistency( fGuardDraw.fPrevious->GetShaderResource(), fDefaultPrograms[mod], &fGuardDraw.fList, fGuardDraw.fNames );
+		}
+		else
+		{
+			fBackCommandBuffer->LoadUniforms();
+		}
+
         if( fPreviousPrimitiveType == Geometry::kIndexedTriangles )
         {
             fBackCommandBuffer->DrawIndexed( fIndexOffset, fIndexCount, fPreviousPrimitiveType );
@@ -1599,6 +1767,13 @@ Renderer::CheckAndInsertDrawCommand()
             fBackCommandBuffer->Draw( fVertexOffset, fVertexCount - fDegenerateVertexCount, fPreviousPrimitiveType );
         }
         INCREMENT( fStatistics.fDrawCallCount );
+
+		if( fGuardDraw.fIsValid )
+		{
+			fBackCommandBuffer->RestoreConsistency( fGuardDraw.fPrevious );
+			
+			fGuardDraw.fIsValid = false;
+		}
 
         if( fStatisticsEnabled )
         {
@@ -1758,11 +1933,11 @@ Renderer::InsertInstancing( const Geometry::ExtensionBlock* block, const FormatE
 {
     U32 verticesRequired = 0;
 
-    for (auto iter = FormatExtensionList::InstancedGroups( programList ); !iter.IsDone(); iter.Advance())
+	for ( auto&& iter : FormatExtensionList::InstancedGroups( programList ) )
     {
-        const FormatExtensionList::Group* group = iter.GetGroup();
+        const FormatExtensionList::Group* group = iter.group;
         
-        verticesRequired += group->GetVertexCount( block->fCount, iter.GetAttribute() );
+        verticesRequired += group->InstanceStreamSizeInVertices( block->fCount, iter.attribute );
     }
 
     bool enoughSpace = fCurrentInstancingGeometry && verticesRequired <=
@@ -1776,20 +1951,21 @@ Renderer::InsertInstancing( const Geometry::ExtensionBlock* block, const FormatE
     
     fBackCommandBuffer->BindInstancing( block->fCount, verticesRequired > 0 ? fCurrentInstancingVertex : NULL );
     
-    for (auto iter = FormatExtensionList::InstancedGroups( programList ); !iter.IsDone(); iter.Advance())
+	for ( auto&& iter : FormatExtensionList::InstancedGroups( programList ) )
     {
-        const FormatExtensionList::Group* programGroup = iter.GetGroup();
+        const FormatExtensionList::Group* programGroup = iter.group;
         
         // Find the geometry group corresponding to this program group. Merge
         // the corresponding instance data.
         U32 geometryAttributeIndex;
-  
-        S32 geometryGroupIndex = geometryList->FindCorrespondingInstanceGroup( programGroup, iter.GetAttribute(), &geometryAttributeIndex );
+
+		const U8* nameData = programList->FindAttributeNameData( iter.attribute );
+        S32 geometryGroupIndex = geometryList->FindCorrespondingInstanceGroup( programGroup, iter.attribute, nameData, &geometryAttributeIndex );
 
         Rtt_ASSERT( -1 != geometryGroupIndex );
         
         FormatExtensionList::Group geometryGroup = geometryList->GetGroups()[geometryGroupIndex];
-        U32 vertexCount = geometryGroup.GetVertexCount( block->fCount, geometryList->GetAttributes() + geometryAttributeIndex );
+        U32 vertexCount = geometryGroup.InstanceStreamSizeInVertices( block->fCount, geometryList->GetAttributes() + geometryAttributeIndex );
 
         if (geometryList->HasVertexRateData())
         {
@@ -2085,6 +2261,13 @@ bool
 Renderer::AddedUsesTime()
 {
 	return fFrontCommandBuffer->GetDidUseTime();
+}
+
+void
+Renderer::UpdateCustomFormats( const TextureFormatDescription* formats, U32 count )
+{
+	fCustomFormats = formats;
+	fCustomFormatCount = count;
 }
 
 void

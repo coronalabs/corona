@@ -92,16 +92,19 @@ class PlatformSurface
 // ----------------------------------------------------------------------------
 
 // TODO: Remove this when OffscreenGPUSurface is moved to a separate file
-#include "Rtt_GPU.h"
+// TODO (follow-up): was dead code anyway?
+/* #include "Rtt_GPU.h" */
 
 namespace Rtt
 {
 
 // ----------------------------------------------------------------------------
 
-#if ! defined( Rtt_ANDROID_ENV ) && ! defined( Rtt_EMSCRIPTEN_ENV )
+#if defined( OLD_GRAPHICS) && \
+	! defined( Rtt_ANDROID_ENV ) && ! defined( Rtt_EMSCRIPTEN_ENV )
 
 // TODO: Move to a separate file
+// TODO (follow-up): seems to be dead code; probably can be removed altogether
 // GPU-specific
 class OffscreenGPUSurface : public PlatformSurface
 {

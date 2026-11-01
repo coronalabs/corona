@@ -12,6 +12,7 @@
 #include "Core/Rtt_New.h"
 
 #include <string.h>
+#include <ctype.h>
 
 // ----------------------------------------------------------------------------
 
@@ -213,7 +214,7 @@ template<typename T, T kPrime, T kOffsetBasis>
 T
 GetHash( const char* buffer )
 {
-	// https://en.wikipedia.org/wiki/Fowler–Noll–Vo_hash_function
+	// https://en.wikipedia.org/wiki/FowlerÐNollÐVo_hash_function
     T hash = kOffsetBasis;
 
 	if ( NULL != buffer ) // if absent, interpret as empty string
@@ -320,6 +321,130 @@ String::RTrim(const char *trimChars)
 			fBuffer[loc] = 0;
 		}
 	}
+}
+
+// Encoding bit layout, for bytes 0-3:
+// 0 0 0 0 0 0 1 1 | 1 1 1 1 2 2 2 2 | 2 2 3 3 3 3 3 3
+
+enum {
+
+	#define COUNT_AND_OFFSET( NAME, COUNT, OFFSET ) kCount##NAME = COUNT, kOffset##NAME = OFFSET
+	#define AFTER_PREV( PREV ) kOffset##PREV + kCount##PREV
+	#define NEXT_COUNT_AND_OFFSET( NAME, OFFSET ) COUNT_AND_OFFSET( NAME, kMax##NAME - kMin##NAME + 1, OFFSET )
+
+	kMinUpper = 'A', kMaxUpper = 'Z',
+	kMinLower = 'a', kMaxLower = 'z',
+	kMinDigit = '0', kMaxDigit = '9',
+
+	NEXT_COUNT_AND_OFFSET( Upper, 0 ),
+	NEXT_COUNT_AND_OFFSET( Lower, AFTER_PREV( Upper ) ),
+	NEXT_COUNT_AND_OFFSET( Digit, AFTER_PREV( Lower ) ),
+	kOffsetUnderscore = AFTER_PREV( Digit ),
+	kOffsetNUL = kOffsetUnderscore + 1
+
+	#undef COUNT_AND_OFFSET
+	#undef AFTER_PREV
+	#undef NEXT_COUNT_AND_OFFSET
+	
+};
+
+Rtt_STATIC_ASSERT( kOffsetNUL + 1 == 64 );
+
+int
+String::EncodeIdentifier( U8* buf, const char* ident, int maxTriples )
+{
+	if ( !isalpha( *ident ) && *ident != '_' )
+	{
+		Rtt_LogException( "ERROR: Identifier must begin with a letter or underscore, got '%c'", *ident );
+	
+		return -1;
+	}
+	
+	// TODO? empty string; maxTriples == 0
+	
+	#define PLUS_1_PRED( COND, RESULT ) ( ( COND ) ? 1 + ( RESULT ) : 0 )
+	#define OFFSET_PLUS_1( CHAR, NAME ) PLUS_1_PRED( ( (U32)( CHAR - kMin##NAME ) ) <= ( (U32)( kMax##NAME - kMin##NAME ) ), kOffset##NAME + CHAR - kMin##NAME )
+
+	int k = 0, bufSize = maxTriples * 3, bad = 0;
+	
+	do {
+		U8 work[4] = { kOffsetNUL, kOffsetNUL, kOffsetNUL, kOffsetNUL };
+	
+		for (int j = 0; *ident && j < 4; ++ident, ++j)
+		{
+			int c = *ident;
+			U8 code = PLUS_1_PRED( 0 == c, kOffsetNUL ) | PLUS_1_PRED( '_' == c, kOffsetUnderscore ) |
+						OFFSET_PLUS_1( c, Upper ) | OFFSET_PLUS_1( c, Lower ) | OFFSET_PLUS_1( c, Digit );
+
+			bad = ( 0 == code ) ? c : bad;
+			work[j] = code - 1;
+		}
+
+		// This check prevents overflow, but will lead to bogus results. This is mainly
+		// intended to detect encodability, in which case the results are thrown away.
+		k = Min( k + 3, bufSize );
+
+		buf[k - 3] = ( work[0] << 2 ) | ( work[1] >> 4 );
+		buf[k - 2] = ( work[1] << 4 ) | ( work[2] >> 2 );
+		buf[k - 1] = ( work[2] << 6 ) | ( work[3] >> 0 );
+	} while ( *ident );
+
+	#undef PLUS_1_PRED
+	#undef OFFSET_PLUS_1
+
+	if ( bad )
+	{
+		Rtt_LogException( "ERROR: Non-identifier character(s) found, including %c", bad );
+		
+		return -1;
+	}
+
+	return k;
+}
+
+bool 
+String::IsIdentifier( const char* name )
+{
+	U8 junk[3];
+
+	return EncodeIdentifier( junk, name, 1 ) > 0;
+}
+
+U32
+String::DecodeIdentifier( char* name, const U8* buf, int numTriples )
+{
+	const char* start = name;
+	for ( int i = 0; i < numTriples; i++, buf += 3 )
+	{
+		U32 b1 = buf[0], b2 = buf[1], b3 = buf[2];
+		U32 work[] = {
+			b1 >> 2,
+			( ( b1 & 0x3 ) << 4 ) | ( b2 >> 4 ),
+			( ( b2 & 0xF ) << 2 ) | ( b3 >> 6 ),
+			b3 & 0x3F,
+			kOffsetNUL
+		};
+			
+		for ( int k = 0; work[k] < kOffsetNUL; ++k )
+		{
+			static const char kSymbols[] = 
+				"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+				"abcdefghijklmnopqrstuvwxyz"
+				"0123456789_";
+			
+			*name++ = kSymbols[work[k]];
+		}
+	}
+		
+	*name = 0;
+
+	return (U32)( name - start );
+}
+
+int
+String::IdentifierLengthToTriples( int length )
+{
+	return ( length + 3 ) / 4;
 }
 
 void

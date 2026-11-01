@@ -142,10 +142,18 @@ class String
 		void LTrim(const char *trimChars);
 		void RTrim(const char *trimChars);
 
+		// Identifier operations
+
+		static int EncodeIdentifier( U8* buf, const char* ident, int maxTriples );
+		static bool IsIdentifier( const char* name );
+		static U32 DecodeIdentifier( char* name, const U8* buf, int numTriples );
+
+		static int IdentifierLengthToTriples( int length );
+
 		// Path operations
 
 		// Append the given string to the end of the path including one path separator
-		void AppendPathComponent(const char *);
+		void AppendPathComponent(const char *);	
 		// Remove the last path component from the string (noop if no path separators in string)
 		void RemovePathComponent();
 		// Ensure string ends with one path separator

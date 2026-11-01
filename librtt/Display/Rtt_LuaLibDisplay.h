@@ -83,11 +83,11 @@ class LuaLibDisplay
 		static Color toColor( lua_State *L, int index, bool isBytes );
 		static void ArrayToColor( lua_State *L, int index, Color& outColor, bool isBytes );
 		static Paint *LuaNewColor( lua_State *L, int index, bool isBytes );
-		static BitmapPaint *LuaNewBitmapPaint( lua_State *L, int index );
+		static BitmapPaint *LuaNewBitmapPaint( lua_State *L, int index, void* shaderResourceOut = NULL );
 		static GradientPaint *LuaNewGradientPaint( lua_State *L, int index );
 		static CompositePaint *LuaNewCompositePaint( lua_State *L, int index );
-		static CameraPaint *LuaNewCameraPaint( lua_State *L, int index );
-		static Paint *LuaNewPaint( lua_State *L, int index );
+		static CameraPaint *LuaNewCameraPaint( lua_State *L, int index, void* shaderResourceOut = NULL );
+		static Paint *LuaNewPaint( lua_State *L, int index, void* shaderResourceOut = NULL );
 };
 
 // ----------------------------------------------------------------------------
