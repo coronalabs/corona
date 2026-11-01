@@ -1895,7 +1895,6 @@ HitEvent::DispatchFocused( lua_State *L, Runtime& runtime, StageObject& stage, D
 	Rtt_ASSERT( focus );
 
 	bool handled = false;
-
 	ScreenToContent( runtime.GetDisplay(), fXScreen, fYScreen, fXContent, fYContent );
 
 	// If we have focus, then dispatch only to that object or its ancestors
@@ -1958,9 +1957,10 @@ HitEvent::Dispatch( lua_State *L, Runtime& runtime ) const
 	StageObject& stage = * display.GetStage();
 	DisplayObject* focus = stage.GetFocus();
 	bool handled = false;
+    
 	if ( focus )
 	{
-		handled = DispatchFocused( L, runtime, stage, focus );
+		handled = DispatchFocused( L, runtime, stage, focus);
 	}
 	else
 	{
@@ -2137,9 +2137,7 @@ TouchEvent::TouchEvent()
 	fYStartScreen( Rtt_REAL_0 ),
 	fXStartContent( Rtt_REAL_0 ),
 	fYStartContent( Rtt_REAL_0 ),
-	fPressure( kPressureInvalid ),
-	fDeltaX( Rtt_REAL_0 ),
-	fDeltaY( Rtt_REAL_0 )
+	fPressure( kPressureInvalid )
 {
 }
 
@@ -2151,9 +2149,7 @@ TouchEvent::TouchEvent( Real x, Real y, Real xStartScreen, Real yStartScreen, Ph
 	fYStartScreen( yStartScreen ),
 	fXStartContent( xStartScreen ),
 	fYStartContent( yStartScreen ),
-	fPressure( pressure ),
-	fDeltaX( x - xStartScreen ),
-	fDeltaY( y - yStartScreen )
+	fPressure( pressure )
 {
 }
 
@@ -2178,14 +2174,16 @@ TouchEvent::Push( lua_State *L ) const
 
 		lua_pushstring( L, StringForPhase( (Phase)fPhase ) );
 		lua_setfield( L, -2, kPhaseKey );
-
+        
 		lua_pushnumber( L, Rtt_RealToFloat( fXStartContent ) );
 		lua_setfield( L, -2, kXStartKey );
 		lua_pushnumber( L, Rtt_RealToFloat( fYStartContent ) );
 		lua_setfield( L, -2, kYStartKey );
-		lua_pushinteger( L, Rtt_RealToInt( fDeltaX) );
+        
+        
+        lua_pushnumber( L, X()-Rtt_RealToFloat( fXStartContent ) );
 		lua_setfield( L, -2, kXDeltaKey );
-		lua_pushinteger( L, Rtt_RealToInt( fDeltaY ));
+        lua_pushnumber( L, Y()-Rtt_RealToFloat( fYStartContent ));
 		lua_setfield( L, -2, kYDeltaKey );
 		
 		if ( fPressure >= kPressureThreshold )
@@ -2208,7 +2206,7 @@ void
 TouchEvent::Dispatch( lua_State *L, Runtime& runtime ) const
 {
 	ScreenToContent( runtime.GetDisplay(), fXStartScreen, fYStartScreen, fXStartContent, fYStartContent );
-
+    
 	Super::Dispatch( L, runtime );
 }
 
@@ -2266,8 +2264,7 @@ MultitouchEvent::Dispatch( lua_State *L, Runtime& runtime ) const
 		if ( object )
 		{
 			// Dispatch focused per-object touch events
-			e.DispatchFocused( L, runtime, stage, object );
-
+			e.DispatchFocused( L, runtime, stage, object);
 			// Cleanup: remove per-object focus at the end of the touch (e.g. phase is "ended" or "cancelled")
 			if ( shouldCleanup )
 			{
