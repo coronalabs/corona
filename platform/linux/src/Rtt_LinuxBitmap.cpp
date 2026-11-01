@@ -179,7 +179,7 @@ namespace Rtt
 		return fData != NULL;
 	}
 
-	bool LinuxBaseBitmap::SaveBitmap(Rtt_Allocator *context, PlatformBitmap *bitmap, const char *filePath)
+	bool LinuxBaseBitmap::SaveBitmap(Rtt_Allocator *context, PlatformBitmap *bitmap, const char *filePath, float jpegQuality)
 	{
 		// Validate.
 		if ((NULL == bitmap) || (NULL == filePath))
@@ -205,7 +205,7 @@ namespace Rtt
 		}
 		else if (path.rfind(".jpg") != std::string::npos)
 		{
-			rc = bitmapUtil::saveJPG(filePath, bits, w, h, fmt, 75); // jpegQuality);
+			rc = bitmapUtil::saveJPG(filePath, bits, w, h, fmt, jpegQuality);
 		}
 		return rc;
 	}
