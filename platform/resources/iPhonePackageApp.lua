@@ -1117,7 +1117,7 @@ local function packageApp( options )
 			local suffix = "_SwiftSupport"
 			local ssDir = captureCommandOutput("mktemp -d -t CLtmpXXXXXX"..suffix) -- creates a temporary directory
 			-- be paranoid because we'll "rm -r" this later
-			if not ssDir:sub(-string.len(suffix)) == suffix then
+			if not ssDir or ssDir:sub(-string.len(suffix)) ~= suffix then
 				return "Problem with temporary directory: "..tostring(ssDir)
 			end
 			bundleSwiftSupportParentDir = ssDir
@@ -1137,6 +1137,17 @@ local function packageApp( options )
 		if result ~= 0 then
 			errMsg = "ERROR: bundling Swift libraries required by plugins failed: "..tostring(errMsg)
 			return errMsg
+		end
+
+		-- Since iOS 12.2 the Swift runtime ships with the OS, so swift-stdlib-tool often copies nothing
+		-- and leaves an empty SwiftSupport/iphoneos folder behind. App Store Connect rejects an IPA with an
+		-- empty SwiftSupport folder (ITMS-90424), so only include it when it holds Swift libraries.
+		if bundleSwiftSupportDir then
+			local swiftLibs = captureCommandOutput("find "..quoteString(bundleSwiftSupportDir).." -type f -name '*.dylib' 2>/dev/null | head -n 1")
+			if not swiftLibs or swiftLibs == "" then
+				print("No Swift libraries need bundling; leaving SwiftSupport out of the IPA")
+				bundleSwiftSupportDir = nil
+			end
 		end
 	end
 
@@ -1208,7 +1219,7 @@ local function packageApp( options )
 		local ipaTmpDir = captureCommandOutput("mktemp -d -t CLtmpXXXXXX"..suffix) -- creates a temporary directory
 
 		-- be paranoid because we'll "rm -r" this later
-		if not ipaTmpDir:sub(-string.len(suffix)) == suffix then
+		if not ipaTmpDir or ipaTmpDir:sub(-string.len(suffix)) ~= suffix then
 			return "Problem with temporary directory: "..tostring(ipaTmpDir)
 		end
 
@@ -1225,7 +1236,7 @@ local function packageApp( options )
 			end
 
 			if bundleSwiftSupportDir then
-				runScript( "mv " .. bundleSwiftSupportDir .." ".. quoteString(ipaTmpDir) )
+				runScript( "mv " .. quoteString(bundleSwiftSupportDir) .." ".. quoteString(ipaTmpDir) )
 			end
 
 			runScript( "cd " .. quoteString(ipaTmpDir) .. "; zip --symlinks -r " .. appBundleFileIPA .. " *" )
