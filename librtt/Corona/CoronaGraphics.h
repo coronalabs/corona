@@ -255,11 +255,23 @@ typedef struct CoronaExternalTextureExtension_TextureTarget {
 	
 	/**
 	*/
+	int canCoalesceMipLevel;
+	
+	/**
+	*/
 	int isArray;
 	// TODO: these actually describe the samplers; family and array-ness is more or less right
 		// TODO: want some way to specify layers (and levels, with mipmaps)...
 		// any way to do so that doesn't just blow up combinatorically?
 	// there are some target + array-ness combinations to work out
+	
+	/**
+	*/
+	int layerCount;
+
+	/**
+	*/
+	int (*prepareLayerAndMip)( int layer, int mip, int *numLayers, int sizes[3] );
 } CoronaExternalTextureExtension_TextureTarget;
 
 /**
