@@ -129,6 +129,12 @@ CompositePaint::PrepareExtraTextures( U32 count, const LengthAccumulator& names 
 		fExtraInfo = (ExtraTextureInfo*)Rtt_MALLOC( NULL, TextureInfoSize( count, true ) + count + names.GetTotalBytes() );
 		fExtraCount = count;
 		
+		PtrTR* resources = (PtrTR*)GetTextureResourceList();
+        for ( U32 i = 0; i < count; i++ )
+        {
+            new ( &resources[i] ) PtrTR();
+        }
+		
 		Texture** texturesList = GetTexturesList();
 
 		Rtt_ASSERT( fPaint0 && fPaint1 ); // TODO: possibly can be relaxed... maybe to fPaint0 || !fPaint1

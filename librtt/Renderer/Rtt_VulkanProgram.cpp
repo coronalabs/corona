@@ -154,10 +154,10 @@ VulkanProgram::VulkanProgram( VulkanContext * context )
 }
 
 bool
-VulkanProgram::UsesTime ( Program::Version version, bool includeDelta ) const
+VulkanProgram::UsesTime( Program::Version version, bool includeDelta ) const
 {
 	Rtt_ASSERT( version < Program::kNumVersions );
-	Rtt_ASSERT( ( 0 != fData[version].fProgram ) || ( !fData[version].HasTotalTime() && !fData[version].HasDeltaTime() ) );
+	Rtt_ASSERT( ( fData[version].IsValid() ) || ( !fData[version].HasTotalTime() && !fData[version].HasDeltaTime() ) );
 
 	return fData[version].HasTotalTime() || ( includeDelta && fData[version].HasDeltaTime() );
 }
