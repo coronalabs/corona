@@ -10,6 +10,10 @@
 #ifndef _Rtt_GL_H__
 #define _Rtt_GL_H__
 
+#ifndef GL_SILENCE_DEPRECATION
+	#define GL_SILENCE_DEPRECATION
+#endif
+
 #include "Core/Rtt_Config.h"
 #include "Renderer/Rtt_GPUResource.h"
 

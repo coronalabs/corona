@@ -39,7 +39,9 @@ class Uniform;
 class RenderingStream;
 class BufferBitmap;
 class ShaderData;
+class ShaderResource;
 struct CustomGraphicsInfo;
+struct RenderDataState;
 struct TimeTransform;
 
 // ----------------------------------------------------------------------------
@@ -58,6 +60,8 @@ class Renderer
         // be called when a valid rendering context is active.
         virtual void Initialize();
 
+		void SetDefaultPrograms( Program* defaultPrograms[2] );
+
 		// Perform any per-frame preparation. Total time is the time in seconds
 		// since the start of the application. Delta time is the amount of time
 		// in seconds it took to complete the previous frame.
@@ -70,6 +74,9 @@ class Renderer
 
 		virtual void CaptureFrameBuffer( RenderingStream & stream, BufferBitmap & bitmap, S32 x_in_pixels, S32 y_in_pixels, S32 w_in_pixels, S32 h_in_pixels );
 		virtual void EndCapture() {}
+
+		virtual bool MatchToFormatDescription( TextureFormatDescription* desc, const void* data );
+		virtual void DetectOneComponentTextureFormatSupport();
 
 		// Get the current view and projection matrices. These 4x4 matrices are
 		// returned via the given pointers, which are assumed to be non-null.
@@ -147,7 +154,7 @@ class Renderer
 
 		// Generate the minimum set of commands needed to ensure that the given
 		// RenderData is properly drawn on the next call to Render().
-		void Insert( const RenderData* data, const ShaderData * shaderData = NULL );
+		void Insert( const RenderData* data, const ShaderData * shaderData = NULL, RenderDataState * renderDataState = NULL );
 
         // Render all data added since the last call to swap(). It is both safe
         // and expected that Render() is called while another thread is adding
@@ -183,14 +190,19 @@ class Renderer
         // Render triangles as outlines with no interior. Useful for debugging.
         void SetWireframeEnabled( bool enabled );
 
-		static U32 GetMaxTextureSize();
-		static const char *GetGlString( const char *s );
-		static bool GetGpuSupportsHighPrecisionFragmentShaders();
-        static U32 GetMaxUniformVectorsCount();
-		static U32 GetMaxVertexTextureUnits();
+		typedef enum _BackendDetail : U32 {
+			kMaxTextureSize,
+			kGlString,
+			kSupportsHighPrecisionFragmentShaders,
+			kMaxUniformVectorsCount,
+			kMaxVertexTextureUnits,
+			kMaxImageUnits,
+			kHasFramebufferBlit,
+			kVertexAttributes
+		}
+		BackendDetail;
 
-        bool HasFramebufferBlit(  bool * canScale ) const;
-        void GetVertexAttributes( VertexAttributeSupport & support ) const;
+		static uintptr_t QueryBackendDetail( BackendDetail detail, uintptr_t arg );
 
         struct Statistics
         {
@@ -324,6 +336,11 @@ class Renderer
 	public:
 		bool AddedUsesTime();
 
+	public:
+		void UpdateCustomFormats( const TextureFormatDescription* formats, U32 count );
+
+		bool Has8BitRed() const { return fHas8BitRed; }
+		
 	protected:
 		Rtt_Allocator* fAllocator;
 		
@@ -379,6 +396,15 @@ class Renderer
         Geometry::Vertex* fCurrentInstancingVertex;
         Geometry* fCurrentInstancingGeometry;
 
+		Program* fDefaultPrograms[2]; // default and 2.5D
+
+		bool fIsES2;
+		bool fHas8BitRed;
+
+		// Non-owning:
+		const TextureFormatDescription* fCustomFormats;
+		U32 fCustomFormatCount;
+
         Real fContentScaleX; // Temporary holder.
         Real fContentScaleY; // Temporary holder.
 
@@ -411,6 +437,22 @@ class Renderer
         Array< GeometryWriter > fGeometryWriters;
         const GeometryWriter* fCurrentGeometryWriterList; // to detect change in writer; assumed to be stable object, i.e. either NULL (default) or some static array
         bool fCanAddGeometryWriters;
+
+		LightPtrArray<ShaderResource> fShaderResourcesWithPendingBinds;
+		LightPtrArray<Texture> fExtraTextures;
+		U16 fMaxExtraTexturesThisFrame;
+		
+		struct GuardInfo {
+			GuardInfo() : fNames( NULL ), fIsMod25( false ), fIsValid( false ) {}
+			
+			TextureList fList;
+			Program* fPrevious;
+			const U8* fNames;
+			bool fIsMod25;
+			bool fIsValid;
+		};
+		
+		GuardInfo fGuardDraw;
         
 		const TimeTransform* fPrevTimeTransform;   
 		float fRawTime;

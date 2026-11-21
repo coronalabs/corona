@@ -12,6 +12,10 @@
 #include "Renderer/Rtt_GL.h"
 #include "Rtt_RenderTypes.h"
 
+#ifdef Rtt_DEBUG
+	#include "Corona/CoronaGraphics.h" /* validate some bit counts */
+#endif
+
 #include <string.h>
 
 // ----------------------------------------------------------------------------
@@ -1166,6 +1170,423 @@ bool
 BlendMode::operator==( const BlendMode& rhs ) const
 {
 	return 0 == memcmp( this, & rhs, sizeof( BlendMode ) );
+}
+
+// ----------------------------------------------------------------------------
+
+// These details are used to lug around some information for non-built-in or
+// non-2D-target texture and / or bitmap resources, and avoid the inconvenience
+// and / or need to pester the texture factory.
+
+enum {
+	// Various single-bit flags.
+	kFlagBits = 1 /* special flag */
+
+		// This is used for a few special cases: the format is word-packed, or compressed
+		// in an ASTC-ish (16-bit block size) way.
+
+			+ 1 /* array flag */
+			
+		// The texture is structured as an array.
+
+			+ 1 /* component #1 flag */
+			
+		// In the case of a word-packed format, component #2 has 1 more bit than average.
+			
+			+ 1 /* component #2 flag */
+
+		// ...likewise, but for component #2...
+		
+			+ 1 /* component #3 flag */
+
+		// ...and component #3.
+
+			+ 1, /* is-mask flag */
+		
+		// In the case of a one-component format, indicate it has mask semantics.
+
+	// These bits describe whether a texture and sampler can pair up, so that paints
+	// know whether they can plug into a given shader input. Some bitmap operations
+	// can also take this into consideration, e.g. only considering vanilla 2D.
+	kFamilyBits = 2,
+	kTargetBits = 3,
+
+	// Allow 511 (0 being "no custom format") possible texture formats and aliases.
+	// This is a bit arbitrary: some digging suggests a Vulkan backend, seemingly the
+	// most prolific case, might allow 300-some options, although only a few of these
+	// are likely to matter in real situations.
+	// When one of these is in use, the detail bits also come into play. Furthermore,
+	// the stock bits, i.e. those that would have contained a built-in format's value,
+	// lose their meaning and so may be repurposed.
+	kFormatIndexBits = 9,
+
+	// These are some details used to interpret the format as a bitmap, e.g. finding
+	// the size or component layout. The different sorts of formats (currently "normal",
+	// word-packed, or compressed) each interpret these in a particular way.
+	kBytesPerComponentBits = 2,
+	kComponentCountBits = 2,
+	kDataBits = 4,
+
+	// These describe in broad strokes how to interpret the input data, e.g. as the
+	// common 0-255, normalized to 0-1 on the GPU, versus actual floating-point. A
+	// few hybrid formats can also distinguish themselves in this way.
+	kInputKindBits = 3,
+
+	// Sums of some related bits...
+	kTargetPartBits = kFamilyBits + kTargetBits,
+	kDetailBits = kBytesPerComponentBits + kComponentCountBits + kDataBits,
+
+	// ...and # of bits maximally alloted (with stock format bits repurposed).
+	kAllBits = kFlagBits + kFormatIndexBits + kTargetPartBits + kDetailBits + kInputKindBits
+
+	// Some validation of these is done in corresponding C++ files.
+};
+
+Rtt_STATIC_ASSERT( kTextureInputKind_NumKinds <= ( 1U << kInputKindBits ) );
+Rtt_STATIC_ASSERT( kAllBits <= 32 );
+
+// ----------------------------------------------------------------------------
+
+struct MaskInfo {
+	int fFirstBit;
+	int fNumBits;
+	U32 fIncludeMask;
+	U32 fExcludeMask;
+};
+
+#define INCLUDE_MASK( numBits ) ( ( 1U << ( numBits ) ) - 1 )
+#define MAKE_MASK_INFO( first, numBits, next ) { \
+	first, numBits, INCLUDE_MASK( numBits ), ~( INCLUDE_MASK( numBits ) << ( first ) ) \
+}; const int next = first + numBits
+#define MAKE_FLAG_MASK( offset, next ) 1U << ( offset ); const int next = ( offset ) + 1
+
+static const MaskInfo StockFormatMask = MAKE_MASK_INFO( 0, FormatDetails::kStockFormatBits, kFormatIndexOffset );
+static const MaskInfo FormatIndexMask = MAKE_MASK_INFO( kFormatIndexOffset, kFormatIndexBits, kFamilyOffset );
+
+static const MaskInfo FamilyMask = MAKE_MASK_INFO( kFamilyOffset, kFamilyBits, kTargetOffset );
+static const MaskInfo TargetMask = MAKE_MASK_INFO( kTargetOffset, kTargetBits, kIsArrayFlagOffset );
+static const U32 IsArrayMask = MAKE_FLAG_MASK( kIsArrayFlagOffset, kBytesPerComponentOffset );
+
+// n.b. repurposes stock format bits when using non-core format
+static const MaskInfo ComponentCountMask = MAKE_MASK_INFO( 0, kComponentCountBits, kSpecialFlagOffset );
+static const U32 SpecialFlagMask = MAKE_FLAG_MASK( kSpecialFlagOffset, kComponentsPlusSpecialMaskSize );
+Rtt_STATIC_ASSERT( FormatDetails::kStockFormatBits >= kComponentsPlusSpecialMaskSize );
+
+static const MaskInfo BytesPerComponentMask = MAKE_MASK_INFO( kBytesPerComponentOffset, kBytesPerComponentBits, kDataOffset );
+static const MaskInfo DataMask = MAKE_MASK_INFO( kDataOffset, kDataBits, kDiff1FlagOffset );
+static const U32 Diff1FlagMask = MAKE_FLAG_MASK( kDiff1FlagOffset, kDiff2FlagOffset );
+static const U32 Diff2FlagMask = MAKE_FLAG_MASK( kDiff2FlagOffset, kDiff3FlagOffset );
+static const U32 Diff3FlagMask = MAKE_FLAG_MASK( kDiff3FlagOffset, kInputKindOffset );
+
+// TODO: if "word-packed" && #components < 3, further cases
+	// can hijack Diff*Flag if #components = 1 (e.g. bit 1 says "is depth or stencil", bit 2 decides which; else = "other" with data)
+	// if we ARE using depth-stencil, we can potentially forgo some stuff, e.g. "has alpha" or "color byte indices"
+
+static const MaskInfo InputKindMask = MAKE_MASK_INFO( kInputKindOffset, kInputKindBits, kIsMaskFlagOffset );
+static const U32 kIsMaskFlagMask = MAKE_FLAG_MASK( kIsMaskFlagOffset, kDoneOffset );
+
+Rtt_STATIC_ASSERT( kDoneOffset == kAllBits );
+
+// TODO: can supply 32 - kAllBits and getter / setter...
+
+#undef INCLUDE_MASK
+#undef MAKE_MASK_INFO
+#undef MAKE_FLAG_MASK
+
+static U32
+GetBits( U32 v, const MaskInfo& info )
+{
+	return ( v >> info.fFirstBit ) & info.fIncludeMask;
+}
+
+static void
+SetBits( U32* v, U32 bits, const MaskInfo& info )
+{
+	Rtt_ASSERT( ( bits & info.fIncludeMask ) == bits );
+	
+	*v &= info.fExcludeMask;
+	*v |= bits << info.fFirstBit;
+}
+
+// ----------------------------------------------------------------------------
+
+int
+FormatDetails::GetFormatIndexBitCount()
+{
+	return kFormatIndexBits;
+}
+
+U32
+FormatDetails::GetStockFormat( U32 v )
+{
+	return GetBits( v, StockFormatMask );
+}
+
+U32
+FormatDetails::GetFormatIndex( U32 v )
+{
+	return GetBits( v, FormatIndexMask );
+}
+
+U32
+FormatDetails::GetFamily( U32 v )
+{
+	return GetBits( v, FamilyMask );
+}
+
+U32
+FormatDetails::GetTarget( U32 v )
+{
+	return GetBits( v, TargetMask );
+}
+
+bool
+FormatDetails::HasArrayFlag( U32 v )
+{
+	return 0 != ( v & IsArrayMask );
+}
+
+bool
+FormatDetails::IsCore( U32 v )
+{
+	return 0 == GetFormatIndex( v );
+}
+
+void
+FormatDetails::AddMaskBit( U32& backingValue )
+{
+	backingValue |= kIsMaskFlagMask;
+}
+
+bool
+FormatDetails::HasMaskBit( U32 backingValue )
+{
+	return 0 != ( backingValue & kIsMaskFlagMask );
+}
+
+struct Bits {
+	U32 Get( const MaskInfo& mask ) const { return GetBits( fValue, mask ); }
+	U32 GetCount( const MaskInfo& mask ) const { return Get( mask ) + 1; }
+
+	void Set( U32 bits, const MaskInfo& mask )
+	{
+		Rtt_ASSERT( ( bits & mask.fIncludeMask ) == bits );
+		SetBits( &fValue, bits, mask );
+	}
+	
+	void SetCount( U32 bits, const MaskInfo& mask )
+	{
+		Rtt_ASSERT( bits > 0 );
+		Set( bits - 1, mask );
+	}
+	
+	bool HasFlag( U32 flag ) const { return 0 != ( fValue & flag ); }
+	void SetFlag( U32 flag ) { fValue |= flag; }
+
+	U32 fValue;
+};
+
+// n.b. an alternative to this would be a struct with a bunch of U32-based
+// bitfields, that ensures the final size == sizeof(U32); this would mildly
+// affect repurposing the stock bits, and also not give an obvious way to
+// access any "extra" bits that remain, so the scheme used here seems best
+
+// ----------------------------------------------------------------------------
+
+U32
+FormatDetails::BuildFromDescription( const TextureFormatDescription* desc, U32 formatIndex )
+{
+	if ( desc->IsWordPacked() )
+	{
+		Rtt_ASSERT( ( 0 != desc->fSizes[0] ) && ( 0 != desc->fSizes[1] ) );
+		Rtt_ASSERT( ( 0 != desc->fSizes[2] ) || ( 0 == desc->fSizes[3] ) );
+		Rtt_ASSERT( ( desc->fSizes[0] + desc->fSizes[1] + desc->fSizes[2] + desc->fSizes[3] ) % 8 == 0 );
+	}
+	else
+	{
+		if ( desc->IsCompressed() )
+		{
+			Rtt_ASSERT( desc->fBlockWidth != 0 && desc->fBlockHeight != 0 && desc->fBlockSize != 0 );
+		}
+		else
+		{
+			Rtt_ASSERT( desc->fNumComponents >= 1 && desc->fNumComponents <= 4 );
+			Rtt_ASSERT( desc->fBytesPerComponent == 1 || desc->fBytesPerComponent == 2 || desc->fBytesPerComponent == 4 );
+		}
+	}
+	
+	Bits bits = {};
+	if ( desc->IsWordPacked() )
+	{
+		int componentCount = 2 + ( 0 != desc->fSizes[2] ) + ( 0 != desc->fSizes[3] );
+// TODO: can use 1 to sneak in exceptions? (also, 2 == depth, if anything)
+		bits.SetCount( componentCount, ComponentCountMask );
+	}
+	else if ( !desc->IsCompressed() )
+	{
+		bits.SetCount( desc->fNumComponents, ComponentCountMask );
+	}
+
+	if ( desc->IsCompressed() )
+	{
+		bits.SetCount( 3, BytesPerComponentMask ); // 3 != valid size, so encodes compression
+
+		if ( 16 == desc->fBlockSize ) // ASTC or certain BC format?
+		{
+			U32 data = Texture::Format::BlockDimsID( desc->fBlockWidth, desc->fBlockHeight );
+
+			Rtt_ASSERT( data >= 0 && data < ( 1 << kDataBits ) );
+			
+			bits.Set( data, DataMask );
+			bits.SetFlag( SpecialFlagMask );
+		}
+	}
+	else if ( desc->IsWordPacked() )
+	{
+		U32 sumOfSizes = desc->fSizes[0] + desc->fSizes[1] + desc->fSizes[2] + desc->fSizes[3];
+
+		bits.SetCount( sumOfSizes / 8, BytesPerComponentMask );
+		bits.SetFlag( SpecialFlagMask );
+
+		bool hasThreeOrMoreComponents = ( 0 != desc->fSizes[2] );
+		if ( hasThreeOrMoreComponents ) // "normal" word-packed format?
+		{
+			int firstIndex = 0;
+			U32 dataBits = 0, isReversed = 0 != ( desc->fFlags & TextureFormatDescription::kIsReversed );
+			if ( 0 != desc->fSizes[3] ) // has four components?
+			{
+				// In the case of word-packed formats with four components, at least three of
+				// them have either their (floored) average value, or are one greater. There
+				// are some formats where the fourth value is an outlier: these always appear
+				// to be small, in particular <= 3 bits.
+				
+				// Whether the outlier differs or not, put it in the data and deduct it from
+				// the sum-of-sizes, giving us an average honoring the above description.
+				U8 outlier;
+				if ( isReversed )
+				{
+					firstIndex++;
+					outlier = desc->fSizes[0];
+				}
+				else
+				{
+					outlier = desc->fSizes[3];
+				}
+				
+				Rtt_ASSERT( ( ( outlier << 1 ) & DataMask.fIncludeMask ) == ( outlier << 1 ) );
+				
+				dataBits = outlier;
+				sumOfSizes -= outlier;
+			}
+			
+			bits.Set( ( dataBits << 1 ) | isReversed, DataMask );
+			
+			U32 averagePlusOne = sumOfSizes / 3 + 1;
+			if ( desc->fSizes[firstIndex] == averagePlusOne )
+			{
+				bits.SetFlag( Diff1FlagMask );
+			}
+			if ( desc->fSizes[firstIndex + 1] == averagePlusOne )
+			{
+				bits.SetFlag( Diff2FlagMask );
+			}
+			if ( desc->fSizes[firstIndex + 2] == averagePlusOne )
+			{
+				bits.SetFlag( Diff3FlagMask );
+			}
+		}
+		else
+		{
+			// TODO: depth, planar, etc.
+				// redundant, given family == kOtherFamily?
+		}
+	}
+	else
+	{
+		bits.SetCount( desc->fBytesPerComponent, BytesPerComponentMask );
+		// TODO: miscellaneous bits in 
+	}
+
+	bits.Set( formatIndex, FormatIndexMask );
+
+	return bits.fValue;
+}
+
+U32
+FormatDetails::GatherFamilyInfo( U32 family, U32 target, bool isArray )
+{
+	U32 value = 0;
+	SetBits( &value, family, FamilyMask );
+	SetBits( &value, target, TargetMask );
+	
+	if ( isArray )
+	{
+		value |= IsArrayMask;
+	}
+	
+	return value;
+}
+
+size_t
+FormatDetails::GetSize( U16 w, U16 h, U32 backingValue )
+{
+	Bits bits = { backingValue };
+	U32 bytesPerComponent = bits.GetCount( BytesPerComponentMask );
+	if ( 3 == bytesPerComponent ) // compressed? cf. BuildFromDescription()
+	{
+		U8 blockWidth, blockHeight, blockSize;
+		bool has16Bytes = bits.HasFlag( SpecialFlagMask );
+		if ( has16Bytes )
+		{
+			Texture::Format::GetBlockDims( bits.Get( DataMask ), blockWidth, blockHeight );
+			
+			blockSize = 16;
+		}
+		else
+		{
+			blockWidth = 4;
+			blockHeight = 4;
+			blockSize = 8;
+		}
+		
+		return Texture::Format::GetCompressedSize( w, h, blockWidth, blockHeight, blockSize );
+	}
+	else if ( bits.HasFlag( SpecialFlagMask ) ) // word-packed?
+	{
+		return ( w * h ) * bytesPerComponent; // TODO! (1, 2, or 4, #components irrelevant)
+				// assuming we don't care about non-color stuff (depth, stencils, etc.) probably covers it?
+				// planar, etc. but might fall into same rubric (maybe suss out a bit combination that rules these out)
+	}
+	else
+	{
+		U32 componentCount = bits.GetCount( ComponentCountMask );
+		return ( w * h ) * ( componentCount * bytesPerComponent );
+	}
+}
+
+bool
+FormatDetails::IsCompressed( U32 backingValue )
+{
+	return 3 == Bits{ backingValue }.GetCount( BytesPerComponentMask );
+}
+
+bool
+FormatDetails::HasAlphaChannel( U32 backingValue )
+{
+	return 4 == Bits{ backingValue }.GetCount( ComponentCountMask );
+	// TODO: RA, etc.
+}
+
+void
+FormatDetails::GetComponentIndices( U32 backingValue, int& redIndex, int& greenIndex, int& blueIndex, int& alphaIndex )
+{
+	U32 componentCount = Bits{ backingValue }.GetCount( ComponentCountMask );
+	
+	redIndex = 0;
+	greenIndex = ( componentCount > 1 ) ? 1 : -1;
+	blueIndex = ( componentCount > 2 ) ? 2 : -1;
+	alphaIndex = ( componentCount > 3 ) ? 3 : -1;
+	// TODO: BGRA, etc.
 }
 
 // ----------------------------------------------------------------------------

@@ -138,6 +138,8 @@ class VulkanRenderer : public Renderer
 		virtual void CaptureFrameBuffer( RenderingStream & stream, BufferBitmap & bitmap, S32 x_in_pixels, S32 y_in_pixels, S32 w_in_pixels, S32 h_in_pixels );
 		virtual void EndCapture();
 
+		virtual void DetectOneComponentTextureFormatSupport() {} // TODO: probably `fHasRed = true`; need to check some other pieces are in place
+
 	public:
 		VkSwapchainKHR MakeSwapchain();
 

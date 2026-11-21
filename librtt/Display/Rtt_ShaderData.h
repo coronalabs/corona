@@ -106,8 +106,9 @@ class ShaderData
 		Uniform *fUniformData[kNumData];
 		WeakPtr< ShaderResource > fShaderResource;
         void * fExtraSpace;
-        U32 fExtraCount;
 		const Shader *fOwner;
+		const char *fKeys;
+        U32 fExtraCount;
 		U8 fDirtyFlags;
 };
 

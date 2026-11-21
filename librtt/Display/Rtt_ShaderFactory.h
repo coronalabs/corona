@@ -67,6 +67,13 @@ class ShaderFactory
 				ShaderBinaryVersions &compiled25DShaders,
                 int localStubsIndex );
 #else
+		struct TweakDetails {
+			const char* fVert;
+			const char* fFrag;
+			int fHasZFlagPos; // n.b. stack slot, and gets stomped on for temporary storage
+			bool fSamplerTypes;
+		};
+
 		Program *NewProgram(
 				const char *shellVert,
 				const char *shellFrag,
@@ -78,7 +85,8 @@ class ShaderFactory
 				const char *name,
 				const char *kernelVert,
 				const char *kernelFrag,
-                int localStubsIndex );
+                int localStubsIndex,
+                const TweakDetails* tweaks );
 #endif
         Shader *NewShaderPrototype( lua_State *L, int index, const SharedPtr< ShaderResource >& resource );
 
@@ -91,6 +99,7 @@ class ShaderFactory
         void BindShellTransform( lua_State * L, int index, const SharedPtr< ShaderResource >& resource );
         void BindTimeTransform( lua_State *L, int index, const SharedPtr< ShaderResource >& resource );
         void BindVertexExtension( lua_State *L, int index, const SharedPtr< ShaderResource >& resource );
+        void BindLanguageExtensions( lua_State *L, int index, const SharedPtr< ShaderResource >& resource );
 
         void InitializeBindings( lua_State *L, int shaderIndex, const SharedPtr< ShaderResource >& resource );
 #if defined( Rtt_USE_PRECOMPILED_SHADERS )
@@ -165,6 +174,7 @@ class ShaderFactory
 		Program *fDefaultKernel;
 		ProgramHeader *fProgramHeader;
 		const char *fBackend;
+		int fReplaceFuncRef;
 };
 
 // ----------------------------------------------------------------------------

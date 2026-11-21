@@ -598,6 +598,30 @@ int CoronaExternalFormatBPP(CoronaExternalBitmapFormat format)
 	CoronaCallbackLoad();
 	return CoronaCallbackInvoke(format);
 }
+
+CORONA_API
+int CoronaDefineStandardTextureFormat(lua_State *L, const CoronaTextureFormatDetails *details, unsigned int componentCount, unsigned int bytesPerComponent)
+{
+	typedef int(*CoronaCallbackType)(lua_State*, const CoronaTextureFormatDetails*, unsigned int, unsigned int);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(L, details, componentCount, bytesPerComponent);
+}
+
+CORONA_API
+int CoronaDefineWordPackedTextureFormat(lua_State *L, const CoronaTextureFormatDetails *details, unsigned int bitCounts[4])
+{
+	typedef int(*CoronaCallbackType)(lua_State*, const CoronaTextureFormatDetails*, unsigned int*);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(L, details, bitCounts);
+}
+
+CORONA_API
+int CoronaDefineCompressedTextureFormat(lua_State *L, const CoronaCompressedTextureFormatDetails *details, unsigned int componentCount)
+{
+	typedef int(*CoronaCallbackType)(lua_State*, const CoronaCompressedTextureFormatDetails*, unsigned int);
+	CoronaCallbackLoad();
+	return CoronaCallbackInvoke(L, details, componentCount);
+}
 #pragma endregion
 
 #pragma region Corona Renderer API

@@ -64,6 +64,43 @@ template < > Rtt_TYPES_INLINE long double Abs< long double >( long double a ) { 
 
 // ----------------------------------------------------------------------------
 
+#if defined( Rtt_WIN_ENV )
+    Rtt_INLINE unsigned int Rtt_Pop16( U16 v )
+    {
+		v -= ( ( v >> 1 ) & 0x5555 );
+
+		v = ( ( v >> 2 ) & 0x3333 ) + ( v & 0x3333 );
+		v = ( ( v >> 4 ) + v ) & 0x0F0F;
+		
+		return ( ( v >> 8 ) + v ) & 0x00FF;
+    }
+	
+    Rtt_INLINE unsigned int Rtt_Pop32( U32 v )
+    {
+        v -= ( v >> 1 ) & 0x55555555;
+
+        v = ( v & 0x33333333 ) + ( ( v >> 2 ) & 0x33333333 );
+
+        return ( ( v + ( v >> 4 ) & 0x0F0F0F0F ) * 0x01010101 ) >> 24;
+    }
+
+    Rtt_INLINE unsigned int Rtt_Pop64( U64 v )
+    {
+        v -= ( v >> 1 ) & 0x5555555555555555ULL;
+
+        v = ( v & 0x3333333333333333ULL ) + ( ( v >> 2 ) & 0x3333333333333333ULL );
+        v = ( v + ( v >> 4 ) ) & 0x0F0F0F0F0F0F0F0FULL;
+
+        return ( v * 0x0101010101010101ULL ) >> 56;
+    }
+#else
+	#define Rtt_Pop16 __builtin_popcount
+	#define Rtt_Pop32 __builtin_popcount
+	#define Rtt_Pop64 __builtin_popcountll
+#endif
+
+// ----------------------------------------------------------------------------
+
 } // Rtt
 
 #endif // __cplusplus

@@ -41,7 +41,7 @@ BitmapPaint::NewTextureResource( Runtime& runtime, const char* filename, MPlatfo
 */
 
 BitmapPaint*
-BitmapPaint::NewBitmap( Runtime& runtime, const char* filename, MPlatform::Directory baseDir, U32 flags )
+BitmapPaint::NewBitmap( Runtime& runtime, const char* filename, MPlatform::Directory baseDir, U32 flags, void* shaderResourceOut )
 {
 	BitmapPaint *result = NULL;
 
@@ -51,6 +51,13 @@ BitmapPaint::NewBitmap( Runtime& runtime, const char* filename, MPlatform::Direc
 
 	if ( pTexture.NotNull() )
 	{
+		if ( shaderResourceOut )
+		{
+			*( SharedPtr< TextureResource >* )shaderResourceOut = pTexture;
+		
+			return NULL;
+		}
+		
 		if ( pTexture->GetBitmap() == NULL || !pTexture->GetBitmap()->IsMask() )
 		{
 			result = Rtt_NEW( runtime.Allocator(), BitmapPaint( pTexture ) ); Rtt_ASSERT( result );

@@ -218,8 +218,8 @@ DisplayObject::PropertyForKey( Rtt_Allocator *allocator, const char key[] )
 void
 DisplayObject::DidChangePaint( RenderData& data )
 {
-    data.fFillTexture0 = NULL;
-    data.fFillTexture1 = NULL;
+    data.fTextures = TextureList();
+    
     data.fProgram = NULL;
     data.fUserUniform0 = NULL;
     data.fUserUniform1 = NULL;

@@ -44,8 +44,8 @@ class GLGeometry : public GPUResource
     
         void SpliceVertexRateData( const Geometry::Vertex* vertexData, Geometry::Vertex* extendedVertexData, const FormatExtensionList * list, size_t & size );
     
-        virtual void Create( CPUResource* resource );
-        virtual void Update( CPUResource* resource );
+        virtual void Create( CPUResource* resource, const RenderContext* context );
+        virtual void Update( CPUResource* resource, const RenderContext* context );
         virtual void Destroy();
 
         void BindStockAttributes( size_t size, U32 offset );

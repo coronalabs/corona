@@ -25,8 +25,6 @@ namespace Rtt
 RenderData::RenderData()
 :	fGeometry( NULL ),
 	fProgram( NULL ),
-	fFillTexture0( NULL ),
-	fFillTexture1( NULL ),
 	fMaskTexture( NULL ),
 	fMaskUniform( NULL ),
 	fUserUniform0( NULL ),
@@ -59,8 +57,8 @@ RenderData::Log( const char *msg ) const
 	Rtt_LogException( "\tblendEq =   %s\n", RenderTypes::StringForBlendEquation( fBlendEquation ) );
 //	Rtt_LogException( "\tdepth =   [%g,%g]\n", fMinDepthRange, fMaxDepthRange );
 	Rtt_LogException( "\tprogram = %p\n", fProgram );
-	Rtt_LogException( "\tfillTex0 = %p\n", fFillTexture0 );
-	Rtt_LogException( "\tfillTex1 = %p\n", fFillTexture1 );
+	Rtt_LogException( "\tfillTex0 = %p\n", fTextures.GetFill0() );
+	Rtt_LogException( "\tfillTex1 = %p\n", fTextures.GetFill1() );
 	Rtt_LogException( "\tmaskTex = %p\n", fMaskTexture );
 	Rtt_LogException( "\tmaskUniform = %p\n", fMaskUniform );
 	Rtt_LogException( "\tgeometry: numVertices(%d)\n", fGeometry->GetVerticesUsed() );

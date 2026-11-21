@@ -45,7 +45,8 @@ TextureFactory::TextureFactory( Display& display )
 	fVideo(),
 	fVideoSource(kCamera),
 	fTextureMemoryUsed( 0 ),
-	fCreateQueue( display.GetAllocator() )
+	fCreateQueue( display.GetAllocator() ),
+	fCustomFormats( display.GetAllocator() )
 {
 }
 
@@ -547,7 +548,7 @@ TextureFactory::WillRemoveTexture( const TextureResource& resource )
 SharedPtr< TextureResource >
 TextureFactory::FindOrCreateCanvas(const std::string &cacheKey,
 								Real width, Real height,
-								int pixelWidth, int pixelHeight, bool isMask )
+								int pixelWidth, int pixelHeight, Texture::Format format )
 
 {
 	SharedPtr< TextureResource > result = Find(cacheKey);
@@ -556,7 +557,7 @@ TextureFactory::FindOrCreateCanvas(const std::string &cacheKey,
 		return result;
 	}
 	
-	TextureResourceCanvas *resource = TextureResourceCanvas::Create( * this, width, height, pixelWidth, pixelHeight, isMask ? Texture::kLuminance : Texture::kRGBA );
+	TextureResourceCanvas *resource = TextureResourceCanvas::Create( * this, width, height, pixelWidth, pixelHeight, format );
 	result = SharedPtr< TextureResource >( resource );
 	
 	fCache[cacheKey] = CacheEntry( result );
@@ -685,7 +686,35 @@ void TextureFactory::RemoveFromTeardownList( const std::string &key )
 {
 	fTeardownList.erase( key );
 }
-	
+
+bool TextureFactory::AddCustomFormat( const TextureFormatDescription &format )
+{
+	const int maxValueWithBits = ( 1 << FormatDetails::GetFormatIndexBitCount() ) - 1;
+	const int maxCount = maxValueWithBits - 1; // one value set aside for 0, which is not a custom format
+
+	if ( fCustomFormats.Length() < maxCount )
+	{
+		fCustomFormats.Append( format );
+		
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+const TextureFormatDescription* TextureFactory::GetCustomFormatDescription( U16 formatIndex ) const
+{
+	if ( formatIndex > 0 && formatIndex <= GetCurrentFormatCount() )
+	{
+		return GetCurrentFormatList() + ( formatIndex - 1 );
+	}
+	else
+	{
+		return NULL;
+	}
+}
 	
 void TextureFactory::AddTextureToUpdateList( const std::string &key )
 {

@@ -154,16 +154,16 @@ VulkanProgram::VulkanProgram( VulkanContext * context )
 }
 
 bool
-VulkanProgram::UsesTime ( Program::Version version, bool includeDelta ) const
+VulkanProgram::UsesTime( Program::Version version, bool includeDelta ) const
 {
 	Rtt_ASSERT( version < Program::kNumVersions );
-	Rtt_ASSERT( ( 0 != fData[version].fProgram ) || ( !fData[version].HasTotalTime() && !fData[version].HasDeltaTime() ) );
+	Rtt_ASSERT( ( fData[version].IsValid() ) || ( !fData[version].HasTotalTime() && !fData[version].HasDeltaTime() ) );
 
 	return fData[version].HasTotalTime() || ( includeDelta && fData[version].HasDeltaTime() );
 }
 
 void 
-VulkanProgram::Create( CPUResource* resource )
+VulkanProgram::Create( CPUResource* resource, const RenderContext* )
 {
 	Rtt_ASSERT( CPUResource::kProgram == resource->GetType() );
 	fResource = resource;
@@ -177,7 +177,7 @@ VulkanProgram::Create( CPUResource* resource )
 }
 
 void
-VulkanProgram::Update( CPUResource* resource )
+VulkanProgram::Update( CPUResource* resource, const RenderContext* )
 {
 	Rtt_ASSERT( CPUResource::kProgram == resource->GetType() );
 	if( fData[Program::kMaskCount0].IsValid() ) Update( Program::kMaskCount0, fData[Program::kMaskCount0] );

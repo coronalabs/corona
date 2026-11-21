@@ -86,8 +86,8 @@ class VulkanFrameBufferObject : public GPUResource
 		VulkanFrameBufferObject( VulkanRenderer & renderer );
 
 	public:
-		virtual void Create( CPUResource* resource );
-		virtual void Update( CPUResource* resource );
+		virtual void Create( CPUResource* resource, const RenderContext* context );
+		virtual void Update( CPUResource* resource, const RenderContext* context );
 		virtual void Destroy();
 
 		void Bind( VulkanRenderer & renderer, uint32_t index, VkRenderPassBeginInfo & passBeginInfo );
