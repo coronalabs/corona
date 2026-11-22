@@ -133,6 +133,15 @@ public class CoronaGLSurfaceView extends GLSurfaceView {
 		// Set up rendering system to use OpenGL ES 2.0.
 		setEGLContextClientVersion(2);
 
+		// Optionally ask for an OpenGL ES 3.0 context instead (falls back to 2.0 if the device cannot create one).
+		// ES 3.0 runs the same GLSL ES 1.00 shaders, but makes instancing core and raises the shader limits.
+		// Enabled through build.settings: android.applicationChildElements =
+		//     { [[<meta-data android:name="wantsOpenGLES3" android:value="true" />]] }
+		if (readBooleanMetaData(context, "wantsOpenGLES3")) {
+			setPreferOpenGLES3Config(true); // before setEGLConfigChooser() below
+			setEGLContextFactory(new ES3ContextFactory());
+		}
+
 		// Set up OpenGL to render with a 32-bit color depth. (The default is 16-bit.)
 		// This must be done before setting the renderer below.
 		// Note: The alpha channel must be disabled for the "surface" to work-around an OpenGL driver bug on Kindle Fire
@@ -458,6 +467,67 @@ public class CoronaGLSurfaceView extends GLSurfaceView {
 		 */
 		public boolean canRender() {
 			return fCanRender;
+		}
+	}
+
+	/** Reads a boolean <meta-data> value of the application's manifest; false when missing or unreadable. */
+	private static boolean readBooleanMetaData(android.content.Context context, String name) {
+		try {
+			android.content.pm.ApplicationInfo info = context.getPackageManager().getApplicationInfo(
+					context.getPackageName(), android.content.pm.PackageManager.GET_META_DATA);
+			return (info != null) && (info.metaData != null) && info.metaData.getBoolean(name, false);
+		}
+		catch (Exception ex) {
+			return false;
+		}
+	}
+
+	/** Creates an OpenGL ES 3.0 context when the driver can, else an OpenGL ES 2.0 one. */
+	private static class ES3ContextFactory implements GLSurfaceView.EGLContextFactory {
+		private static final int EGL_CONTEXT_CLIENT_VERSION = 0x3098;
+
+		@Override
+		public javax.microedition.khronos.egl.EGLContext createContext(
+				javax.microedition.khronos.egl.EGL10 egl,
+				javax.microedition.khronos.egl.EGLDisplay display,
+				javax.microedition.khronos.egl.EGLConfig config) {
+			int[] es3 = { EGL_CONTEXT_CLIENT_VERSION, 3, javax.microedition.khronos.egl.EGL10.EGL_NONE };
+			javax.microedition.khronos.egl.EGLContext context = egl.eglCreateContext(
+					display, config, javax.microedition.khronos.egl.EGL10.EGL_NO_CONTEXT, es3);
+			if ((context != null) && (context != javax.microedition.khronos.egl.EGL10.EGL_NO_CONTEXT)) {
+				android.util.Log.i("Corona", "OpenGL ES 3.0 context created");
+				setNativeFlag("1");
+				return context;
+			}
+			int error = egl.eglGetError(); // also clears the error of the failed attempt
+			android.util.Log.i("Corona", "OpenGL ES 3.0 context unavailable (EGL error 0x" + Integer.toHexString(error) + "), using OpenGL ES 2.0");
+			setNativeFlag("0");
+			int[] es2 = { EGL_CONTEXT_CLIENT_VERSION, 2, javax.microedition.khronos.egl.EGL10.EGL_NONE };
+			return egl.eglCreateContext(display, config, javax.microedition.khronos.egl.EGL10.EGL_NO_CONTEXT, es2);
+		}
+
+		/**
+		 * Tells the native side (GLGeometry::SupportsInstancing) that this app opted in and got an ES 3.0 context.
+		 * Drivers often report "OpenGL ES 3.x" for contexts created as ES 2.0 too, so the native side cannot tell
+		 * from the context itself; apps without "wantsOpenGLES3" never set this and keep the previous behavior.
+		 */
+		private static void setNativeFlag(String value) {
+			if (android.os.Build.VERSION.SDK_INT >= 21) {
+				try {
+					android.system.Os.setenv("CORONA_GLES3", value, true);
+				}
+				catch (Exception ex) {
+					android.util.Log.w("Corona", "Could not set CORONA_GLES3: " + ex);
+				}
+			}
+		}
+
+		@Override
+		public void destroyContext(
+				javax.microedition.khronos.egl.EGL10 egl,
+				javax.microedition.khronos.egl.EGLDisplay display,
+				javax.microedition.khronos.egl.EGLContext context) {
+			egl.eglDestroyContext(display, context);
 		}
 	}
 }

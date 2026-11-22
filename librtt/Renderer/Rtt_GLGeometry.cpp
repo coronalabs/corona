@@ -25,6 +25,7 @@
 #include "Rtt_Profiling.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stddef.h>
 
 // ----------------------------------------------------------------------------
@@ -322,6 +323,32 @@ GLGeometry::SupportsInstancing()
         #endif
     #endif
         
+    #if defined( Rtt_OPENGLES ) && defined( Rtt_EGL ) && !defined( Rtt_EMSCRIPTEN_ENV )
+        // OpenGL ES 3.0+ context (Android: "wantsOpenGLES3"): instancing and divisors are core, without a suffix.
+        // Shaders stay GLSL ES 1.00, which has no gl_InstanceID, so no ID suffix: instance-rate attributes only.
+        // Backward compatibility: drivers often create (and report, even through EGL_CONTEXT_CLIENT_VERSION) an ES 3.x
+        // context when ES 2.0 was requested, so only the opt-in decides: the Java side sets CORONA_GLES3=1 after it
+        // created an ES 3.0 context for an app with "wantsOpenGLES3". Other apps keep exactly the previous behavior.
+        {
+            const char * optedIn = getenv( "CORONA_GLES3" );
+            const char * version = (const char *)glGetString( GL_VERSION ); // "OpenGL ES 3.2 ..."
+            int major = 0;
+
+            if (optedIn && '1' == optedIn[0]
+                && version && 1 == sscanf( version, "OpenGL ES %d", &major ) && major >= 3)
+            {
+                DrawArrays = GL_GET_PROC( DrawArraysInstanced, );
+                DrawElements = GL_GET_PROC( DrawElementsInstanced, );
+                AttribDivisor = GL_GET_PROC( VertexAttribDivisor, );
+
+                if (!GL_HAS_SUPPORT() || NULL == AttribDivisor)
+                {
+                    GL_RESET();
+                }
+            }
+        }
+    #endif
+
     #if !defined( Rtt_NXS_ENV )
 		const char * extensions = (const char *)glGetString( GL_EXTENSIONS );
 		
