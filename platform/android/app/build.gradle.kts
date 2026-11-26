@@ -139,6 +139,11 @@ val supportsFoldables = parsedBuildProperties.lookup<Any?>("buildSettings.androi
 if (supportsFoldables && (extra["minSdkVersion"] as Int) < 23) {
     extra["minSdkVersion"] = 23
 }
+// R8 (shrinking, obfuscation, optimization) for release builds is opt-in: set android.minify = true in
+// build.settings. It is off by default because plugins that bundle an SDK without keep rules can break
+// at runtime. Extra keep rules are read from AndroidResources/proguard-rules.pro in the project and from
+// proguard*.pro / proguard*.txt files shipped inside a plugin.
+val minifyRelease = parsedBuildProperties.lookup<Any?>("buildSettings.android.minify").firstOrNull()?.toString() == "true"
 
 
 val coronaAndroidResourcesDir = file(coronaSrcDir).resolve(
@@ -235,8 +240,12 @@ android {
 
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+            isMinifyEnabled = minifyRelease
+            // Resources are looked up by name at runtime (Lua, plugins), so resource shrinking stays off.
+            isShrinkResources = false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            coronaAndroidResourcesDir.resolve("proguard-rules.pro").takeIf { it.exists() }?.let { proguardFiles(it) }
+            proguardFiles(*fileTree(coronaPlugins) { include("*/proguard*.pro", "*/proguard*.txt") }.files.sorted().toTypedArray())
             coronaKeystore?.let { signingConfig = signingConfigs.getByName("release") }
         }
     }
@@ -929,6 +938,15 @@ fun copyWithAppFilename(dest: String, appName: String?) {
         rename {
             "$appName.${file(it).extension}"
         }
+    }
+    // R8 mapping file, needed to deobfuscate stack traces of APKs (the AAB already embeds it).
+    delete("$dest/$appName.mapping.txt")
+    if (minifyRelease) copy {
+        into(dest)
+        from("$buildDirectory/outputs/mapping/release") {
+            include("mapping.txt")
+        }
+        rename { "$appName.mapping.txt" }
     }
 }
 

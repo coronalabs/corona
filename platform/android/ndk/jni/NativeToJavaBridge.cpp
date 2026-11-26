@@ -4077,7 +4077,7 @@ NativeToJavaBridge::NotificationSchedule( lua_State *L, int index )
 	if (bridge.isValid())
 	{
 		jmethodID mid = bridge.getEnv()->GetStaticMethodID(
-				bridge.getClass(), "callNotificationSchedule", "(Lcom/ansca/corona/CoronaRuntime;JI)J");
+				bridge.getClass(), "callNotificationSchedule", "(Lcom/ansca/corona/CoronaRuntime;JI)I");
 		if (mid)
 		{
 			notificationId = (int)bridge.getEnv()->CallStaticIntMethod(
