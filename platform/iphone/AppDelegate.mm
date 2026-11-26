@@ -36,6 +36,8 @@
 
 #import <CoreLocation/CoreLocation.h>
 #import <CoreMotion/CoreMotion.h>
+#import <UserNotifications/UserNotifications.h>
+#import <objc/runtime.h>
 #import "Rtt_AppleCallback.h"
 #include "Rtt_IPhoneOrientation.h"
 
@@ -440,6 +442,9 @@ IsEnterprise()
 
 @end
 
+
+// Defined with CoronaNotificationResponseForwarder below
+static void InstallNotificationResponseForwarder();
 
 // File's Owner stand-in used by -[AppDelegate loadWindowFromNib]
 @interface CoronaMainNibOwner : NSObject
@@ -1016,6 +1021,11 @@ SetLaunchArgs( UIApplication *application, NSDictionary *launchOptions, Rtt::Run
 		// from CoronaSceneDelegate at that point, so the window belongs to the scene and the connection options
 		// (e.g. the URL the app was launched with) end up in the launch options handed to main.lua.
 		self.pendingLaunchOptions = launchOptions;
+
+		// Notification taps only reach the UNUserNotificationCenter delegate in scene-based apps; this hands them
+		// to the application delegate callbacks the CoronaDelegate plugins implement. A delegate has to be in
+		// place before this method returns to receive the response to the notification that launched the app.
+		InstallNotificationResponseForwarder();
 		return YES;
 	}
 
@@ -1519,6 +1529,178 @@ SetLaunchArgs( UIApplication *application, NSDictionary *launchOptions, Rtt::Run
 // CoronaSceneDelegate
 // ----------------------------------------------------------------------------
 
+// Notification taps
+// ----------------------------------------------------------------------------
+
+// In scene-based apps UIKit no longer reports a tapped notification through the application delegate: it is not in
+// the launch options and application:didReceiveRemoteNotification:... / application:didReceiveLocalNotification:
+// are not called for it. It only goes to the UNUserNotificationCenter delegate (and, for the tap that launched the
+// app, to the scene connection options). CoronaDelegate plugins (e.g. plugin.notifications.v2) listen on the
+// application delegate callbacks, so the functions below turn a notification response back into those.
+//
+// The UserNotifications classes are looked up at runtime, so the player does not have to link the framework.
+
+static BOOL
+IsRemoteNotification( UNNotification *notification )
+{
+	Class pushTrigger = NSClassFromString( @"UNPushNotificationTrigger" );
+	return pushTrigger && [notification.request.trigger isKindOfClass:pushTrigger];
+}
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
+// The local notification callbacks/launch option carry a UILocalNotification, so rebuild one from the content
+static UILocalNotification *
+LocalNotificationWithNotification( UNNotification *notification )
+{
+	UNNotificationContent *content = notification.request.content;
+
+	UILocalNotification *result = [[[UILocalNotification alloc] init] autorelease];
+	result.alertTitle = content.title;
+	result.alertBody = content.body;
+	result.userInfo = content.userInfo;
+	result.applicationIconBadgeNumber = [content.badge integerValue];
+	result.category = content.categoryIdentifier;
+	result.fireDate = notification.date;
+	return result;
+}
+
+// Adds the notification that launched the app under the key the pre-scene life cycle used for it
+static void
+AddNotificationResponseToLaunchOptions( NSMutableDictionary *launchOptions, UNNotificationResponse *response )
+{
+	if ( ! response )
+	{
+		return;
+	}
+
+	UNNotification *notification = response.notification;
+	if ( IsRemoteNotification( notification ) )
+	{
+		NSDictionary *userInfo = notification.request.content.userInfo;
+		if ( userInfo && nil == [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey] )
+		{
+			[launchOptions setObject:userInfo forKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+		}
+	}
+	else if ( nil == [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey] )
+	{
+		[launchOptions setObject:LocalNotificationWithNotification( notification ) forKey:UIApplicationLaunchOptionsLocalNotificationKey];
+	}
+}
+
+API_AVAILABLE(ios(13.0))
+@interface CoronaNotificationResponseForwarder : NSObject< UNUserNotificationCenterDelegate >
+{
+	id fWrappedDelegate; // zeroing weak reference, see +install
+}
++ (void)install;
+@end
+
+@implementation CoronaNotificationResponseForwarder
+
+// Becomes the notification center's delegate, unless the current one handles notification responses itself.
+//
+// A delegate that does not (plugin.notifications.v2 sets one without any of the delegate methods) used to make
+// UIKit fall back to the application delegate callbacks; in scene-based apps the response is dropped instead.
+// Such a delegate is wrapped: it keeps receiving every other delegate method through the forwarder.
+//
+// Plugins set their delegate whenever they like (e.g. when Lua registers for notifications), so this is called
+// again on the application state changes that precede the delivery of a response.
++ (void)install
+{
+	UNUserNotificationCenter *center = [NSClassFromString( @"UNUserNotificationCenter" ) currentNotificationCenter];
+	if ( ! center )
+	{
+		return;
+	}
+
+	static CoronaNotificationResponseForwarder *sForwarder = nil;
+	if ( ! sForwarder )
+	{
+		sForwarder = [[CoronaNotificationResponseForwarder alloc] init];
+	}
+
+	id current = center.delegate;
+	if ( current != sForwarder
+		 && ! [current respondsToSelector:@selector(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:)] )
+	{
+		// The center does not retain its delegate, so neither does the forwarder
+		objc_storeWeak( & sForwarder->fWrappedDelegate, current );
+		center.delegate = sForwarder;
+	}
+}
+
+- (BOOL)respondsToSelector:(SEL)aSelector
+{
+	return [super respondsToSelector:aSelector] || [objc_loadWeak( & fWrappedDelegate ) respondsToSelector:aSelector];
+}
+
+- (id)forwardingTargetForSelector:(SEL)aSelector
+{
+	return objc_loadWeak( & fWrappedDelegate );
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
+{
+	UIApplication *application = [UIApplication sharedApplication];
+	id< UIApplicationDelegate > appDelegate = application.delegate;
+	UNNotification *notification = response.notification;
+
+	// Only taps: swiping a notification away was never reported to the application delegate
+	if ( [response.actionIdentifier isEqualToString:@"com.apple.UNNotificationDismissActionIdentifier"] )
+	{
+		completionHandler();
+	}
+	else if ( IsRemoteNotification( notification ) )
+	{
+		NSDictionary *userInfo = notification.request.content.userInfo;
+
+		// Same precedence as UIKit: the fetchCompletionHandler variant replaces the plain one when implemented
+		if ( [appDelegate respondsToSelector:@selector(application:didReceiveRemoteNotification:fetchCompletionHandler:)] )
+		{
+			__block BOOL didComplete = NO;
+			[appDelegate application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:^( UIBackgroundFetchResult result ) {
+				if ( ! didComplete )
+				{
+					didComplete = YES;
+					completionHandler();
+				}
+			}];
+		}
+		else
+		{
+			if ( [appDelegate respondsToSelector:@selector(application:didReceiveRemoteNotification:)] )
+			{
+				[appDelegate application:application didReceiveRemoteNotification:userInfo];
+			}
+			completionHandler();
+		}
+	}
+	else
+	{
+		if ( [appDelegate respondsToSelector:@selector(application:didReceiveLocalNotification:)] )
+		{
+			[appDelegate application:application didReceiveLocalNotification:LocalNotificationWithNotification( notification )];
+		}
+		completionHandler();
+	}
+}
+
+@end
+
+#pragma clang diagnostic pop
+
+static void
+InstallNotificationResponseForwarder()
+{
+	if ( @available( iOS 13.0, * ) )
+	{
+		[CoronaNotificationResponseForwarder install];
+	}
+}
+
 // Folds the scene connection options into the launch options, the way the pre-scene life cycle delivered them
 static NSDictionary *
 LaunchOptionsWithConnectionOptions( NSDictionary *launchOptions, UISceneConnectionOptions *connectionOptions ) API_AVAILABLE(ios(13.0))
@@ -1534,6 +1716,8 @@ LaunchOptionsWithConnectionOptions( NSDictionary *launchOptions, UISceneConnecti
 			[result setObject:urlContext.options.sourceApplication forKey:UIApplicationLaunchOptionsSourceApplicationKey];
 		}
 	}
+
+	AddNotificationResponseToLaunchOptions( result, connectionOptions.notificationResponse );
 
 	return result;
 }
@@ -1572,6 +1756,9 @@ LaunchOptionsWithConnectionOptions( NSDictionary *launchOptions, UISceneConnecti
 
 		[appDelegate launchWithApplication:application options:launchOptions];
 
+		// main.lua has run: a plugin may have replaced the notification center's delegate by now
+		InstallNotificationResponseForwarder();
+
 		// Handoff/universal links and quick actions that launched the app arrive with the connection instead of
 		// through the application delegate, so hand them to the same code paths a running app would use.
 		for ( NSUserActivity *activity in connectionOptions.userActivities )
@@ -1591,19 +1778,24 @@ LaunchOptionsWithConnectionOptions( NSDictionary *launchOptions, UISceneConnecti
 
 // UIKit does not call the application-level versions of these when the app uses scenes, so forward them.
 // The AppDelegate methods take care of the runtime and of the CoronaDelegate plugins, as before.
+// InstallNotificationResponseForwarder() is repeated here because plugins can replace the notification center's
+// delegate at any time, and a notification can only be tapped after one of these state changes.
 
 - (void)sceneDidBecomeActive:(UIScene *)scene
 {
+	InstallNotificationResponseForwarder();
 	[[self appDelegate] applicationDidBecomeActive:[UIApplication sharedApplication]];
 }
 
 - (void)sceneWillResignActive:(UIScene *)scene
 {
+	InstallNotificationResponseForwarder();
 	[[self appDelegate] applicationWillResignActive:[UIApplication sharedApplication]];
 }
 
 - (void)sceneWillEnterForeground:(UIScene *)scene
 {
+	InstallNotificationResponseForwarder();
 	[[self appDelegate] applicationWillEnterForeground:[UIApplication sharedApplication]];
 }
 
