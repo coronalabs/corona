@@ -61,6 +61,20 @@ local function makepath( inPath, ... )
 	return path
 end
 
+-- macOS `mktemp -d -t <template>` uses the template as a prefix and appends ".<random>",
+-- so the path ends in "<suffix>.XXXXXXXXXX", not "<suffix>". Paranoid check before "rm -r".
+local function isTmpDirWithSuffix( path, suffix )
+	if type(path) ~= "string" or path == "" then
+		return false
+	end
+	local base = path:match("[^/]+$")
+	if not base or base:sub(1, 5) ~= "CLtmp" then
+		return false
+	end
+	local escaped = (suffix:gsub("%p", "%%%0"))
+	return base:sub(-#suffix) == suffix or base:match(escaped .. "%.%w+$") ~= nil
+end
+
 local function setStatus( msg )
 	print( "Building: " .. msg )
 	if simulator then
@@ -1366,7 +1380,7 @@ local function packageApp( options )
 		local ipaTmpDir = captureCommandOutput("mktemp -d -t CLtmpXXXXXX"..suffix) -- creates a temporary directory
 
 		-- be paranoid because we'll "rm -r" this later
-		if not ipaTmpDir:sub(-string.len(suffix)) == suffix then
+		if not isTmpDirWithSuffix(ipaTmpDir, suffix) then
 			return "Problem with temporary directory: "..tostring(ipaTmpDir)
 		end
 
