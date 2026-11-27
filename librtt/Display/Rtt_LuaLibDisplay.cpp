@@ -1929,7 +1929,7 @@ DisplayLibrary::getDefault( lua_State *L )
         RenderTypes::TextureWrap wrap = defaults.GetTextureWrapY();
         lua_pushstring( L, RenderTypes::StringForTextureWrap( wrap ) );
     }
-	else if ( Rtt_StringCompare( key, "emitterScaling" ) == 0 )
+	else if ( Rtt_StringCompare( key, "emitterMapping" ) == 0 )
 	{
 		EmitterObject::Mapping mapping = (EmitterObject::Mapping)defaults.GetEmitterMapping();
 		lua_pushstring( L, EmitterObject::GetStringForMapping( mapping ) );

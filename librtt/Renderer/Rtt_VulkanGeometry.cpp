@@ -98,7 +98,18 @@ VulkanGeometry::Update( CPUResource* resource )
 		// Copy the vertex data from main memory to GPU memory.
 		else if ( vertexData )
 		{
-			TransferToGPU( fVertexBufferData->GetBuffer(), vertexData, geometry->GetVerticesUsed() * sizeof( Geometry::Vertex ) );
+			if ( geometry->GetVerticesUsed() )
+			{
+				TransferToGPU( fVertexBufferData->GetBuffer(), vertexData, geometry->GetVerticesUsed() * sizeof( Geometry::Vertex ) );
+			}
+
+			// As on GL, also refresh the indices: Create() only copied the ones in use then.
+			const Geometry::Index * indices = geometry->GetIndexData();
+
+			if ( indices && fIndexBufferData && geometry->GetIndicesUsed() )
+			{
+				TransferToGPU( fIndexBufferData->GetBuffer(), indices, geometry->GetIndicesUsed() * sizeof( Geometry::Index ) );
+			}
 		}
 
 		else

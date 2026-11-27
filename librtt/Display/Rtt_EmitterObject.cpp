@@ -10,6 +10,7 @@
 #include "Core/Rtt_Build.h"
 
 #include "Display/Rtt_EmitterObject.h"
+#include "Display/Rtt_EmitterSIMD.h"
 
 #include "Rtt_LuaLibSystem.h"
 #include "Core/Rtt_AutoPtr.h"
@@ -32,8 +33,10 @@
 #include "Box2D/Box2D.h"
 #include "Rtt_LuaContainer.h"
 #include <algorithm>
+#include <limits>
 
 #include "Rtt_Profiling.h"
+#include "Rtt_Runtime.h"
 
 // -----------------------------------------------------------------------------
 
@@ -112,89 +115,204 @@ enum kParticleTypes
 #define GET_RANDOM_0_TO_1( ... )		( (float)rand() / (float)RAND_MAX )
 #define GET_RANDOM_MINUS_1_TO_1( ... )	( ( (float)rand() / (float)( RAND_MAX / 2 ) ) - 1.0f )
 
-// Structure used to hold particle specific information
-struct EmitterObjectParticle
+// Particle state, as a structure of arrays. Live particles are packed densely
+// in [0, fParticleCount), so every pass is a forward walk over a few arrays.
+//
+// Only the fields used by the emitter's type are allocated: gravity and radial
+// emitters share the slots following kCommonFieldCount.
+struct EmitterObjectParticles
 {
-	void Reset();
-	void Init( EmitterObject *eo, const Matrix &spawnTimeTransform );
-	void Update( EmitterObject *eo, float time_delta );
-	void UpdateVertices( EmitterObject *eo,
-							EmitterObjectParticle &particle,
-							Geometry::Vertex *output_vertices );
+	enum Field
+	{
+		kPositionX,
+		kPositionY,
+		kTimeToLiveInSeconds,
+		kColorR,
+		kColorG,
+		kColorB,
+		kColorA,
+		kDeltaColorR,
+		kDeltaColorG,
+		kDeltaColorB,
+		kDeltaColorA,
+		kParticleSize,
+		kParticleSizeDelta,
+		kRotation,
+		kRotationDelta,
 
-	Matrix fSpawnTimeTransform;
-	b2Vec2 fPosition;
-	b2Vec2 fDirection;
-//    b2Vec2 fStartPos;
-	Vector4 fColor;
-	Vector4 fDeltaColor;
-    float fRotation;
-    float fRotationDelta;
-    float fRadialAcceleration;
-    float fTangentialAcceleration;
-	float fRadius;
-	float fRadiusDelta;
-	float fRotationInRadians;
-	float fRadiansPerSecond;
-	float fParticleSize;
-	float fParticleSizeDelta;
-	float fTimeToLiveInSeconds;
+		kCommonFieldCount,
+
+		// Gravity emitters.
+		kDirectionX = kCommonFieldCount,
+		kDirectionY,
+		kRadialAcceleration,
+		kTangentialAcceleration,
+
+		// Radial emitters.
+		kRotationInRadians = kCommonFieldCount,
+		kRadiansPerSecond,
+		kRadius,
+		kRadiusDelta,
+
+		// Spawn-time transform: rows ( a, b, c ) and ( d, e, f ), as in Matrix,
+		// with a = infinity for the identity (and the rest 0).
+		kSpawnA = kCommonFieldCount + 4,
+		kSpawnB,
+		kSpawnC,
+		kSpawnD,
+		kSpawnE,
+		kSpawnF,
+
+		kFieldCount
+	};
+
+	static EmitterObjectParticles *Create( Rtt_Allocator *allocator, int capacity );
+	static void Destroy( EmitterObjectParticles *particles );
+
+	void Init( int index, EmitterObject *eo, const Matrix &spawnTimeTransform );
+	void Move( int to, int from );
+
+	// Same result as Matrix::Apply() with the particle's spawn-time transform.
+	void ApplySpawnTimeTransform( int index, Vertex2 &v ) const;
+
+	float *fFields[kFieldCount];
 };
 
-void EmitterObjectParticle::Reset()
+EmitterObjectParticles *
+EmitterObjectParticles::Create( Rtt_Allocator *allocator, int capacity )
 {
-	fTimeToLiveInSeconds = 0.0f;
+	// Round each array up to a multiple of 4 floats, keeping them 16-byte aligned
+	// relative to one another.
+	size_t stride = ( ( (size_t)capacity + 3 ) & ~(size_t)3 );
+	size_t headerSize = ( ( sizeof( EmitterObjectParticles ) + 15 ) & ~(size_t)15 );
+	size_t fieldsSize = ( kFieldCount * stride * sizeof( float ) );
+
+	U8 *storage = (U8 *)Rtt_MALLOC( allocator, headerSize + fieldsSize );
+	EmitterObjectParticles *particles = (EmitterObjectParticles *)storage;
+	float *fields = (float *)( storage + headerSize );
+
+	for( int i = 0; i < kFieldCount; ++i )
+	{
+		particles->fFields[i] = fields + ( i * stride );
+	}
+
+	return particles;
 }
 
-void EmitterObjectParticle::Init( EmitterObject *eo, const Matrix &spawnTimeTransform )
+void
+EmitterObjectParticles::Destroy( EmitterObjectParticles *particles )
 {
-	fSpawnTimeTransform = spawnTimeTransform;
+	Rtt_FREE( particles );
+}
+
+void
+EmitterObjectParticles::Move( int to, int from )
+{
+	for( int i = 0; i < kFieldCount; ++i )
+	{
+		fFields[i][to] = fFields[i][from];
+	}
+}
+
+void
+EmitterObjectParticles::ApplySpawnTimeTransform( int index, Vertex2 &v ) const
+{
+	float a = fFields[kSpawnA][index];
+
+	if ( Rtt_REAL_INF != a )
+	{
+		// As MatrixRowDotVertex2() computes it.
+		Real x = fFields[kSpawnC][index];
+		x += a * v.x;
+		x += fFields[kSpawnB][index] * v.y;
+
+		Real y = fFields[kSpawnF][index];
+		y += fFields[kSpawnD][index] * v.x;
+		y += fFields[kSpawnE][index] * v.y;
+
+		v.x = x;
+		v.y = y;
+	}
+}
+
+void EmitterObjectParticles::Init( int index, EmitterObject *eo, const Matrix &spawnTimeTransform )
+{
+	float **f = fFields;
+
+	if ( spawnTimeTransform.IsIdentity() )
+	{
+		f[kSpawnA][index] = Rtt_REAL_INF;
+		f[kSpawnB][index] = f[kSpawnC][index] = f[kSpawnD][index] = f[kSpawnE][index] = f[kSpawnF][index] = 0.0f;
+	}
+	else
+	{
+		const Real *row0 = spawnTimeTransform.Row0(), *row1 = spawnTimeTransform.Row1();
+
+		f[kSpawnA][index] = row0[0];
+		f[kSpawnB][index] = row0[1];
+		f[kSpawnC][index] = row0[2];
+		f[kSpawnD][index] = row1[0];
+		f[kSpawnE][index] = row1[1];
+		f[kSpawnF][index] = row1[2];
+	}
+
+	// NOTE: Every random value below is drawn, in this order, whatever the emitter
+	// type. This keeps the sequence of rand() calls the same as it has always been.
 
 	// Init the position of the particle.  This is based on the source position of the particle emitter
 	// plus a configured variance.  The GET_RANDOM_MINUS_1_TO_1 macro allows the number to be both positive
 	// and negative
-	fPosition.x = eo->fSourcePositionVariance.x * GET_RANDOM_MINUS_1_TO_1();
-	fPosition.y = eo->fSourcePositionVariance.y * GET_RANDOM_MINUS_1_TO_1();
-//    fStartPos.x = 0.0f;
-//    fStartPos.y = 0.0f;
-
+	f[kPositionX][index] = eo->fSourcePositionVariance.x * GET_RANDOM_MINUS_1_TO_1();
+	f[kPositionY][index] = eo->fSourcePositionVariance.y * GET_RANDOM_MINUS_1_TO_1();
 
 	// Init the direction of the particle.  The newAngleInRadians is calculated using the angle passed in and the
 	// angle variance.
 	float newAngleInRadians = Rtt_RealDegreesToRadians(eo->fRotationInDegrees + eo->fRotationInDegreesVariance * GET_RANDOM_MINUS_1_TO_1());
 
-	// Create a new GLKVector2 using the newAngleInRadians
-	b2Vec2 vector( cosf(newAngleInRadians), sinf(newAngleInRadians) );
-
 	// Calculate the vectorSpeed using the speed and speedVariance which has been passed in
 	float vectorSpeed = std::max( 0.0f, ( eo->fSpeed + eo->fSpeedVariance * GET_RANDOM_MINUS_1_TO_1() ) );
 
-	// The particles direction vector is calculated by taking the vector calculated above and
-	// multiplying that by the speed
-	fDirection = vector;
-	fDirection *= vectorSpeed;
+	// Calculate the particles life span using the life span and variance passed in
+	float timeToLive = std::max( 0.0f, ( eo->fParticleLifespanInSeconds + eo->fParticleLifespanInSecondsVariance * GET_RANDOM_MINUS_1_TO_1() ) );
 
-    // Calculate the particles life span using the life span and variance passed in
-	fTimeToLiveInSeconds = std::max( 0.0f, ( eo->fParticleLifespanInSeconds + eo->fParticleLifespanInSecondsVariance * GET_RANDOM_MINUS_1_TO_1() ) );
+	// A particle whose sampled life span is 0 dies on its first update, before it is
+	// drawn. Give it zero rates, rather than dividing by 0.
+	bool hasLifetime = timeToLive > 0.0f;
 
-    float startRadius = std::max( 0.0f, ( eo->fMaxRadius + eo->fMaxRadiusVariance * GET_RANDOM_MINUS_1_TO_1() ) );
-    float endRadius = std::max( 0.0f, ( eo->fMinRadius + eo->fMinRadiusVariance * GET_RANDOM_MINUS_1_TO_1() ) );
+	float startRadius = std::max( 0.0f, ( eo->fMaxRadius + eo->fMaxRadiusVariance * GET_RANDOM_MINUS_1_TO_1() ) );
+	float endRadius = std::max( 0.0f, ( eo->fMinRadius + eo->fMinRadiusVariance * GET_RANDOM_MINUS_1_TO_1() ) );
 
-	// Set the default diameter of the particle from the source position
-	fRadius = startRadius;
-	fRadiusDelta = (endRadius - startRadius) / fTimeToLiveInSeconds;
+	float rotationInRadians = Rtt_RealDegreesToRadians(eo->fRotationInDegrees + eo->fRotationInDegreesVariance * GET_RANDOM_MINUS_1_TO_1());
+	float radiansPerSecond = Rtt_RealDegreesToRadians(eo->fRotateDegreesPerSecond + eo->fRotateDegreesPerSecondVariance * GET_RANDOM_MINUS_1_TO_1());
 
-	fRotationInRadians = Rtt_RealDegreesToRadians(eo->fRotationInDegrees + eo->fRotationInDegreesVariance * GET_RANDOM_MINUS_1_TO_1());
-	fRadiansPerSecond = Rtt_RealDegreesToRadians(eo->fRotateDegreesPerSecond + eo->fRotateDegreesPerSecondVariance * GET_RANDOM_MINUS_1_TO_1());
+	float radialAcceleration = eo->fRadialAcceleration + eo->fRadialAccelerationVariance * GET_RANDOM_MINUS_1_TO_1();
+	float tangentialAcceleration = eo->fTangentialAcceleration + eo->fTangentialAccelerationVariance * GET_RANDOM_MINUS_1_TO_1();
 
-    fRadialAcceleration = eo->fRadialAcceleration + eo->fRadialAccelerationVariance * GET_RANDOM_MINUS_1_TO_1();
-    fTangentialAcceleration = eo->fTangentialAcceleration + eo->fTangentialAccelerationVariance * GET_RANDOM_MINUS_1_TO_1();
+	if( eo->fEmitterType == kParticleTypeRadial )
+	{
+		// Set the default diameter of the particle from the source position
+		f[kRadius][index] = startRadius;
+		f[kRadiusDelta][index] = hasLifetime ? (endRadius - startRadius) / timeToLive : 0.0f;
+		f[kRotationInRadians][index] = rotationInRadians;
+		f[kRadiansPerSecond][index] = radiansPerSecond;
+	}
+	else
+	{
+		// The particles direction vector is calculated by taking the unit vector of the angle
+		// above and multiplying that by the speed
+		f[kDirectionX][index] = cosf(newAngleInRadians) * vectorSpeed;
+		f[kDirectionY][index] = sinf(newAngleInRadians) * vectorSpeed;
+		f[kRadialAcceleration][index] = radialAcceleration;
+		f[kTangentialAcceleration][index] = tangentialAcceleration;
+	}
+
+	f[kTimeToLiveInSeconds][index] = timeToLive;
 
 	// Calculate the particle size using the start and finish particle sizes
 	float particleStartSize = std::max( 0.0f, eo->fStartParticleSize + eo->fStartParticleSizeVariance * GET_RANDOM_MINUS_1_TO_1() );
 	float particleFinishSize = std::max( 0.0f, eo->fFinishParticleSize + eo->fFinishParticleSizeVariance * GET_RANDOM_MINUS_1_TO_1() );
-	fParticleSizeDelta = ((particleFinishSize - particleStartSize) / fTimeToLiveInSeconds);
-	fParticleSize = particleStartSize;
+	f[kParticleSizeDelta][index] = hasLifetime ? ((particleFinishSize - particleStartSize) / timeToLive) : 0.0f;
+	f[kParticleSize][index] = particleStartSize;
 
 	// Calculate the color the particle should have when it starts its life.  All the elements
 	// of the start color passed in along with the variance are used to calculate the star color
@@ -214,92 +332,203 @@ void EmitterObjectParticle::Init( EmitterObject *eo, const Matrix &spawnTimeTran
 
 	// Calculate the delta which is to be applied to the particles color during each cycle of its
 	// life.  The delta calculation uses the life span of the particle to make sure that the
-	// particles color will transition from the start to end color during its life time.  As the game
-	// loop is using a fixed delta value we can calculate the delta color once saving cycles in the
-	// update method
+	// particles color will transition from the start to end color during its life time.
+	f[kColorR][index] = start.r;
+	f[kColorG][index] = start.g;
+	f[kColorB][index] = start.b;
+	f[kColorA][index] = start.a;
+	f[kDeltaColorR][index] = hasLifetime ? ((end.r - start.r) / timeToLive) : 0.0f;
+	f[kDeltaColorG][index] = hasLifetime ? ((end.g - start.g) / timeToLive) : 0.0f;
+	f[kDeltaColorB][index] = hasLifetime ? ((end.b - start.b) / timeToLive) : 0.0f;
+	f[kDeltaColorA][index] = hasLifetime ? ((end.a - start.a) / timeToLive) : 0.0f;
 
-    fColor = start;
-	fDeltaColor.r = ((end.r - start.r) / fTimeToLiveInSeconds);
-	fDeltaColor.g = ((end.g - start.g) / fTimeToLiveInSeconds);
-	fDeltaColor.b = ((end.b - start.b) / fTimeToLiveInSeconds);
-	fDeltaColor.a = ((end.a - start.a) / fTimeToLiveInSeconds);
-
-    // Calculate the rotation
-    float startA = eo->fRotationStart + eo->fRotationStartVariance * GET_RANDOM_MINUS_1_TO_1();
-    float endA = eo->fRotationEnd + eo->fRotationEndVariance * GET_RANDOM_MINUS_1_TO_1();
-    fRotation = startA;
-    fRotationDelta = (endA - startA) / fTimeToLiveInSeconds;
+	// Calculate the rotation
+	float startA = eo->fRotationStart + eo->fRotationStartVariance * GET_RANDOM_MINUS_1_TO_1();
+	float endA = eo->fRotationEnd + eo->fRotationEndVariance * GET_RANDOM_MINUS_1_TO_1();
+	f[kRotation][index] = startA;
+	f[kRotationDelta][index] = hasLifetime ? (endA - startA) / timeToLive : 0.0f;
 }
 
-void EmitterObjectParticle::Update( EmitterObject *eo, float time_delta )
+// The update kernels below process 4 particles at a time when SIMD is available,
+// with the same operations, in the same order, as their scalar loops, which also
+// handle the last count % 4 particles. The exception is trigonometry, which uses
+// EmitterSIMD::SinCos(): within a couple of units in the last place of sinf() /
+// cosf(), but not identical.
+#ifdef Rtt_EMITTER_SIMD
+using namespace EmitterSIMD;
+#endif
+
+// Advances the state shared by both emitter types.
+static void
+UpdateCommonParticleState( float **f, int count, float time_delta )
 {
-    // Reduce the life span of the particle
-    fTimeToLiveInSeconds -= time_delta;
+	float * Rtt_RESTRICT r = f[EmitterObjectParticles::kColorR];
+	float * Rtt_RESTRICT g = f[EmitterObjectParticles::kColorG];
+	float * Rtt_RESTRICT b = f[EmitterObjectParticles::kColorB];
+	float * Rtt_RESTRICT a = f[EmitterObjectParticles::kColorA];
+	const float * Rtt_RESTRICT dr = f[EmitterObjectParticles::kDeltaColorR];
+	const float * Rtt_RESTRICT dg = f[EmitterObjectParticles::kDeltaColorG];
+	const float * Rtt_RESTRICT db = f[EmitterObjectParticles::kDeltaColorB];
+	const float * Rtt_RESTRICT da = f[EmitterObjectParticles::kDeltaColorA];
+	float * Rtt_RESTRICT size = f[EmitterObjectParticles::kParticleSize];
+	const float * Rtt_RESTRICT sizeDelta = f[EmitterObjectParticles::kParticleSizeDelta];
+	float * Rtt_RESTRICT rotation = f[EmitterObjectParticles::kRotation];
+	const float * Rtt_RESTRICT rotationDelta = f[EmitterObjectParticles::kRotationDelta];
 
-	// If the current particle is alive then update it
-	if( fTimeToLiveInSeconds <= 0.0f )
+	int i = 0;
+
+#ifdef Rtt_EMITTER_SIMD
+	V4 dt = Splat( time_delta );
+
+	for( ; i + 4 <= count; i += 4 )
 	{
-		return;
+		Store( r + i, Add( Load( r + i ), Mul( Load( dr + i ), dt ) ) );
+		Store( g + i, Add( Load( g + i ), Mul( Load( dg + i ), dt ) ) );
+		Store( b + i, Add( Load( b + i ), Mul( Load( db + i ), dt ) ) );
+		Store( a + i, Add( Load( a + i ), Mul( Load( da + i ), dt ) ) );
+		Store( size + i, MaxZero( Add( Load( size + i ), Mul( Load( sizeDelta + i ), dt ) ) ) );
+		Store( rotation + i, Add( Load( rotation + i ), Mul( Load( rotationDelta + i ), dt ) ) );
 	}
+#endif
 
-	// If maxRadius is greater than 0 then the particles are going to spin otherwise they are effected by speed and gravity
-	if( eo->fEmitterType == kParticleTypeRadial )
+	for( ; i < count; ++i )
 	{
-        // FIX 2
-        // Update the angle of the particle from the sourcePosition and the radius.  This is only done of the particles are rotating
-		fRotationInRadians += fRadiansPerSecond * time_delta;
-		fRadius += fRadiusDelta * time_delta;
+		// Update the particles color
+		r[i] += dr[i] * time_delta;
+		g[i] += dg[i] * time_delta;
+		b[i] += db[i] * time_delta;
+		a[i] += da[i] * time_delta;
 
-		fPosition.x = - cosf(fRotationInRadians) * fRadius;
-		fPosition.y = - sinf(fRotationInRadians) * fRadius;
+		// Update the particle size
+		size[i] = std::max( 0.0f, size[i] + sizeDelta[i] * time_delta );
+
+		// Update the rotation of the particle
+		rotation[i] += rotationDelta[i] * time_delta;
 	}
-	else
+}
+
+static void
+UpdateRadialParticles( float **f, int count, float time_delta )
+{
+	float * Rtt_RESTRICT x = f[EmitterObjectParticles::kPositionX];
+	float * Rtt_RESTRICT y = f[EmitterObjectParticles::kPositionY];
+	float * Rtt_RESTRICT angle = f[EmitterObjectParticles::kRotationInRadians];
+	const float * Rtt_RESTRICT radiansPerSecond = f[EmitterObjectParticles::kRadiansPerSecond];
+	float * Rtt_RESTRICT radius = f[EmitterObjectParticles::kRadius];
+	const float * Rtt_RESTRICT radiusDelta = f[EmitterObjectParticles::kRadiusDelta];
+
+	int i = 0;
+
+#ifdef Rtt_EMITTER_SIMD
+	V4 dt = Splat( time_delta );
+
+	for( ; i + 4 <= count; i += 4 )
 	{
-		b2Vec2 tmp, radial, tangential;
+		V4 theta = Add( Load( angle + i ), Mul( Load( radiansPerSecond + i ), dt ) );
+		V4 r = Add( Load( radius + i ), Mul( Load( radiusDelta + i ), dt ) );
+		V4 sines, cosines;
 
-        radial = b2Vec2_zero;
+		SinCos( theta, sines, cosines ); // NOT bit-identical to sinf() / cosf()
 
-        // By default this emitters particles are moved relative to the emitter node position
-//        b2Vec2 positionDifference = fStartPos - b2Vec2_zero;
-//        fPosition = fPosition - positionDifference;
+		Store( angle + i, theta );
+		Store( radius + i, r );
+		Store( x + i, Mul( Neg( cosines ), r ) );
+		Store( y + i, Mul( Neg( sines ), r ) );
+	}
+#endif
 
-        if( fPosition.x || fPosition.y )
+	for( ; i < count; ++i )
+	{
+		// Update the angle of the particle from the sourcePosition and the radius.
+		angle[i] += radiansPerSecond[i] * time_delta;
+		radius[i] += radiusDelta[i] * time_delta;
+
+		x[i] = - cosf(angle[i]) * radius[i];
+		y[i] = - sinf(angle[i]) * radius[i];
+	}
+}
+
+static void
+UpdateGravityParticles( float **f, int count, float time_delta, const b2Vec2 &gravity )
+{
+	float * Rtt_RESTRICT x = f[EmitterObjectParticles::kPositionX];
+	float * Rtt_RESTRICT y = f[EmitterObjectParticles::kPositionY];
+	float * Rtt_RESTRICT dx = f[EmitterObjectParticles::kDirectionX];
+	float * Rtt_RESTRICT dy = f[EmitterObjectParticles::kDirectionY];
+	const float * Rtt_RESTRICT radialAcceleration = f[EmitterObjectParticles::kRadialAcceleration];
+	const float * Rtt_RESTRICT tangentialAcceleration = f[EmitterObjectParticles::kTangentialAcceleration];
+
+	int i = 0;
+
+#ifdef Rtt_EMITTER_SIMD
+	V4 dt = Splat( time_delta ), gx = Splat( gravity.x ), gy = Splat( gravity.y );
+	V4 zero = Splat( 0.0f ), one = Splat( 1.0f ), epsilon = Splat( b2_epsilon );
+
+	for( ; i + 4 <= count; i += 4 )
+	{
+		V4 px = Load( x + i ), py = Load( y + i );
+
+		// radial = position, normalized unless its length is below b2_epsilon
+		// (see b2Vec2::Normalize()), or 0 if position is 0.
+		V4 length = Sqrt( Add( Mul( px, px ), Mul( py, py ) ) );
+		V4 invLength = Div( one, length );
+		V4 isShort = Less( length, epsilon );
+		V4 rx = Select( isShort, px, Mul( px, invLength ) );
+		V4 ry = Select( isShort, py, Mul( py, invLength ) );
+		V4 isNonZero = Or( NotEqual( px, zero ), NotEqual( py, zero ) );
+
+		rx = And( isNonZero, rx );
+		ry = And( isNonZero, ry );
+
+		// tangential = perpendicular of radial.
+		V4 ta = Load( tangentialAcceleration + i ), ra = Load( radialAcceleration + i );
+		V4 tx = Mul( Neg( ry ), ta ), ty = Mul( rx, ta );
+
+		rx = Mul( rx, ra );
+		ry = Mul( ry, ra );
+
+		V4 ddx = Mul( Add( Add( rx, tx ), gx ), dt );
+		V4 ddy = Mul( Add( Add( ry, ty ), gy ), dt );
+		V4 dirx = Add( Load( dx + i ), ddx ), diry = Add( Load( dy + i ), ddy );
+
+		Store( dx + i, dirx );
+		Store( dy + i, diry );
+		Store( x + i, Add( px, Mul( dirx, dt ) ) );
+		Store( y + i, Add( py, Mul( diry, dt ) ) );
+	}
+#endif
+
+	for( ; i < count; ++i )
+	{
+		b2Vec2 position( x[i], y[i] ), direction( dx[i], dy[i] );
+		b2Vec2 tmp, radial = b2Vec2_zero, tangential;
+
+		if( position.x || position.y )
 		{
-            radial = fPosition;
-            radial.Normalize();
+			radial = position;
+			radial.Normalize();
 		}
 
-        tangential = radial;
-        radial *= fRadialAcceleration;
+		tangential = radial;
+		radial *= radialAcceleration[i];
 
-        float newy = tangential.x;
-        tangential.x = ( - tangential.y );
-        tangential.y = newy;
-        tangential *= fTangentialAcceleration;
+		float newy = tangential.x;
+		tangential.x = ( - tangential.y );
+		tangential.y = newy;
+		tangential *= tangentialAcceleration[i];
 
-		tmp = ( radial + tangential + eo->fGravity);
-        tmp *= time_delta;
-		fDirection += tmp;
-		tmp = fDirection;
+		tmp = ( radial + tangential + gravity );
 		tmp *= time_delta;
-		fPosition += tmp;
+		direction += tmp;
+		tmp = direction;
+		tmp *= time_delta;
+		position += tmp;
 
-        // Now apply the difference calculated early causing the particles to be relative in position to the emitter position
-//        fPosition += positionDifference;
+		x[i] = position.x;
+		y[i] = position.y;
+		dx[i] = direction.x;
+		dy[i] = direction.y;
 	}
-
-	// Update the particles color
-	fColor.r += fDeltaColor.r * time_delta;
-	fColor.g += fDeltaColor.g * time_delta;
-	fColor.b += fDeltaColor.b * time_delta;
-	fColor.a += fDeltaColor.a * time_delta;
-
-	// Update the particle size
-	fParticleSize += fParticleSizeDelta * time_delta;
-    fParticleSize = std::max(0.0f, fParticleSize);
-
-    // Update the rotation of the particle
-    fRotation += fRotationDelta * time_delta;
 }
 
 bool EmitterObject::ValidateEmitterParent()
@@ -336,31 +565,79 @@ inline void EmitterObject::TransformParticlePosition(const Matrix &spawnTimeTran
 	}
 }
 
-static void SetVertex( Geometry::Vertex& output, const Vertex2& v, const Vector4& color )
+// -----------------------------------------------------------------------------
+
+// Everything the vertex pass needs that is the same for every particle in a frame.
+struct EmitterVertexContext
 {
-	output.SetPos( v.x, v.y );
-	Geometry::Vertex::SetColor( 1,
-								&output,
-								color.r,
-								color.g,
-								color.b,
-								color.a );
+	enum TransformMode
+	{
+		kTransform_SpawnTime, // Default: particles keep the transform they spawned with.
+		kTransform_Current, // "absolutePosition" is true: particles follow the emitter.
+		kTransform_Parent, // Particles keep their spawn transform within a parent group.
+	};
+
+	const Matrix *fCurrentTransform; // kTransform_Current: the emitter's; kTransform_Parent: the parent's.
+	Real fColorScale[4]; // Applied to particle color: cumulative alpha, premultiplied if the texture is.
+	EmitterObject::Mapping fMapping;
+	bool fUsesIndexedQuads;
+};
+
+template < int kTransformMode >
+static inline void
+TransformParticlePoint( const EmitterVertexContext &context, const EmitterObjectParticles &particles, int index, Vertex2 &v )
+{
+	switch ( kTransformMode )
+	{
+	case EmitterVertexContext::kTransform_SpawnTime:
+		particles.ApplySpawnTimeTransform( index, v );
+		break;
+	case EmitterVertexContext::kTransform_Current:
+		context.fCurrentTransform->Apply( v );
+		break;
+	default:
+		particles.ApplySpawnTimeTransform( index, v );
+		context.fCurrentTransform->Apply( v );
+		break;
+	}
 }
 
-static void EmitRect( Geometry::Vertex *output_vertices, const Vertex2& topLeft, const Vertex2& topRight, const Vertex2& bottomLeft, const Vertex2& bottomRight, const Vector4& color )
+static inline void
+SetVertex( Geometry::Vertex& output, const Vertex2& v, const U8 color[4] )
 {
-	SetVertex( output_vertices[0], bottomLeft, color );
-	SetVertex( output_vertices[1], topRight, color );
-	SetVertex( output_vertices[2], topLeft, color );
-	SetVertex( output_vertices[3], bottomLeft, color );
-	SetVertex( output_vertices[4], bottomRight, color );
-	SetVertex( output_vertices[5], topRight, color );
+	output.x = v.x;
+	output.y = v.y;
+	output.rs = color[0];
+	output.gs = color[1];
+	output.bs = color[2];
+	output.as = color[3];
 }
 
-static void Legacy( Geometry::Vertex *output_vertices, const Vertex2& base_position, float rotation, float halfSize, const Vector4& color )
+static inline void
+EmitRect( Geometry::Vertex *output_vertices, bool indexed, const Vertex2& topLeft, const Vertex2& topRight, const Vertex2& bottomLeft, const Vertex2& bottomRight, const U8 color[4] )
 {
-	Vertex2 topLeft, topRight, bottomLeft, bottomRight;
+	if ( indexed )
+	{
+		// See the indices in EmitterObject::Initialize().
+		SetVertex( output_vertices[0], topLeft, color );
+		SetVertex( output_vertices[1], topRight, color );
+		SetVertex( output_vertices[2], bottomLeft, color );
+		SetVertex( output_vertices[3], bottomRight, color );
+	}
+	else
+	{
+		SetVertex( output_vertices[0], bottomLeft, color );
+		SetVertex( output_vertices[1], topRight, color );
+		SetVertex( output_vertices[2], topLeft, color );
+		SetVertex( output_vertices[3], bottomLeft, color );
+		SetVertex( output_vertices[4], bottomRight, color );
+		SetVertex( output_vertices[5], topRight, color );
+	}
+}
 
+static inline void
+Legacy( Vertex2 corners[4], const Vertex2& base_position, float rotation, float halfSize )
+{
     // If a rotation has been defined for this particle then apply the rotation to the vertices that define
     // the particle
     if( rotation )
@@ -383,10 +660,10 @@ static void Legacy( Geometry::Vertex *output_vertices, const Vertex2& base_posit
         float dx = x1 * cr - y2 * sr + x;
         float dy = x1 * sr + y2 * cr + y;
 
-		bottomLeft = { dx, dy };
-		topRight = { bx, by };
-		topLeft = { ax, ay };
-		bottomRight = { cx, cy };
+		corners[0] = { ax, ay }; // Top left.
+		corners[1] = { bx, by }; // Top right.
+		corners[2] = { dx, dy }; // Bottom left.
+		corners[3] = { cx, cy }; // Bottom right.
     }
 	else
 	{
@@ -398,13 +675,11 @@ static void Legacy( Geometry::Vertex *output_vertices, const Vertex2& base_posit
 		float xmax = ( base_position.x + halfSize );
 		float ymax = ( base_position.y + halfSize );
 
-		bottomLeft = { xmin, ymax };
-		topRight = { xmax, ymin };
-		topLeft = { xmin, ymin };
-		bottomRight = { xmax, ymax };
+		corners[0] = { xmin, ymin };
+		corners[1] = { xmax, ymin };
+		corners[2] = { xmin, ymax };
+		corners[3] = { xmax, ymax };
 	}
-
-	EmitRect( output_vertices, topLeft, topRight, bottomLeft, bottomRight, color );
 }
 
 static Vertex2
@@ -455,10 +730,11 @@ PerpFromYDir( const Vertex2& yDir ) // right, from below
 	return xDir;
 }
 
-static void Rescale( Geometry::Vertex *output_vertices, EmitterObject::Mapping mapping, const Vertex2& base_position, const Vertex2& right, const Vertex2& below, float rotation, float halfSize, const Vector4& color )
+static void
+Rescale( Vertex2 corners[4], EmitterObject::Mapping mapping, const Vertex2& base_position, const Vertex2& right, const Vertex2& below, float rotation, float halfSize )
 {
 	Vertex2 xDir = DiffPoints( right, base_position ), yDir = DiffPoints( below, base_position );
-	
+
 	switch ( mapping )
 	{
 	case EmitterObject::kMapping_Rescale:
@@ -479,7 +755,7 @@ static void Rescale( Geometry::Vertex *output_vertices, EmitterObject::Mapping m
 				Rtt_Real meanLength = Rtt_RealDiv2( xLength + yLength );
 
 				ScaleVertex( xDir, meanLength / xLength );
-				ScaleVertex( xDir, meanLength / yLength );
+				ScaleVertex( yDir, meanLength / yLength );
 			}
 			else
 			{
@@ -514,76 +790,395 @@ static void Rescale( Geometry::Vertex *output_vertices, EmitterObject::Mapping m
 	ScaleVertex( xDir, halfSize );
 	ScaleVertex( yDir, halfSize );
 
-	Vertex2 topLeft = MapPoint( base_position, xDir, yDir, -1.f, -1.f );
-	Vertex2 topRight = MapPoint( base_position, xDir, yDir, +1.f, -1.f );
-	Vertex2 bottomLeft = MapPoint( base_position, xDir, yDir, -1.f, +1.f );
-	Vertex2 bottomRight = MapPoint( base_position, xDir, yDir, +1.f, +1.f );
-
-	EmitRect( output_vertices, topLeft, topRight, bottomLeft, bottomRight, color );
+	corners[0] = MapPoint( base_position, xDir, yDir, -1.f, -1.f ); // Top left.
+	corners[1] = MapPoint( base_position, xDir, yDir, +1.f, -1.f ); // Top right.
+	corners[2] = MapPoint( base_position, xDir, yDir, -1.f, +1.f ); // Bottom left.
+	corners[3] = MapPoint( base_position, xDir, yDir, +1.f, +1.f ); // Bottom right.
 }
 
-// Rect: output_vertices, top_left, top_right, bottom_left, bottom_right, color
-// Legacy: base_position, rotation, halfSize, output_vertices, color
+#ifdef Rtt_EMITTER_SIMD
 
-void EmitterObjectParticle::UpdateVertices( EmitterObject *eo,
-											EmitterObjectParticle &particle,
-											Geometry::Vertex *output_vertices )
+// A transform for 4 points: either one matrix for all 4 or, for spawn-time
+// transforms, one per particle. Lanes with an identity matrix are left alone.
+struct TransformV4
 {
+	V4 a, b, c, d, e, f;
+	V4 isIdentity;
+	bool isUniformIdentity;
+};
 
-    // As we are rendering the particles as quads, we need to define 6 vertices for each particle
-	// We assume that all particles have a square aspect ratio.
-    float halfSize = ( fParticleSize * 0.5f );
+static inline TransformV4
+LoadSpawnTimeTransforms( float **f, int index )
+{
+	TransformV4 t;
 
-	//// Base position.
-	//
-	Vertex2 base_position = {fPosition.x, fPosition.y};
-	Vertex2 right = {base_position.x + 1, base_position.y};
-	Vertex2 below = {base_position.x, base_position.y + 1};
+	t.a = Load( f[EmitterObjectParticles::kSpawnA] + index );
+	t.b = Load( f[EmitterObjectParticles::kSpawnB] + index );
+	t.c = Load( f[EmitterObjectParticles::kSpawnC] + index );
+	t.d = Load( f[EmitterObjectParticles::kSpawnD] + index );
+	t.e = Load( f[EmitterObjectParticles::kSpawnE] + index );
+	t.f = Load( f[EmitterObjectParticles::kSpawnF] + index );
+	t.isIdentity = Equal( t.a, Splat( Rtt_REAL_INF ) );
+	t.isUniformIdentity = false;
 
-	eo->TransformParticlePosition(fSpawnTimeTransform, base_position);
+	return t;
+}
 
-	//// Color.
-	//
-	Vector4 color;
+static inline TransformV4
+SplatTransform( const Matrix &m )
+{
+	TransformV4 t;
 
-	float cumulative_alpha = ( (float)eo->AlphaCumulative() * ( 1.0f / 255.0f ) );
+	t.isUniformIdentity = m.IsIdentity();
 
-	if( eo->fTextureResource->GetBitmap()->IsPremultiplied() )
+	const Real *row0 = m.Row0(), *row1 = m.Row1();
+	bool isIdentity = t.isUniformIdentity;
+
+	t.a = Splat( isIdentity ? 0.0f : row0[0] );
+	t.b = Splat( isIdentity ? 0.0f : row0[1] );
+	t.c = Splat( isIdentity ? 0.0f : row0[2] );
+	t.d = Splat( isIdentity ? 0.0f : row1[0] );
+	t.e = Splat( isIdentity ? 0.0f : row1[1] );
+	t.f = Splat( isIdentity ? 0.0f : row1[2] );
+	t.isIdentity = Splat( 0.0f );
+
+	return t;
+}
+
+// Same operations as Matrix::Apply().
+static inline void
+ApplyTransform( const TransformV4 &t, V4 &x, V4 &y )
+{
+	if ( !t.isUniformIdentity )
 	{
-		color.r = ( fColor.r * cumulative_alpha );
-		color.g = ( fColor.g * cumulative_alpha );
-		color.b = ( fColor.b * cumulative_alpha );
-		color.a = ( fColor.a * cumulative_alpha );
+		V4 tx = Add( Add( t.c, Mul( t.a, x ) ), Mul( t.b, y ) );
+		V4 ty = Add( Add( t.f, Mul( t.d, x ) ), Mul( t.e, y ) );
+
+		x = Select( t.isIdentity, x, tx );
+		y = Select( t.isIdentity, y, ty );
 	}
-	else
+}
+
+template < int kTransformMode >
+static inline void
+TransformParticlePoints( const TransformV4 &spawnTimeTransforms, const TransformV4 &current, V4 &x, V4 &y )
+{
+	if ( EmitterVertexContext::kTransform_Current != kTransformMode )
 	{
-		color.r = fColor.r;
-		color.g = fColor.g;
-		color.b = fColor.b;
-		color.a = ( fColor.a * cumulative_alpha );
+		ApplyTransform( spawnTimeTransforms, x, y );
 	}
-	//
-	////
 
-	EmitterObject::Mapping mapping = eo->GetMapping();
-
-	if ( EmitterObject::kMapping_Legacy != mapping )
+	if ( EmitterVertexContext::kTransform_SpawnTime != kTransformMode )
 	{
-		if ( EmitterObject::kMapping_RescaleY != mapping )
+		ApplyTransform( current, x, y );
+	}
+}
+
+// The cosine and sine of each lane's rotation, in degrees; lanes with no rotation
+// get 1 and 0. Returns the mask of rotated lanes. (SinCos() is NOT bit-identical
+// to the scalar code's cosf() / sinf().)
+static inline V4
+CosSinOfRotations( V4 rotation, V4 &cosines, V4 &sines )
+{
+	V4 isRotated = NotEqual( rotation, Splat( 0.0f ) );
+
+	cosines = Splat( 1.0f );
+	sines = Splat( 0.0f );
+
+	if ( Any( isRotated ) )
+	{
+		V4 s, c;
+
+		SinCos( Mul( rotation, Splat( (float)( M_PI / 180.0 ) ) ), s, c );
+
+		cosines = Select( isRotated, c, cosines );
+		sines = Select( isRotated, s, sines );
+	}
+
+	return isRotated;
+}
+
+// See Legacy(). Corners: top left, top right, bottom left, bottom right; x then y.
+static inline void
+LegacyCorners( V4 corners[8], V4 x, V4 y, V4 rotation, V4 halfSize )
+{
+	V4 cr, sr;
+	V4 isRotated = CosSinOfRotations( rotation, cr, sr );
+
+	V4 xmin = Sub( x, halfSize ), ymin = Sub( y, halfSize );
+	V4 xmax = Add( x, halfSize ), ymax = Add( y, halfSize );
+
+	corners[0] = xmin; corners[1] = ymin;
+	corners[2] = xmax; corners[3] = ymin;
+	corners[4] = xmin; corners[5] = ymax;
+	corners[6] = xmax; corners[7] = ymax;
+
+	if ( Any( isRotated ) )
+	{
+		V4 x1 = Neg( halfSize ), y1 = x1;
+		V4 x2 = halfSize, y2 = halfSize;
+		V4 ax = Add( Sub( Mul( x1, cr ), Mul( y1, sr ) ), x );
+		V4 ay = Add( Add( Mul( x1, sr ), Mul( y1, cr ) ), y );
+		V4 bx = Add( Sub( Mul( x2, cr ), Mul( y1, sr ) ), x );
+		V4 by = Add( Add( Mul( x2, sr ), Mul( y1, cr ) ), y );
+		V4 cx = Add( Sub( Mul( x2, cr ), Mul( y2, sr ) ), x );
+		V4 cy = Add( Add( Mul( x2, sr ), Mul( y2, cr ) ), y );
+		V4 dx = Add( Sub( Mul( x1, cr ), Mul( y2, sr ) ), x );
+		V4 dy = Add( Add( Mul( x1, sr ), Mul( y2, cr ) ), y );
+
+		corners[0] = Select( isRotated, ax, corners[0] ); corners[1] = Select( isRotated, ay, corners[1] );
+		corners[2] = Select( isRotated, bx, corners[2] ); corners[3] = Select( isRotated, by, corners[3] );
+		corners[4] = Select( isRotated, dx, corners[4] ); corners[5] = Select( isRotated, dy, corners[5] );
+		corners[6] = Select( isRotated, cx, corners[6] ); corners[7] = Select( isRotated, cy, corners[7] );
+	}
+}
+
+// See Rescale().
+static inline void
+RescaleCorners( V4 corners[8], EmitterObject::Mapping mapping, V4 x, V4 y, V4 rightX, V4 rightY, V4 belowX, V4 belowY, V4 rotation, V4 halfSize )
+{
+	V4 xDirX = Sub( rightX, x ), xDirY = Sub( rightY, y );
+	V4 yDirX = Sub( belowX, x ), yDirY = Sub( belowY, y );
+
+	switch ( mapping )
+	{
+	case EmitterObject::kMapping_Rescale:
+		break;
+	case EmitterObject::kMapping_RescaleX:
+		yDirX = Neg( xDirY ); // PerpFromXDir()
+		yDirY = xDirX;
+		break;
+	case EmitterObject::kMapping_RescaleY:
+		xDirX = yDirY; // PerpFromYDir()
+		xDirY = Neg( yDirX );
+		break;
+	default:
 		{
-			eo->TransformParticlePosition(fSpawnTimeTransform, right);
+			V4 xLength = Sqrt( Add( Mul( xDirX, xDirX ), Mul( xDirY, xDirY ) ) );
+			V4 yLength = Sqrt( Add( Mul( yDirX, yDirX ), Mul( yDirY, yDirY ) ) );
+
+			// Min or max (also mean's fallback): rebuild one axis from the other.
+			V4 xIsShorter = Less( xLength, yLength );
+			V4 fromXDir = xIsShorter;
+
+			if ( EmitterObject::kMapping_RescaleMin != mapping )
+			{
+				V4 zero = Splat( 0.0f );
+
+				fromXDir = AndNot( Equal( zero, zero ), xIsShorter ); // !xIsShorter
+			}
+
+			V4 newXDirX = Select( fromXDir, xDirX, yDirY ), newXDirY = Select( fromXDir, xDirY, Neg( yDirX ) );
+			V4 newYDirX = Select( fromXDir, Neg( xDirY ), yDirX ), newYDirY = Select( fromXDir, xDirX, yDirY );
+
+			if ( EmitterObject::kMapping_RescaleMean == mapping )
+			{
+				float xl[4], yl[4];
+
+				Store( xl, xLength );
+				Store( yl, yLength );
+
+				V4 useMean = MaskFromBools( !Rtt_RealIsZero( xl[0] ) && !Rtt_RealIsZero( yl[0] ),
+											!Rtt_RealIsZero( xl[1] ) && !Rtt_RealIsZero( yl[1] ),
+											!Rtt_RealIsZero( xl[2] ) && !Rtt_RealIsZero( yl[2] ),
+											!Rtt_RealIsZero( xl[3] ) && !Rtt_RealIsZero( yl[3] ) );
+
+				if ( Any( useMean ) )
+				{
+					V4 meanLength = Mul( Add( xLength, yLength ), Splat( Rtt_REAL_HALF ) ); // Rtt_RealDiv2()
+					V4 xScale = Div( meanLength, xLength ), yScale = Div( meanLength, yLength );
+
+					newXDirX = Select( useMean, Mul( xDirX, xScale ), newXDirX );
+					newXDirY = Select( useMean, Mul( xDirY, xScale ), newXDirY );
+					newYDirX = Select( useMean, Mul( yDirX, yScale ), newYDirX );
+					newYDirY = Select( useMean, Mul( yDirY, yScale ), newYDirY );
+				}
+			}
+
+			xDirX = newXDirX; xDirY = newXDirY;
+			yDirX = newYDirX; yDirY = newYDirY;
+		}
+	}
+
+	V4 cr, sr;
+	V4 isRotated = CosSinOfRotations( rotation, cr, sr );
+
+	if ( Any( isRotated ) )
+	{
+		// RotatePoint()
+		V4 rxx = Sub( Mul( xDirX, cr ), Mul( xDirY, sr ) ), rxy = Add( Mul( xDirY, cr ), Mul( xDirX, sr ) );
+		V4 ryx = Sub( Mul( yDirX, cr ), Mul( yDirY, sr ) ), ryy = Add( Mul( yDirY, cr ), Mul( yDirX, sr ) );
+
+		xDirX = Select( isRotated, rxx, xDirX ); xDirY = Select( isRotated, rxy, xDirY );
+		yDirX = Select( isRotated, ryx, yDirX ); yDirY = Select( isRotated, ryy, yDirY );
+	}
+
+	xDirX = Mul( xDirX, halfSize ); xDirY = Mul( xDirY, halfSize );
+	yDirX = Mul( yDirX, halfSize ); yDirY = Mul( yDirY, halfSize );
+
+	// MapPoint() with ( -1, -1 ), ( +1, -1 ), ( -1, +1 ), ( +1, +1 ).
+	V4 plus = Splat( +1.f ), minus = Splat( -1.f );
+
+	corners[0] = Add( x, Add( Mul( xDirX, minus ), Mul( yDirX, minus ) ) ); corners[1] = Add( y, Add( Mul( xDirY, minus ), Mul( yDirY, minus ) ) );
+	corners[2] = Add( x, Add( Mul( xDirX, plus ), Mul( yDirX, minus ) ) ); corners[3] = Add( y, Add( Mul( xDirY, plus ), Mul( yDirY, minus ) ) );
+	corners[4] = Add( x, Add( Mul( xDirX, minus ), Mul( yDirX, plus ) ) ); corners[5] = Add( y, Add( Mul( xDirY, minus ), Mul( yDirY, plus ) ) );
+	corners[6] = Add( x, Add( Mul( xDirX, plus ), Mul( yDirX, plus ) ) ); corners[7] = Add( y, Add( Mul( xDirY, plus ), Mul( yDirY, plus ) ) );
+}
+
+#endif // Rtt_EMITTER_SIMD
+
+// Writes the vertices of particles [0, count). The transform mode and the
+// legacy / rescale choice are fixed for the whole loop.
+template < int kTransformMode, bool kIsLegacy >
+static void
+WriteParticleVertices( const EmitterVertexContext &context, EmitterObjectParticles &particles, int count, Geometry::Vertex *output_vertices )
+{
+	float **f = particles.fFields;
+	const float * Rtt_RESTRICT px = f[EmitterObjectParticles::kPositionX];
+	const float * Rtt_RESTRICT py = f[EmitterObjectParticles::kPositionY];
+	const float * Rtt_RESTRICT size = f[EmitterObjectParticles::kParticleSize];
+	const float * Rtt_RESTRICT rotation = f[EmitterObjectParticles::kRotation];
+	const float * Rtt_RESTRICT r = f[EmitterObjectParticles::kColorR];
+	const float * Rtt_RESTRICT g = f[EmitterObjectParticles::kColorG];
+	const float * Rtt_RESTRICT b = f[EmitterObjectParticles::kColorB];
+	const float * Rtt_RESTRICT a = f[EmitterObjectParticles::kColorA];
+
+	const bool indexed = context.fUsesIndexedQuads;
+	const int verticesPerParticle = indexed ? 4 : VERTICES_PER_QUADS;
+	const EmitterObject::Mapping mapping = context.fMapping;
+
+	int i = 0;
+
+#ifdef Rtt_EMITTER_SIMD
+	TransformV4 current = SplatTransform( EmitterVertexContext::kTransform_SpawnTime != kTransformMode ? *context.fCurrentTransform : Matrix() );
+
+	V4 half = Splat( 0.5f ), one = Splat( 1.0f ), maxByte = Splat( 255.0f );
+	V4 colorScaleR = Splat( context.fColorScale[0] ), colorScaleG = Splat( context.fColorScale[1] );
+	V4 colorScaleB = Splat( context.fColorScale[2] ), colorScaleA = Splat( context.fColorScale[3] );
+
+	for( ; i + 4 <= count; i += 4 )
+	{
+		TransformV4 spawnTimeTransforms = LoadSpawnTimeTransforms( f, i );
+
+		V4 halfSize = Mul( Load( size + i ), half );
+		V4 x = Load( px + i ), y = Load( py + i );
+		V4 rightX = Add( x, one ), rightY = y;
+		V4 belowX = x, belowY = Add( y, one );
+
+		TransformParticlePoints< kTransformMode >( spawnTimeTransforms, current, x, y );
+
+		uint32_t colors[4];
+
+		PackBytes( colors,
+					Mul( Mul( Load( r + i ), colorScaleR ), maxByte ),
+					Mul( Mul( Load( g + i ), colorScaleG ), maxByte ),
+					Mul( Mul( Load( b + i ), colorScaleB ), maxByte ),
+					Mul( Mul( Load( a + i ), colorScaleA ), maxByte ) );
+
+		V4 corners[8];
+
+		if ( kIsLegacy )
+		{
+			LegacyCorners( corners, x, y, Load( rotation + i ), halfSize );
+		}
+		else
+		{
+			if ( EmitterObject::kMapping_RescaleY != mapping )
+			{
+				TransformParticlePoints< kTransformMode >( spawnTimeTransforms, current, rightX, rightY );
+			}
+
+			if ( EmitterObject::kMapping_RescaleX != mapping )
+			{
+				TransformParticlePoints< kTransformMode >( spawnTimeTransforms, current, belowX, belowY );
+			}
+
+			RescaleCorners( corners, mapping, x, y, rightX, rightY, belowX, belowY, Load( rotation + i ), halfSize );
 		}
 
-		if ( EmitterObject::kMapping_RescaleX != mapping )
+		float lanes[8][4];
+
+		for ( int k = 0; k < 8; ++k )
 		{
-			eo->TransformParticlePosition(fSpawnTimeTransform, below);
+			Store( lanes[k], corners[k] );
 		}
 
-		Rescale( output_vertices, mapping, base_position, right, below, fRotation, halfSize, color );
+		for ( int j = 0; j < 4; ++j, output_vertices += verticesPerParticle )
+		{
+			Vertex2 topLeft = { lanes[0][j], lanes[1][j] }, topRight = { lanes[2][j], lanes[3][j] };
+			Vertex2 bottomLeft = { lanes[4][j], lanes[5][j] }, bottomRight = { lanes[6][j], lanes[7][j] };
+			U8 color[4];
+
+			memcpy( color, &colors[j], sizeof( color ) ); // Bytes r, g, b, a, in order.
+
+			EmitRect( output_vertices, indexed, topLeft, topRight, bottomLeft, bottomRight, color );
+		}
 	}
-	else
+#endif
+
+	for( ; i < count; ++i, output_vertices += verticesPerParticle )
 	{
-		Legacy( output_vertices, base_position, fRotation, halfSize, color );
+		// As we are rendering the particles as quads, we need to define 4 corners for each particle
+		// We assume that all particles have a square aspect ratio.
+		float halfSize = ( size[i] * 0.5f );
+
+		//// Base position.
+		//
+		Vertex2 base_position = { px[i], py[i] };
+		Vertex2 right = { base_position.x + 1, base_position.y };
+		Vertex2 below = { base_position.x, base_position.y + 1 };
+
+		TransformParticlePoint< kTransformMode >( context, particles, i, base_position );
+
+		//// Color.
+		//
+		U8 color[4] = {
+			(U8)( ( r[i] * context.fColorScale[0] ) * 255.0f ),
+			(U8)( ( g[i] * context.fColorScale[1] ) * 255.0f ),
+			(U8)( ( b[i] * context.fColorScale[2] ) * 255.0f ),
+			(U8)( ( a[i] * context.fColorScale[3] ) * 255.0f )
+		};
+
+		Vertex2 corners[4];
+
+		if ( kIsLegacy )
+		{
+			Legacy( corners, base_position, rotation[i], halfSize );
+		}
+		else
+		{
+			if ( EmitterObject::kMapping_RescaleY != mapping )
+			{
+				TransformParticlePoint< kTransformMode >( context, particles, i, right );
+			}
+
+			if ( EmitterObject::kMapping_RescaleX != mapping )
+			{
+				TransformParticlePoint< kTransformMode >( context, particles, i, below );
+			}
+
+			Rescale( corners, mapping, base_position, right, below, rotation[i], halfSize );
+		}
+
+		EmitRect( output_vertices, indexed, corners[0], corners[1], corners[2], corners[3], color );
+	}
+}
+
+template < bool kIsLegacy >
+static void
+WriteParticleVertices( int transformMode, const EmitterVertexContext &context, EmitterObjectParticles &particles, int count, Geometry::Vertex *output_vertices )
+{
+	switch ( transformMode )
+	{
+	case EmitterVertexContext::kTransform_SpawnTime:
+		WriteParticleVertices< EmitterVertexContext::kTransform_SpawnTime, kIsLegacy >( context, particles, count, output_vertices );
+		break;
+	case EmitterVertexContext::kTransform_Current:
+		WriteParticleVertices< EmitterVertexContext::kTransform_Current, kIsLegacy >( context, particles, count, output_vertices );
+		break;
+	default:
+		WriteParticleVertices< EmitterVertexContext::kTransform_Parent, kIsLegacy >( context, particles, count, output_vertices );
+		break;
 	}
 }
 
@@ -635,6 +1230,7 @@ EmitterObject::EmitterObject()
 , fTextureFileName()
 , fParticles( NULL )
 , fParticleCount( 0 )
+, fUsesIndexedQuads( false )
 , fMapping( kMapping_Legacy )
 , fState( kState_Playing )
 , fTextureResource()
@@ -659,7 +1255,7 @@ void EmitterObject::_Cleanup()
 
 	if( fParticles )
 	{
-		Rtt_FREE( fParticles );
+		EmitterObjectParticles::Destroy( fParticles );
 
 		fParticles = NULL;
 	}
@@ -766,8 +1362,7 @@ bool EmitterObject::Initialize( lua_State *L, Display &display )
 	fEmissionRateInParticlesPerSeconds = ( (float)fMaxParticles / fParticleLifespanInSeconds );
 	fEmitCounter = 0.0f;
 
-	fParticles = (EmitterObjectParticle *)Rtt_MALLOC( display.GetAllocator(),
-													sizeof( EmitterObjectParticle ) * (int)fMaxParticles );
+	fParticles = EmitterObjectParticles::Create( display.GetAllocator(), fMaxParticles );
 
 	// Get any mapping, else use the display default.
 	lua_getfield( L, index - 1, "emitterMapping" );
@@ -847,12 +1442,36 @@ bool EmitterObject::Initialize( lua_State *L, Display &display )
 
 	// Init fData.
 	{
-		fData.fGeometry = Rtt_NEW( display.GetAllocator(),
-									Geometry( display.GetAllocator(),
-												Geometry::kTriangleFan,
-												0, // Vertex count.
-												0, // Index count.
-												false ) ); // Store on GPU.
+		// Each particle is a quad. If the indices fit, store 4 vertices per quad
+		// on the GPU and draw them with static indices; otherwise, fall back to
+		// 6 vertices (2 triangles) per quad.
+		//
+		// The vertices are re-sent every frame. That is cheap on GL, but on Vulkan
+		// each update of GPU-stored geometry is a blocking transfer, so use the
+		// renderer's own (batched) vertex streaming there instead.
+		const U32 kMaxIndexedVertices = (U32)std::numeric_limits< Geometry::Index >::max() + 1;
+		bool updatesGPUGeometryCheaply = 0 == strcmp( display.GetRuntime().GetBackend(), "glBackend" );
+
+		fUsesIndexedQuads = updatesGPUGeometryCheaply && (U32)fMaxParticles * 4 <= kMaxIndexedVertices;
+
+		if ( fUsesIndexedQuads )
+		{
+			fData.fGeometry = Rtt_NEW( display.GetAllocator(),
+										Geometry( display.GetAllocator(),
+													Geometry::kIndexedTriangles,
+													0, // Vertex count.
+													0, // Index count.
+													true ) ); // Store on GPU.
+		}
+		else
+		{
+			fData.fGeometry = Rtt_NEW( display.GetAllocator(),
+										Geometry( display.GetAllocator(),
+													Geometry::kTriangles,
+													0, // Vertex count.
+													0, // Index count.
+													false ) ); // Store on GPU.
+		}
 
 		ShaderFactory &factory = display.GetShaderFactory();
 		fShader = &factory.GetDefault();
@@ -867,68 +1486,68 @@ bool EmitterObject::Initialize( lua_State *L, Display &display )
 		fData.fUserUniform2 = NULL;
 		fData.fUserUniform3 = NULL;
 
-		fData.fGeometry->Resize( ( fMaxParticles * VERTICES_PER_QUADS ),
-									false );
-		fData.fGeometry->SetVerticesUsed( fParticleCount * VERTICES_PER_QUADS );
+		// Set every member of Vertex that NEVER changes, and the indices.
+		Geometry::Vertex blank;
 
-		// Set every member of Vertex that NEVER change.
+		blank.Zero();
+
+		if ( fUsesIndexedQuads )
 		{
+			fData.fGeometry->Resize( fMaxParticles * 4, fMaxParticles * 6, false );
+
 			Geometry::Vertex *output_vertices = fData.fGeometry->GetVertexData();
+			Geometry::Index *indices = fData.fGeometry->GetIndexData();
 
 			for( int i = 0;
 					i < fMaxParticles;
-					++i )
+					++i, output_vertices += 4, indices += 6 )
 			{
-				Geometry::Vertex &output_vert0 = output_vertices[ ( i * VERTICES_PER_QUADS ) + 0 ];
-				Geometry::Vertex &output_vert1 = output_vertices[ ( i * VERTICES_PER_QUADS ) + 1 ];
-				Geometry::Vertex &output_vert2 = output_vertices[ ( i * VERTICES_PER_QUADS ) + 2 ];
-				Geometry::Vertex &output_vert3 = output_vertices[ ( i * VERTICES_PER_QUADS ) + 3 ];
-				Geometry::Vertex &output_vert4 = output_vertices[ ( i * VERTICES_PER_QUADS ) + 4 ];
-				Geometry::Vertex &output_vert5 = output_vertices[ ( i * VERTICES_PER_QUADS ) + 5 ];
+				// Top left, top right, bottom left, bottom right.
+				for ( int j = 0; j < 4; ++j )
+				{
+					output_vertices[j] = blank;
+					output_vertices[j].u = (Real)( j & 1 );
+					output_vertices[j].v = (Real)( j >> 1 );
+				}
 
-				output_vert0.Zero();
-				output_vert1.Zero();
-				output_vert2.Zero();
-				output_vert3.Zero();
-				output_vert4.Zero();
-				output_vert5.Zero();
+				// Same triangles, in the same order, as the 6-vertex form:
+				// (bottom left, top right, top left), (bottom left, bottom right, top right).
+				Geometry::Index base = (Geometry::Index)( i * 4 );
 
-				// Bottom left.
-				output_vert0.u = 0.0f;
-				output_vert0.v = 1.0f;
-
-				// Top right.
-				output_vert1.u = 1.0f;
-				output_vert1.v = 0.0f;
-
-				// Top left.
-				output_vert2.u = 0.0f;
-				output_vert2.v = 0.0f;
-
-				// Bottom left.
-				output_vert3.u = 0.0f;
-				output_vert3.v = 1.0f;
-
-				// Bottom right.
-				output_vert4.u = 1.0f;
-				output_vert4.v = 1.0f;
-
-				// Top right.
-				output_vert5.u = 1.0f;
-				output_vert5.v = 0.0f;
-		    }
+				indices[0] = base + 2;
+				indices[1] = base + 1;
+				indices[2] = base + 0;
+				indices[3] = base + 2;
+				indices[4] = base + 3;
+				indices[5] = base + 1;
+			}
 		}
+		else
+		{
+			fData.fGeometry->Resize( ( fMaxParticles * VERTICES_PER_QUADS ),
+										false );
+
+			Geometry::Vertex *output_vertices = fData.fGeometry->GetVertexData();
+
+			// Bottom left, top right, top left, bottom left, bottom right, top right.
+			static const Real kU[] = { 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f };
+			static const Real kV[] = { 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f };
+
+			for( int i = 0;
+					i < fMaxParticles;
+					++i, output_vertices += VERTICES_PER_QUADS )
+			{
+				for ( int j = 0; j < VERTICES_PER_QUADS; ++j )
+				{
+					output_vertices[j] = blank;
+					output_vertices[j].u = kU[j];
+					output_vertices[j].v = kV[j];
+				}
+			}
+		}
+
+		_SetParticleCount( fParticleCount );
 	}
-
-	// Set the color.
-	Geometry::Vertex::SetColor( ( fParticleCount * VERTICES_PER_QUADS ),
-								fData.fGeometry->GetVertexData(),
-								1.0f,//color.r,
-								1.0f,//color.g,
-								1.0f,//color.b,
-								1.0f );//color.a
-
-	fData.fGeometry->SetPrimitiveType( Geometry::kTriangles );
 
 	// Shader.
 	{
@@ -988,13 +1607,6 @@ void EmitterObject::Draw( Renderer& renderer ) const
 
 	SUMMED_TIMING( ed, "Emitter: Draw" );
 
-#if defined(Rtt_EMSCRIPTEN_ENV)
-	if (fData.fGeometry->GetStoredOnGPU())
-	{
-		fData.fGeometry->Invalidate();
-	}
-#endif
-
 	// This does the renderer.Insert( &fData ).
 	fShader->Draw( renderer, fData );
 }
@@ -1032,28 +1644,128 @@ void EmitterObject::_AddParticle(const Matrix &spawnTimeTransform)
 	}
 
 	// Take the next particle out of the particle pool we have created and initialize it
-	fParticles[ fParticleCount ].Init( this, spawnTimeTransform );
+	fParticles->Init( fParticleCount, this, spawnTimeTransform );
 
 	// Increment the particle count
-	fParticleCount++;
-
-	fData.fGeometry->SetVerticesUsed( fParticleCount * VERTICES_PER_QUADS );
+	_SetParticleCount( fParticleCount + 1 );
 }
 
-void EmitterObject::_RemoveParticle( int particleIndex )
+void EmitterObject::_SetParticleCount( int count )
 {
-	// As the particle is not alive anymore replace it with the last active particle
-	// in the array and reduce the count of particles by one.  This causes all active particles
-	// to be packed together at the start of the array so that a particle which has run out of
-	// life will only drop into this clause once
-	if( particleIndex != fParticleCount - 1 )
+	fParticleCount = count;
+
+	if ( fUsesIndexedQuads )
 	{
-		fParticles[particleIndex] = fParticles[fParticleCount - 1];
+		fData.fGeometry->SetVerticesUsed( fParticleCount * 4 );
+		fData.fGeometry->SetIndicesUsed( fParticleCount * 6 );
+	}
+	else
+	{
+		fData.fGeometry->SetVerticesUsed( fParticleCount * VERTICES_PER_QUADS );
+	}
+}
+
+void EmitterObject::_UpdateParticles( float time_delta )
+{
+	float **f = fParticles->fFields;
+	float * Rtt_RESTRICT timeToLive = f[EmitterObjectParticles::kTimeToLiveInSeconds];
+	int count = fParticleCount;
+
+	// Reduce the life span of every particle.
+	for( int i = 0; i < count; ++i )
+	{
+		timeToLive[i] -= time_delta;
 	}
 
-	fParticleCount--;
+	// Remove dead particles, moving the last live particle into each hole. Live
+	// particles stay packed together at the start of the arrays. (This leaves
+	// them in the same order as removing each dead one as it is found.)
+	int hole = 0, tail = count;
 
-	fData.fGeometry->SetVerticesUsed( fParticleCount * VERTICES_PER_QUADS );
+	for( ;; )
+	{
+		while( hole < tail && timeToLive[hole] > 0.0f )
+		{
+			++hole;
+		}
+
+		while( hole < tail && !( timeToLive[tail - 1] > 0.0f ) )
+		{
+			--tail;
+		}
+
+		if( hole >= tail )
+		{
+			break;
+		}
+
+		fParticles->Move( hole++, --tail );
+	}
+
+	if( tail != count )
+	{
+		_SetParticleCount( tail );
+	}
+
+	// Update the survivors.
+	if( fEmitterType == kParticleTypeRadial )
+	{
+		UpdateRadialParticles( f, fParticleCount, time_delta );
+	}
+	else
+	{
+		UpdateGravityParticles( f, fParticleCount, time_delta, fGravity );
+	}
+
+	UpdateCommonParticleState( f, fParticleCount, time_delta );
+}
+
+void EmitterObject::_UpdateVertices()
+{
+	EmitterVertexContext context;
+	int transformMode;
+
+	if( fAbsolutePositionParent == EMITTER_ABSOLUTE_PARENT )
+	{
+		transformMode = EmitterVertexContext::kTransform_SpawnTime;
+		context.fCurrentTransform = NULL;
+	}
+	else if( fAbsolutePositionParent == NULL )
+	{
+		transformMode = EmitterVertexContext::kTransform_Current;
+		context.fCurrentTransform = &GetSrcToDstMatrix();
+	}
+	else
+	{
+		transformMode = EmitterVertexContext::kTransform_Parent;
+		context.fCurrentTransform = &fAbsolutePositionParent->GetSrcToDstMatrix();
+	}
+
+	float cumulative_alpha = ( (float)AlphaCumulative() * ( 1.0f / 255.0f ) );
+	bool premultiplied = fTextureResource->GetBitmap()->IsPremultiplied();
+
+	context.fColorScale[0] = premultiplied ? cumulative_alpha : 1.0f;
+	context.fColorScale[1] = context.fColorScale[0];
+	context.fColorScale[2] = context.fColorScale[0];
+	context.fColorScale[3] = cumulative_alpha;
+	context.fMapping = fMapping;
+	context.fUsesIndexedQuads = fUsesIndexedQuads;
+
+	Geometry::Vertex *output_vertices = fData.fGeometry->GetVertexData();
+
+	if ( kMapping_Legacy == fMapping )
+	{
+		WriteParticleVertices< true >( transformMode, context, *fParticles, fParticleCount, output_vertices );
+	}
+	else
+	{
+		WriteParticleVertices< false >( transformMode, context, *fParticles, fParticleCount, output_vertices );
+	}
+
+	if ( fData.fGeometry->GetStoredOnGPU() )
+	{
+		fData.fGeometry->Invalidate();
+	}
 }
 
 bool
@@ -1189,33 +1901,8 @@ void EmitterObject::_Update( const Display &display )
 		}
 	}
 
-	// Reset the particle index before updating the particles in this emitter
-	int particleIndex = 0;
-
-	Geometry::Vertex *output_vertices = fData.fGeometry->GetVertexData();
-
-    // Loop through all the particles updating their location and color
-	while( particleIndex < fParticleCount )
-	{
-		// Get the particle for the current particle index
-		EmitterObjectParticle &particle = fParticles[particleIndex];
-
-		particle.Update( this, time_delta );
-
-		if( particle.fTimeToLiveInSeconds > 0.0f )
-		{
-			particle.UpdateVertices( this,
-										particle,
-										&( output_vertices[ particleIndex * VERTICES_PER_QUADS ] ) );
-
-			// Update the particle and vertex counters
-			particleIndex++;
-		}
-		else
-		{
-			_RemoveParticle( particleIndex );
-		}
-	}
+	_UpdateParticles( time_delta );
+	_UpdateVertices();
 }
 
 void EmitterObject::SetEmissionRateInParticlesPerSeconds( float v )
@@ -1235,11 +1922,13 @@ void EmitterObject::Start()
 		// kState_Stopped -> kState_Playing.
 
 		// Reset all the particles.
+		float *timeToLive = fParticles->fFields[EmitterObjectParticles::kTimeToLiveInSeconds];
+
 		for( int i = 0;
 				i < fParticleCount;
 				++i )
 		{
-			fParticles[i].Reset();
+			timeToLive[i] = 0.0f;
 		}
 
 		fElapsedTime = 0.0f;
@@ -1265,17 +1954,17 @@ const char* EmitterObject::GetStringForMapping( Mapping mapping )
 {
 	switch ( mapping )
 	{
-		kMapping_Rescale:
+		case kMapping_Rescale:
 			return "rescale";
-		kMapping_RescaleX:
+		case kMapping_RescaleX:
 			return "rescaleX";
-		kMapping_RescaleY:
+		case kMapping_RescaleY:
 			return "rescaleY";
-		kMapping_RescaleMin:
+		case kMapping_RescaleMin:
 			return "rescaleMin";
-		kMapping_RescaleMax:
+		case kMapping_RescaleMax:
 			return "rescaleMax";
-		kMapping_RescaleMean:
+		case kMapping_RescaleMean:
 			return "rescaleMean";
 		default:
 			return "legacy";

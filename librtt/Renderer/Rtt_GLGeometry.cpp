@@ -481,6 +481,14 @@ GLGeometry::Create( CPUResource* resource )
     }
 }
 
+// Only the used part of a buffer is drawn, so only that much needs to be
+// copied to the GPU on an update. (The whole buffer is copied on creation.)
+static U32
+UsedCount( U32 used, U32 allocated )
+{
+	return used < allocated ? used : allocated;
+}
+
 void
 GLGeometry::Update( CPUResource* resource )
 {
@@ -537,7 +545,7 @@ GLGeometry::Update( CPUResource* resource )
             }
 			
             glBindBuffer( GL_ARRAY_BUFFER, fVBO );
-            glBufferSubData( GL_ARRAY_BUFFER, 0, fVertexCount * size, vertexData );
+            glBufferSubData( GL_ARRAY_BUFFER, 0, UsedCount( geometry->GetVerticesUsed(), fVertexCount ) * size, vertexData );
 
             const Geometry::ExtensionBlock* block = geometry->GetExtensionBlock();
                         
@@ -575,7 +583,7 @@ GLGeometry::Update( CPUResource* resource )
             {
                 Rtt_glBindVertexArray( 0 );
                 glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, fIBO );
-                glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, 0, fIndexCount * sizeof(Geometry::Index), indexData );
+                glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, 0, UsedCount( geometry->GetIndicesUsed(), fIndexCount ) * sizeof(Geometry::Index), indexData );
                 glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
             }
         }
@@ -621,7 +629,7 @@ GLGeometry::Update( CPUResource* resource )
             }
 
             glBindBuffer( GL_ARRAY_BUFFER, fVBO );
-            glBufferSubData( GL_ARRAY_BUFFER, 0, fVertexCount * size, vertexData );
+            glBufferSubData( GL_ARRAY_BUFFER, 0, UsedCount( geometry->GetVerticesUsed(), fVertexCount ) * size, vertexData );
 
             const Geometry::ExtensionBlock* block = geometry->GetExtensionBlock();
                         
@@ -659,7 +667,7 @@ GLGeometry::Update( CPUResource* resource )
 			if ( indexData )
 			{
 				glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, fIBO );
-				glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, 0, fIndexCount * sizeof(Geometry::Index), indexData );
+				glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, 0, UsedCount( geometry->GetIndicesUsed(), fIndexCount ) * sizeof(Geometry::Index), indexData );
 				glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 			}
         }
