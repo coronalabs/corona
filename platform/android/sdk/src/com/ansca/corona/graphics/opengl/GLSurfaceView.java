@@ -477,6 +477,16 @@ public class GLSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     }
 
     /**
+     * Corona: with client version 2, prefer EGL configs that can also back an OpenGL ES 3.0 context
+     * (EGL_OPENGL_ES3_BIT_KHR), falling back to ES 2.0-only configs when the device has none.
+     * Must be called before setEGLConfigChooser(). Used by apps that opt in to OpenGL ES 3.0.
+     */
+    public void setPreferOpenGLES3Config(boolean prefer) {
+        checkRenderThreadState();
+        mPreferES3Config = prefer;
+    }
+
+    /**
      * Set the rendering mode. When renderMode is
      * RENDERMODE_CONTINUOUSLY, the renderer is called
      * repeatedly to re-render the scene. When renderMode
@@ -863,6 +873,11 @@ public class GLSurfaceView extends SurfaceView implements SurfaceHolder.Callback
             implements EGLConfigChooser {
         public BaseConfigChooser(int[] configSpec) {
             mConfigSpec = filterConfigSpec(configSpec);
+            if ((mEGLContextClientVersion == 2) && mPreferES3Config) {
+                mFallbackConfigSpec = mConfigSpec;
+                mConfigSpec = mConfigSpec.clone();
+                mConfigSpec[mConfigSpec.length - 2] = 4 | 0x40; /* EGL_OPENGL_ES2_BIT | EGL_OPENGL_ES3_BIT_KHR */
+            }
         }
 
         public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display) {
@@ -873,6 +888,17 @@ public class GLSurfaceView extends SurfaceView implements SurfaceHolder.Callback
             }
 
             int numConfigs = num_config[0];
+
+            if ((numConfigs <= 0) && (mFallbackConfigSpec != null)) {
+                // No config can back an OpenGL ES 3.0 context: use ES 2.0-only configs, as without the preference.
+                Log.i("Corona", "No OpenGL ES 3.0 capable EGL config, using OpenGL ES 2.0 configs");
+                mConfigSpec = mFallbackConfigSpec;
+                mFallbackConfigSpec = null;
+                if (!egl.eglChooseConfig(display, mConfigSpec, null, 0, num_config)) {
+                    throw new IllegalArgumentException("eglChooseConfig failed");
+                }
+                numConfigs = num_config[0];
+            }
 
             if (numConfigs <= 0) {
                 throw new IllegalArgumentException(
@@ -895,6 +921,7 @@ public class GLSurfaceView extends SurfaceView implements SurfaceHolder.Callback
                 EGLConfig[] configs);
 
         protected int[] mConfigSpec;
+        private int[] mFallbackConfigSpec; // ES 2.0-only spec, when ES 3.0 capable configs were preferred
 
         private int[] filterConfigSpec(int[] configSpec) {
             if (mEGLContextClientVersion != 2) {
@@ -2036,6 +2063,7 @@ public class GLSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     private GLWrapper mGLWrapper;
     private int mDebugFlags;
     private int mEGLContextClientVersion;
+    private boolean mPreferES3Config; // Corona: see setPreferOpenGLES3Config()
     private boolean mPreserveEGLContextOnPause;
     private boolean mNeedsSwap = true;
     
