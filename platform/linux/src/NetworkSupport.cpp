@@ -428,6 +428,10 @@ int NetworkRequestState::pushToLuaState( lua_State *luaState )
 	lua_setfield( luaState, luaTableStackIndex, "url" );
 	nPushed++;
 
+	lua_pushnumber( luaState, (lua_Number)fRequestID );
+	lua_setfield( luaState, luaTableStackIndex, "requestId" );
+	nPushed++;
+
 	lua_pushnumber( luaState, (lua_Number)fBytesTransferred );
 	lua_setfield( luaState, luaTableStackIndex, "bytesTransferred" );
 	nPushed++;

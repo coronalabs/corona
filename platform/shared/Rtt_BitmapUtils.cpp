@@ -137,58 +137,48 @@ namespace bitmapUtil
 		jpeg_stdio_dest(&cinfo, outfile);
 		cinfo.image_width = width;
 		cinfo.image_height = height;
-		jpeg_set_quality(&cinfo, Rtt::Clamp((int)(jpegQuality * 100), 1, 100), TRUE);
 
 		row_stride = width * 3; // JSAMPLEs per row in image_buffer 
 		cinfo.input_components = 3;       // # of color components per pixel 
 		cinfo.in_color_space = JCS_RGB;       // colorspace of input image 
 
 		jpeg_set_defaults(&cinfo);
+		jpeg_set_quality(&cinfo, Rtt::Clamp((int)(jpegQuality * 100), 1, 100), TRUE);
 		jpeg_start_compress(&cinfo, TRUE);
 
-		std::unique_ptr<uint8_t> rgb;
+		std::unique_ptr<uint8_t[]> rgb;
 		switch (format)
 		{
 		case Rtt::PlatformBitmap::Format::kRGB:
 			break;
 
 		case Rtt::PlatformBitmap::Format::kRGBA:
-		{
-			// convert to RGB
-			rgb.reset((uint8_t*)malloc(width * height * 3));
-			uint8_t* src = data;
-			uint8_t* dst = rgb.get();
-			for (int i = 0; i < width * height; i++)
-			{
-				*dst++ = *src++;
-				*dst++ = *src++;
-				*dst++ = *src++;
-				src++;
-			}
-			data = rgb.get();
-			break;
-		}
-		case Rtt::PlatformBitmap::Format::kABGR:
-		case Rtt::PlatformBitmap::Format::kARGB:
-			Rtt_ASSERT(0); //todo
-			break;
-
 		case Rtt::PlatformBitmap::Format::kBGRA:
 		{
+			// a kBGRA capture is A,R,G,B, so RGB starts one byte in
+			const int rgbOffset = (format == Rtt::PlatformBitmap::Format::kBGRA) ? 1 : 0;
+
 			// convert to RGB
-			rgb.reset((uint8_t*)malloc(width * height * 3));
-			uint8_t* src = data;
+			rgb.reset(new uint8_t[(size_t)width * height * 3]);
+			const uint8_t* src = data;
 			uint8_t* dst = rgb.get();
 			for (int i = 0; i < width * height; i++)
 			{
-				*dst++ = src[2];
-				*dst++ = src[1];
-				*dst++ = src[0];
+				dst[0] = src[rgbOffset];
+				dst[1] = src[rgbOffset + 1];
+				dst[2] = src[rgbOffset + 2];
+				dst += 3;
 				src += 4;
 			}
 			data = rgb.get();
 			break;
 		}
+
+		default:
+			Rtt_LogException("jpeg writer: unsupported pixel format\n");
+			jpeg_destroy_compress(&cinfo);
+			fclose(outfile);
+			return false;
 		}
 
 		while (cinfo.next_scanline < cinfo.image_height)
@@ -347,15 +337,20 @@ namespace bitmapUtil
 	}
 
 	bool	savePNG(const char* filename, uint8_t* data, int width, int height, Rtt::PlatformBitmap::Format format)
-		// Writes a 24 or 32-bit color image in .png format, to the
-		// given output stream.  Data should be in [RGB or RGBA...] byte order.
 	{
-		int bpp = Rtt::PlatformBitmap::BytesPerPixel(format);
-		if (bpp != 3 && bpp != 4)
+		switch (format)
 		{
-			Rtt_LogException("png writer: bpp must be 3 or 4\n");
+		case Rtt::PlatformBitmap::Format::kRGB:
+		case Rtt::PlatformBitmap::Format::kRGBA:
+		case Rtt::PlatformBitmap::Format::kBGRA:
+			break;
+
+		default:
+			Rtt_LogException("png writer: unsupported pixel format\n");
 			return false;
 		}
+
+		int bpp = Rtt::PlatformBitmap::BytesPerPixel(format);
 
 		png_structp	png_ptr;
 		png_infop	info_ptr;
@@ -381,24 +376,23 @@ namespace bitmapUtil
 		png_set_IHDR(png_ptr, info_ptr, width, height, 8, bpp == 3 ? PNG_COLOR_TYPE_RGB : PNG_COLOR_TYPE_RGB_ALPHA, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 		png_write_info(png_ptr, info_ptr);
 
-		bool free_data = false;
+		std::unique_ptr<U8[]> rgba;
 		if (format == Rtt::PlatformBitmap::Format::kBGRA)
 		{
-			// BGRA ==> RGBA
-			U8* rgba = (U8*)malloc(width * height * 4);
-			U8* src = data;
-			U8* dst = rgba;
+			// a capture is A,R,G,B
+			rgba.reset(new U8[(size_t)width * height * 4]);
+			const U8* src = data;
+			U8* dst = rgba.get();
 			for (int i = 0; i < width * height; i++)
 			{
-				dst[0] = src[2];
-				dst[1] = src[1];
-				dst[2] = src[0];
-				dst[3] = src[3];
+				dst[0] = src[1];
+				dst[1] = src[2];
+				dst[2] = src[3];
+				dst[3] = src[0];
 				dst += 4;
 				src += 4;
 			}
-			data = rgba;
-			free_data = true;
+			data = rgba.get();
 		}
 
 		for (int y = 0; y < height; y++)
@@ -408,11 +402,6 @@ namespace bitmapUtil
 
 		png_write_end(png_ptr, info_ptr);
 		png_destroy_write_struct(&png_ptr, &info_ptr);
-
-		if (free_data)
-		{
-			free(data);
-		}
 
 		size_t bytes = 0;
 		FILE* out = fopen(filename, "wb");

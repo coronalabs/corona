@@ -439,7 +439,7 @@ namespace Rtt
 
 	bool LinuxPlatform::SaveBitmap(PlatformBitmap* bitmap, const char* filePath, float jpegQuality) const
 	{
-		return LinuxBaseBitmap::SaveBitmap(fAllocator, bitmap, filePath);
+		return LinuxBaseBitmap::SaveBitmap(fAllocator, bitmap, filePath, jpegQuality);
 	}
 
 	bool LinuxPlatform::AddBitmapToPhotoLibrary(PlatformBitmap* bitmap) const

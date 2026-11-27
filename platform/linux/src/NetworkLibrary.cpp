@@ -16,6 +16,7 @@
 #include "Rtt_PlatformNotifier.h"
 #include "NetworkLibrary.h"
 #include "NetworkSupport.h"
+#include <climits>
 
 int luaload_network(lua_State *L);
 
@@ -345,6 +346,7 @@ int	NetworkLibrary::sendRequest(lua_State *L)
 		requestState->fResponseBody.bodyType = TYPE_NONE;
 		requestState->fResponseBody.bodyBytes = NULL;
 		requestState->setURL(requestParams->getRequestUrl());
+		requestState->setRequestID(requestParams->getID());
 		requestState->setStatus(status);
 		requestState->setPhase("ended");
 		requestState->setBytesEstimated(requestParams->fResponse.size());
@@ -370,8 +372,32 @@ int	NetworkLibrary::sendRequest(lua_State *L)
 int	NetworkLibrary::cancel(lua_State *L)
 {
 	Self* thiz = NetworkLibrary::ToLibrary(L);
+
+	// The id arrives as a plain number, and lua_tonumber() answers 0 for a missing
+	// argument, nil, false, a table or a non-numeric string, and truncates a
+	// fractional one. Converting before checking would let any of those name a
+	// request the caller never meant to cancel, and report success for it.
+	lua_Number requestIDValue = 0;
+	bool isValidRequestID = (lua_type(L, 1) == LUA_TNUMBER);
+	if (isValidRequestID)
+	{
+		requestIDValue = lua_tonumber(L, 1);
+
+		// Ordered so that a NaN fails the range test instead of reaching the cast.
+		isValidRequestID = (requestIDValue >= 0 && requestIDValue <= (lua_Number)UINT_MAX);
+		isValidRequestID = isValidRequestID && ((lua_Number)(unsigned int)requestIDValue == requestIDValue);
+	}
+
+	if (!isValidRequestID)
+	{
+		// The other backends log and return nothing rather than raising, so a bad
+		// argument stays a diagnosable no-op instead of a Lua error.
+		paramValidationFailure(L, "network.cancel() expects a requestId returned from a call to network.request()");
+		return 0;
+	}
+
 	bool rc = false;
-	unsigned int requestID = lua_tonumber(L, 1);
+	unsigned int requestID = (unsigned int)requestIDValue;
 	auto it = thiz->fRequests.find(requestID);
 	if (it != thiz->fRequests.end())
 	{
